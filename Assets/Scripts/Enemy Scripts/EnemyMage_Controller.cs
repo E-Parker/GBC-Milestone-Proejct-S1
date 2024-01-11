@@ -125,7 +125,7 @@ public class EnemyMage_Controller_Interface : SpriteController{
                 currentMana++;
             }
         }
-
+        
         // Check that the current animation is not locking input:
         if (StopMovement.Contains(Animation.GetAnimationName())){
             unsetState("Walk");
@@ -146,21 +146,23 @@ public class EnemyMage_Controller_Interface : SpriteController{
         
         LastTargetPosition = TargetPosition;        // Store position for next frame predictions.
         TargetPosition = target.transform.position; // Update current Target Position:
+        
         Vector3 RelativeTargetPosition = GetPosition() - TargetPosition;
         toTarget = RelativeTargetPosition + ((LastTargetPosition - TargetPosition) * overshoot);
+        
         float relativeSqrDistance = Vector3.SqrMagnitude(RelativeTargetPosition); 
 
-        //Debug.DrawLine(GetPosition(), TargetPosition, new Color(1,1,1));
-        //Debug.DrawLine(TargetPosition, TargetPosition - (TargetDelta  * overshoot), new Color(1,0,0));
-  
-        // Clear all states here so that enemy keeps moving between action opertunities.
+
+        // Reset state, Process AI will set new state values.
         unsetAll();     
 
         // Process AI:
 
         // if the enemy is too far away, teleport in front of the player.
         if(relativeSqrDistance > MaxEnemySqrDistance){
-            rigidbody.position = TargetPosition + (Vector3.Normalize(RelativeTargetPosition) * -1f);
+            direction = Vector3.Normalize(RelativeTargetPosition);
+            rigidbody.gameObject.transform.position = TargetPosition - direction; // this is nasty.
+            setState(anim_Walk);
         }
         // If the enemy is to far away walk towards the player.
         else if (relativeSqrDistance > SqrMaxDistance()){
@@ -174,12 +176,12 @@ public class EnemyMage_Controller_Interface : SpriteController{
                 setState(anim_Walk);
             }
         }
-        // If player is under the minimum distance, try to run away. Don't check for stuck so the enemy seems more paniced.
+        // If player is under the minimum distance, try to run away. Don't check for stuck so the enemy seems more panicked.
         else if(relativeSqrDistance < SqrMinDistance()){
             direction = Vector3.Normalize(RelativeTargetPosition);
             setState(anim_Walk);
         }
-        // Agression determins how likely the character is to attack.
+        // Aggression determines how likely the character is to attack.
         else if(Random.Range(0f,1f) > aggression){
             MovementOpertunity();
         }
@@ -189,10 +191,10 @@ public class EnemyMage_Controller_Interface : SpriteController{
     }
 
     public bool ActionOpertunityCheck(){
-        /*  Check for a movement opertunity. Called in Update function. */
+        /*  Check for a movement opertunities. Called in Update function. */
 
-        /*  This works by taking the amount of time that has pased as a fraction of time specified 
-        by ActionOpertunity, which determins the probability that something will happen.
+        /*  This works by taking the amount of time that has passed as a fraction of time specified 
+        by ActionOpertunity, which determines the probability that something will happen.
         Think of it like this, if its been the maximum time, there is a 100% chance to do something,
         if an action was just performed the chance is 0%, if half the time has passed its 50% etc.*/
 
