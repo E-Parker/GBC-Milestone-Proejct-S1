@@ -10,11 +10,11 @@ using UnityEngine.SceneManagement;
 public class Ui_Handler : MonoBehaviour{
     /*  Script for handling UI elements. */
     
-    const char HP_Missing = 'x';
-    const char HP_Has = '-';
+    const char HP_Missing = '-';
+    const char HP_Has = 'x';
 
-    const char MP_Missing = 'x';
-    const char MP_Has = '-';
+    const char MP_Missing = '-';
+    const char MP_Has = 'x';
 
     [Header("Display Text:")]
     [SerializeField] TMP_Text m_ScoreText;
@@ -48,6 +48,7 @@ public class Ui_Handler : MonoBehaviour{
 
     void Start(){
         
+        DontDestroyOnLoad(EmptyObject);                 //
         player = GameObject.Find(PlayerObject);
         enemyManager = GameObject.Find("Enemy_Manger");
 

@@ -173,18 +173,7 @@ public class Projectile_Controller : MonoBehaviour{
 
 
     private void InstanceCasterLight(){
-        /*  This function instances a point light with no shadows on the caster of the projectile. */
-
-        /* This is catastrophically bad. basically what's happening here is that when the scene 
-        restart the reference for the empty object that gets cloned is out of date, so I have to 
-        make a new one.
-        
-        I tried to put this elsewhere but it only reliably works if this code is here. */
-
-        EmptyObject = GameObject.Find("Empty");
-        if (EmptyObject == null){
-            EmptyObject = new GameObject("Empty");
-        }
+        /*  This function instances a point light with no shadows on the caster of the projectile. */     
 
         // Instance the object:
         caster_gameObject = Instantiate(EmptyObject, transform.position, Quaternion.identity);
@@ -192,9 +181,9 @@ public class Projectile_Controller : MonoBehaviour{
         
         // Set lighting:
         caster_light = caster_gameObject.AddComponent<Light>();
-        caster_light.shadows =   LightShadows.None;
-        caster_light.color =     m_Caster_Color;
-        caster_light.range =     m_Caster_Range;
+        caster_light.shadows = LightShadows.None;
+        caster_light.color = m_Caster_Color;
+        caster_light.range = m_Caster_Range;
         caster_light.intensity = m_Caster_Intensity;
     }
 

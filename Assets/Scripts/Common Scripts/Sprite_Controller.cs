@@ -13,7 +13,7 @@ using static Utility.Utility;
 public static class StateData{
     /* This class handles bitwise comparisons for actor states. States are stored as a ushort giving
     16 bits for actions. Note that the first 4 bits are reserved for directions leaving 12 bits 
-    free for any aditional states. */
+    free for any additional states. */
 
     // Constants:
 
@@ -34,7 +34,7 @@ public static class StateData{
     public static bool compare(ushort a, ushort b){
         return (a & b) == b;
     }
-
+    
     public static void set(ref ushort a, ushort b){
         a |= b;
     }
@@ -51,7 +51,7 @@ public static class StateData{
         // Normalize angle to be positive:
         if (angle < 0) angle += PI_2;
         
-        // Convert angle to index 0-7: inv_PI_Div_4 is equivilant to angle(as degrees) / 45 degrees.
+        // Convert angle to index 0-7: inv_PI_Div_4 is equivalent to angle(as degrees) / 45 degrees.
         int index = (Mathf.RoundToInt(angle * inv_PI_Div_4) + offset) % 8;
 
         // Set a to the corresponding direction.
@@ -296,7 +296,7 @@ public class SpriteController{
                 Animation.Play(state);
             }    
         }
-    }   
+    }
 
     public Vector3 GetDirecion(){
         return this.direction;

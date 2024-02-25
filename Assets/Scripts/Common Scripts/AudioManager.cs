@@ -76,6 +76,7 @@ public class AudioManager : MonoBehaviour{
         // Check that there isn't already a AudioManger in the scene.
         if (Instance == null){
             Instance = this;
+            DontDestroyOnLoad(Instance);
         }
         // There already exists an audio manager, so stop creating this instance of it.
         else{
@@ -86,7 +87,7 @@ public class AudioManager : MonoBehaviour{
 
     
     void Start(){
-        // Initialize dictionariesX1
+        // Initialize dictionaries
         sfxClips = new Dictionary<string, AudioClip>();
         musicClips = new Dictionary<string, SongData>();
 
@@ -121,7 +122,6 @@ public class AudioManager : MonoBehaviour{
         AudioClip[] clips = Resources.LoadAll<AudioClip>(SfxDirectory);
         foreach(AudioClip clip in clips){
             sfxClips.Add(clip.name, clip);
-            Debug.Log(clip.name);
         }
     }
     

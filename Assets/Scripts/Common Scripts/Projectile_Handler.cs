@@ -13,7 +13,7 @@ public class Projectile_Handler : MonoBehaviour{
 
     public void On_Fire(Vector3 direction){
         /* Create a new projectile and fire it a direction. */
-        GameObject projectile = Instantiate(projectile_prefab, transform.position,  
+        GameObject projectile = Instantiate(projectile_prefab, transform.position,
                                                                transform.rotation); 
         // get the handler script from the projectile,
         Projectile_Controller controller = projectile.GetComponent<Projectile_Controller>();

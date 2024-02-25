@@ -135,13 +135,12 @@ Player is instantiated in this class for no real reason. This is dumb and should
             
             // Generate the max number enemys of each type, set inactive and add to the dead list.
             for (int i = 0; i < enemyType.maxNumber; i++){
-
-            // Create new enemy:
-            GameObject enemy = Instantiate(enemyType.Entity,transform.position,quaternion.identity);
-            
-            // Disable enemy and at to list of dead enemies:
-            enemy.SetActive(false);
-            dead.Add(enemy);
+                // Create new enemy:
+                GameObject enemy = Instantiate(enemyType.Entity,transform.position,quaternion.identity);
+                
+                // Disable enemy and at to list of dead enemies:
+                enemy.SetActive(false);
+                dead.Add(enemy);
             }   
         }
     }
@@ -265,7 +264,7 @@ Player is instantiated in this class for no real reason. This is dumb and should
         /*  This function checks for any dead enemies, assigning them to the correct list. */
         
         int index = 0;
-
+        
         while (index < alive.Count){
 
             // Get the current enemy.
@@ -313,12 +312,12 @@ Player is instantiated in this class for no real reason. This is dumb and should
         dead.Remove(enemy);
     }
 
-
+    // TODO: Stinky formatted text in the enemy manger!! move it to UI.
     public string GetScoreText(){
         /*  Generates a string that neatly displays the current wave and score for that wave. */
-        string ws = (waveScore != currentWave.Next)? waveScore.ToString():"MAX";
-        string rm = (waveScore != currentWave.Next)?"":$"(Foes-Remaining-{alive.Count})";
-        string s = ((score < 10)? "00": (score < 100)? "0": "") + (score % 999).ToString();
+        string ws = (waveScore != currentWave.Next)? waveScore.ToString() : "MAX";
+        string rm = (waveScore != currentWave.Next)?"" : $"(Foes-Remaining-{alive.Count})";
+        string s = ((score < 10)? "00" : (score < 100)? "0" : "") + (score % 999).ToString();
         return $"(Total-Score-{s}-Wave-{currentWaveCounter}-Score-{ws})\n{rm}"; //
     }
 
