@@ -21,59 +21,43 @@ public class Ui_Handler : MonoBehaviour{
     [SerializeField] TMP_Text m_HPText;
     [SerializeField] TMP_Text m_MPText;
     [SerializeField] GameObject m_GameoverButton;
-
-    // I sadly couldn't get this to work in time... Really disapointing.
-
-    //[Header("Music Track Cuves")]
-    //[SerializeField] AnimationCurve m_Track_1;
-    //[SerializeField] AnimationCurve m_Track_2;
-    //[SerializeField] AnimationCurve m_Track_3;
-    //[SerializeField] AnimationCurve m_Track_4;
-
-    private GameObject player;
+    
     private GameObject enemyManager;
 
+    private GameObject player;
     private Health_handler pch;
     private Player_Controller pc;
-    private Enemy_Manager em;
-
+    
     private int health;
     private int maxHealth;
 
     private int mana;
     private int maxMana;
 
-    private float action;
-    private float lastAction;
 
     void Start(){
-        
-        DontDestroyOnLoad(EmptyObject);                 //
+        DontDestroyOnLoad(EmptyObject);
         player = GameObject.Find(PlayerObject);
         enemyManager = GameObject.Find("Enemy_Manger");
 
         pc = player.GetComponent<Player_Controller>();
         pch = player.GetComponent<Health_handler>();
-        em = enemyManager.GetComponent<Enemy_Manager>();
-
     }
 
-    void UpdateMusic(){
-        /*  The UI manager already has access to most of the parameters so handle dynamic music here. */
 
-        action = 0.25f - (pch.GetHealth() / pch.GetMaxHealth() * 0.25f) + (0.75f * (em.AliveEnemies() / em.TotalEnemies()));
+    public void ChangeSceneTo(int index){
+        /*  Swaps the current scene to the one named "name". */
 
-        if (action == lastAction){
+        // Check for valid index:
+        if(index < 0 || index > SceneManager.sceneCountInBuildSettings){
+            Debug.LogError($"Invalid scene index: {index}");
             return;
         }
-        Debug.Log(action);
-        lastAction = action;
 
-        //AudioManager.SetMusicTrackVolume(0,m_Track_1.Evaluate(action));
-        //AudioManager.SetMusicTrackVolume(1,m_Track_2.Evaluate(action));
-        //AudioManager.SetMusicTrackVolume(2,m_Track_3.Evaluate(action));
-        //AudioManager.SetMusicTrackVolume(3,m_Track_4.Evaluate(action));
+        // Load the scene from index:
+        SceneManager.LoadScene(index);
     }
+
 
     public void RestartScene(){
         /*  This could be better but this is the fastest way i can think of to reload the scene. */
@@ -85,7 +69,6 @@ public class Ui_Handler : MonoBehaviour{
 
 
     void Update(){
-        //UpdateMusic();
         maxHealth = pch.GetMaxHealth();
         maxMana = pc.controller.GetMaxMana();
 
@@ -126,7 +109,8 @@ public class Ui_Handler : MonoBehaviour{
             } 
             m_MPText.text += ")";
         }
-        m_ScoreText.text = em.GetScoreText();
+        
+        m_ScoreText.text = Enemy_Manager.GetScoreText();
         //m_DebugText.text = Utility.ushortBitsToString(pc.controller.state);
     }
 }

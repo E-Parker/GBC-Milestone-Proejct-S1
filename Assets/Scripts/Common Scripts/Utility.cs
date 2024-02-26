@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using Unity.Mathematics;
 
@@ -26,7 +27,6 @@ public static class Utility{
 
     // This will affect globally unless a local overwrite is made.
     public const int PixelsPerUnit = 100;   
-
 
     public static Vector3 TransformToPixels(Vector3 position, int pixelsPerUnit=PixelsPerUnit){
         /* This function rounds a Vector3 to the pixels per unit. */

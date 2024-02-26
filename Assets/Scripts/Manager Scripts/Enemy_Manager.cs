@@ -1,22 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using Unity.Mathematics;
 using UnityEngine;
 using static Utility.Utility;
 
-/*
 
-NOTES:
-
-Player is instantiated in this class for no real reason. This is dumb and should be changed.
-
-
-*/
-
-
-[Serializable] public class Enemy_Manager : MonoBehaviour{   
+[Serializable] public class Enemy_Manager : SingletonObject<Enemy_Manager>{   
 
     [Serializable] public struct EnemySpawn{
         /*  Struct for the enemy prefab and number of enemies to spawn. */
@@ -52,12 +42,14 @@ Player is instantiated in this class for no real reason. This is dumb and should
     [SerializeField] float m_SpawnRate = 1f;        // Time(Seconds) between spawns.
     [SerializeField] float m_GracePeriod = 5f;      // Time(Seconds) between waves.
     
-    private GameObject target;                      // player gameObject
+    public GameObject target;                       // player gameObject
+
     private int currentWaveCounter = 0;             // Number of waves the player has finished.
     private int score = 0;                          // player's total score.
     private int waveScore = 0;                      // Score in the current wave.
     private float enemyTimer = 0f;                  // timer for spawning enemies.
     private float waveTimer = 0f;                   // timer for starting waves.
+
     private Queue<EnemyWave> WaveQueue;
     private EnemyWave currentWave;
 
@@ -71,30 +63,24 @@ Player is instantiated in this class for no real reason. This is dumb and should
     private List<GameObject> alive = new List<GameObject>();    // list of alive enemies
     private List<GameObject> dead = new List<GameObject>();     // list of dead (marked inactive) enemies.
 
-    void Awake(){
-        // Initialize Target (spawn the player):
-        target = Instantiate(m_targetPrefab, transform.position, Quaternion.identity);
-        target.name = PlayerObject;
-    }
-
     void Start(){
         // Initialize enemies:
         InitializeWaves();
     }
 
-    void InitializeWaves(){
+    public static void InitializeWaves(){
         /*  This function sorts the waves by level. */
 
-        int iterations = m_waves.Count;
+        int iterations = Instance.m_waves.Count;
         List<EnemyWaveUI> SortedWaves = new List<EnemyWaveUI>();
-        WaveQueue = new Queue<EnemyWave>();
+        Instance.WaveQueue = new Queue<EnemyWave>();
 
         // sort waves by level requirement using insertion sort:
         for (int i = 0; i < iterations; i++){
 
-            EnemyWaveUI smallest = m_waves[i];
+            EnemyWaveUI smallest = Instance.m_waves[i];
             
-            foreach(EnemyWaveUI wave in m_waves){
+            foreach(EnemyWaveUI wave in Instance.m_waves){
                 if ((!SortedWaves.Contains(wave)) && (wave.level < smallest.level)){
                     smallest = wave;
                 }
@@ -104,19 +90,21 @@ Player is instantiated in this class for no real reason. This is dumb and should
         }
 
         // Generate list of waves:
-        for (int i = 0; i < iterations; i++){
-            EnemyWaveUI wave = SortedWaves[i];
-            Debug.Log($"wave: {i}, level: {wave.level}");
+        for (int i = 0; i < iterations; i++){ 
+            EnemyWaveUI waveUI = SortedWaves[i];
+            Debug.Log($"wave: {i}, level: {waveUI.level}");
             int nextLevel = (iterations-1 != i)?SortedWaves[i+1].level : -1;
             Debug.Log(nextLevel);
-            WaveQueue.Enqueue(new EnemyWave(wave.enemySpawns,wave.level,nextLevel));
+            EnemyWave wave = new EnemyWave(waveUI.enemySpawns, waveUI.level,nextLevel);
+            Debug.Log(JsonUtility.ToJson(wave));
+            Instance.WaveQueue.Enqueue(wave);
         }
 
-        currentWave = WaveQueue.Dequeue();
+        Instance.currentWave = Instance.WaveQueue.Dequeue();
     }
 
 
-    void GenerateEnemies(){
+    private void GenerateEnemies(){
         /*  This function fills out the list of enemies based off the total amount of each type. */
         
         // Clear lists of alive and dead enemies:
@@ -145,7 +133,7 @@ Player is instantiated in this class for no real reason. This is dumb and should
         }
     }
 
-    void GenerateEnemiesAsync(){
+    private void GenerateEnemiesAsync(){
         /*  This function Generates new enemies over time to even out the load and prevent lag
         spikes. */
 
@@ -260,7 +248,7 @@ Player is instantiated in this class for no real reason. This is dumb and should
     }
 
 
-    void UpdateLists(){
+    private void UpdateLists(){
         /*  This function checks for any dead enemies, assigning them to the correct list. */
         
         int index = 0;
@@ -288,7 +276,7 @@ Player is instantiated in this class for no real reason. This is dumb and should
     }
 
 
-    void SpawnEnemy(){
+    private void SpawnEnemy(){
         /*  This function handles spawning a new enemy and adding it to the list of enemies. */
 
         // Leave early if there are no enemies left to spawn.
@@ -313,24 +301,24 @@ Player is instantiated in this class for no real reason. This is dumb and should
     }
 
     // TODO: Stinky formatted text in the enemy manger!! move it to UI.
-    public string GetScoreText(){
+    public static string GetScoreText(){
         /*  Generates a string that neatly displays the current wave and score for that wave. */
-        string ws = (waveScore != currentWave.Next)? waveScore.ToString() : "MAX";
-        string rm = (waveScore != currentWave.Next)?"" : $"(Foes-Remaining-{alive.Count})";
-        string s = ((score < 10)? "00" : (score < 100)? "0" : "") + (score % 999).ToString();
-        return $"(Total-Score-{s}-Wave-{currentWaveCounter}-Score-{ws})\n{rm}"; //
+        string ws = (Instance.waveScore != Instance.currentWave.Next)? Instance.waveScore.ToString() : "MAX";
+        string rm = (Instance.waveScore != Instance.currentWave.Next)?"" : $"(Foes-Remaining-{Instance.alive.Count})";
+        string s = ((Instance.score < 10)? "00" : (Instance.score < 100)? "0" : "") + (Instance.score % 999).ToString();
+        return $"(Total-Score-{s}-Wave-{Instance.currentWaveCounter}-Score-{ws})\n{rm}"; //
     }
 
-    public int TotalEnemies(){
-        return alive.Count + dead.Count;
+    public static int TotalEnemies(){
+        return Instance.alive.Count + Instance.dead.Count;
     }
 
-    public int AliveEnemies(){
-        return alive.Count;
+    public static int AliveEnemies(){
+        return Instance.alive.Count;
     }
 
-    public int GetScore(){
-        return score;
+    public static int GetScore(){
+        return Instance.score;
     }
 }
 

@@ -8428,6 +8428,63 @@ Transform:
   - {fileID: 1194758149}
   m_Father: {fileID: 1475234106}
   m_LocalEulerAnglesHint: {x: 0, y: 60, z: 0}
+--- !u!1001 &1611157335
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 547713432738287873, guid: 9445c87cc30b11544a42f48e9b2f95ce, type: 3}
+      propertyPath: m_Name
+      value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 4446771483280667548, guid: 9445c87cc30b11544a42f48e9b2f95ce, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4446771483280667548, guid: 9445c87cc30b11544a42f48e9b2f95ce, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 4446771483280667548, guid: 9445c87cc30b11544a42f48e9b2f95ce, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4446771483280667548, guid: 9445c87cc30b11544a42f48e9b2f95ce, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4446771483280667548, guid: 9445c87cc30b11544a42f48e9b2f95ce, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4446771483280667548, guid: 9445c87cc30b11544a42f48e9b2f95ce, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4446771483280667548, guid: 9445c87cc30b11544a42f48e9b2f95ce, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4446771483280667548, guid: 9445c87cc30b11544a42f48e9b2f95ce, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4446771483280667548, guid: 9445c87cc30b11544a42f48e9b2f95ce, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4446771483280667548, guid: 9445c87cc30b11544a42f48e9b2f95ce, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 9445c87cc30b11544a42f48e9b2f95ce, type: 3}
 --- !u!1001 &1645474928
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8911,7 +8968,7 @@ GameObject:
   - component: {fileID: 1779495452}
   - component: {fileID: 1779495453}
   m_Layer: 0
-  m_Name: Enemy_Manger
+  m_Name: Enemy_Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8946,55 +9003,56 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_waves:
   - enemySpawns:
-    - Entity: {fileID: 6093886521202672647, guid: 90f5031bebb516a498eb0913d95f3768, type: 3}
-      maxNumber: 4
+    - Entity: {fileID: 0}
+      maxNumber: 0
     level: 3
   - enemySpawns:
-    - Entity: {fileID: 6093886521202672647, guid: 90f5031bebb516a498eb0913d95f3768, type: 3}
-      maxNumber: 5
-    - Entity: {fileID: 6093886521202672647, guid: 3fe57dd17e562a44b8b969b3df04d0d5, type: 3}
-      maxNumber: 1
+    - Entity: {fileID: 0}
+      maxNumber: 0
+    - Entity: {fileID: 0}
+      maxNumber: 0
     level: 5
   - enemySpawns:
-    - Entity: {fileID: 6093886521202672647, guid: 3fe57dd17e562a44b8b969b3df04d0d5, type: 3}
-      maxNumber: 3
-    - Entity: {fileID: 6093886521202672647, guid: b9686856e76e4904c8dd2c2b1f413c48, type: 3}
-      maxNumber: 1
+    - Entity: {fileID: 0}
+      maxNumber: 0
+    - Entity: {fileID: 0}
+      maxNumber: 0
     level: 10
   - enemySpawns:
-    - Entity: {fileID: 6093886521202672647, guid: 90f5031bebb516a498eb0913d95f3768, type: 3}
-      maxNumber: 5
-    - Entity: {fileID: 6093886521202672647, guid: 3fe57dd17e562a44b8b969b3df04d0d5, type: 3}
-      maxNumber: 3
-    - Entity: {fileID: 6093886521202672647, guid: fe565f7e2a03ea646be5c45b4381d361, type: 3}
-      maxNumber: 1
+    - Entity: {fileID: 0}
+      maxNumber: 0
+    - Entity: {fileID: 0}
+      maxNumber: 0
+    - Entity: {fileID: 0}
+      maxNumber: 0
     level: 10
   - enemySpawns:
-    - Entity: {fileID: 6093886521202672647, guid: 90f5031bebb516a498eb0913d95f3768, type: 3}
-      maxNumber: 10
-    - Entity: {fileID: 6093886521202672647, guid: 3fe57dd17e562a44b8b969b3df04d0d5, type: 3}
-      maxNumber: 3
-    - Entity: {fileID: 6093886521202672647, guid: 0b10c1f227bbd8b4588e16c8129f3d95, type: 3}
-      maxNumber: 1
-    - Entity: {fileID: 6093886521202672647, guid: fe565f7e2a03ea646be5c45b4381d361, type: 3}
-      maxNumber: 3
+    - Entity: {fileID: 0}
+      maxNumber: 0
+    - Entity: {fileID: 0}
+      maxNumber: 0
+    - Entity: {fileID: 0}
+      maxNumber: 0
+    - Entity: {fileID: 0}
+      maxNumber: 0
     level: 20
   - enemySpawns:
-    - Entity: {fileID: 6093886521202672647, guid: 90f5031bebb516a498eb0913d95f3768, type: 3}
-      maxNumber: 10
-    - Entity: {fileID: 6093886521202672647, guid: 3fe57dd17e562a44b8b969b3df04d0d5, type: 3}
-      maxNumber: 5
-    - Entity: {fileID: 6093886521202672647, guid: b9686856e76e4904c8dd2c2b1f413c48, type: 3}
-      maxNumber: 3
-    - Entity: {fileID: 6093886521202672647, guid: 0b10c1f227bbd8b4588e16c8129f3d95, type: 3}
-      maxNumber: 5
-    - Entity: {fileID: 6093886521202672647, guid: fe565f7e2a03ea646be5c45b4381d361, type: 3}
-      maxNumber: 5
+    - Entity: {fileID: 0}
+      maxNumber: 0
+    - Entity: {fileID: 0}
+      maxNumber: 0
+    - Entity: {fileID: 0}
+      maxNumber: 0
+    - Entity: {fileID: 0}
+      maxNumber: 0
+    - Entity: {fileID: 0}
+      maxNumber: 0
     level: 20
   m_targetPrefab: {fileID: 547713432738287873, guid: 9445c87cc30b11544a42f48e9b2f95ce, type: 3}
   m_SpawnRadius: 1.5
   m_SpawnRate: 0.25
   m_GracePeriod: 1
+  target: {fileID: 0}
 --- !u!1 &1795765528
 GameObject:
   m_ObjectHideFlags: 0
@@ -9865,3 +9923,4 @@ SceneRoots:
   - {fileID: 231596640}
   - {fileID: 1539733491}
   - {fileID: 1586570550}
+  - {fileID: 1611157335}

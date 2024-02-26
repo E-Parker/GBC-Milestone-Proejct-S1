@@ -42,7 +42,7 @@ public struct SongData{
 }
 
 
-public class AudioManager : MonoBehaviour{
+public class AudioManager : SingletonObject<AudioManager>{
     // Constants / Readonly:
     
     readonly string MusicDirectory = "Sounds/Music";
@@ -57,35 +57,18 @@ public class AudioManager : MonoBehaviour{
     private Dictionary<string, AudioClip> sfxClips;     // Store sfx here.
     private Dictionary<string, SongData> musicClips;    // store music with this.
 
-    [Header("Audio Settings:")]
-    [SerializeField] ushort m_musicTracks = 4;  // number of audiosoruces instanced to handle music.
-    [SerializeField] float m_dopplerLevel = 0f; // Amount of doppler for sfx.
-    [SerializeField] float m_volume = 0.5f;     // Master volume control.
-    [SerializeField] bool m_spatialize = false; // bool for if the audio is spatialized
+    public ushort m_musicTracks = 4;    // number of audiosoruces instanced to handle music.
+    public float m_dopplerLevel = 0f;   // Amount of doppler for sfx.
+    public float m_volume = 0.5f;       // Master volume control.
+    public bool m_spatialize = false;   // bool for if the audio is spatialized
 
     private float musicVolume = 0.8f;
     private float sfxVolume = 0.6f;
 
     public string currentSong;
-    public static AudioManager Instance;    // this allows the instance specific stuff to work as if it was static.
     private bool switching;                 // flag for if changing state.
     
-    void Awake(){
-        // This setup here is done to allow for static function calls. 
-        
-        // Check that there isn't already a AudioManger in the scene.
-        if (Instance == null){
-            Instance = this;
-            DontDestroyOnLoad(Instance);
-        }
-        // There already exists an audio manager, so stop creating this instance of it.
-        else{
-            Debug.LogWarning("Only one audio Manager can exist in a scene.");
-            Destroy(gameObject);
-        }
-    }
 
-    
     void Start(){
         // Initialize dictionaries
         sfxClips = new Dictionary<string, AudioClip>();
