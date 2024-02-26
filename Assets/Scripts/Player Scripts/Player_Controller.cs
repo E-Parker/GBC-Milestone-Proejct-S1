@@ -152,7 +152,6 @@ public class Player_Controller : MonoBehaviour{
     
     // Define what buttons do what:
     [Header("Input Buttons")]
-    
     [SerializeField] KeyCode m_Up;
     [SerializeField] KeyCode m_Down;
     [SerializeField] KeyCode m_Left;
@@ -190,7 +189,7 @@ public class Player_Controller : MonoBehaviour{
             gameObject.GetComponent<Health_handler>(),
             gameObject.GetComponent<Projectile_Handler>());
         
-        controller.SetCurrentMana(m_Mana); // For debuging. 
+        controller.SetCurrentMana(m_Mana);
     }
 
     void Update(){

@@ -1,0 +1,15 @@
+{"Wave":{
+    "Entities":[{"SpawnType":{"ID":0,"Max":3}}],
+    "Level":3}
+}
+
+{"Entities":
+[{"EnemySpawn":{"ID":0,"Max":5}},
+{"EnemySpawn":{"ID":1,"Max":1}}],
+"Level":10}
+
+{"Entities":
+[{"EnemySpawn":{"ID":1,"Max":0}},
+{"EnemySpawn":{"ID":2,"Max":3}}],
+"Level":15}
+}

@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 
 // cool symbols 🗡
 
-public class Ui_Handler : MonoBehaviour{
+public class Ui_Handler : SingletonObject<Ui_Handler>{
     /*  Script for handling UI elements. */
     
     const char HP_Missing = '-';
@@ -21,8 +21,6 @@ public class Ui_Handler : MonoBehaviour{
     [SerializeField] TMP_Text m_HPText;
     [SerializeField] TMP_Text m_MPText;
     [SerializeField] GameObject m_GameoverButton;
-    
-    private GameObject enemyManager;
 
     private GameObject player;
     private Health_handler pch;
@@ -38,7 +36,6 @@ public class Ui_Handler : MonoBehaviour{
     void Start(){
         DontDestroyOnLoad(EmptyObject);
         player = GameObject.Find(PlayerObject);
-        enemyManager = GameObject.Find("Enemy_Manger");
 
         pc = player.GetComponent<Player_Controller>();
         pch = player.GetComponent<Health_handler>();
@@ -109,7 +106,7 @@ public class Ui_Handler : MonoBehaviour{
             } 
             m_MPText.text += ")";
         }
-        
+
         m_ScoreText.text = Enemy_Manager.GetScoreText();
         //m_DebugText.text = Utility.ushortBitsToString(pc.controller.state);
     }

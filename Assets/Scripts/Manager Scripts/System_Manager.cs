@@ -17,22 +17,12 @@ public class System_Manger : SingletonObject<System_Manger>{
     [SerializeField] float m_volume = 0.5f;     // Master volume control.
     [SerializeField] bool m_spatialize = false; // bool for if the audio is spatialized
     
-    public override void Awake(){
-        // First check that the system manager is a singleton.
-        base.Awake();
-
-        
+    public override void CustomAwake(){
 
         // Attempt to instance all other scripts.
-        GameObject instance;
-        instance = GameObject.Instantiate(EmptyObject, transform.position, quaternion.identity);
-        instance.AddComponent<AudioManager>();
+        AudioManager.MakeInstance();
+        Enemy_Manager.MakeInstance();
+        Ui_Handler.MakeInstance();
+        
     }
-
-
-    void Start(){
-
-    }
-
-
 }

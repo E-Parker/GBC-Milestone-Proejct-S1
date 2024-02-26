@@ -3,61 +3,96 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
+using System.IO;
 using static Utility.Utility;
 
 
-[Serializable] public class Enemy_Manager : SingletonObject<Enemy_Manager>{   
+public class Enemy_Manager : SingletonObject<Enemy_Manager>{   
 
-    [Serializable] public struct EnemySpawn{
+    public static GameObject[] c_Entities;
+
+    // enemy spawn handling structs:
+
+    [Serializable] public struct IEnemySpawn{
+        public int ID;  // Stores the index of the entity in the list of possible entities.
+        public int Max; // Maximum of this type.
+    }
+
+    [Serializable] public struct IEnemyWave{
+        public IEnemySpawn[] SpawnID;   // array of IEnemySpawn indices.
+        public int level;       // level required to progress to the next wave.
+    }
+
+    [Serializable] public struct IEnemyWaveArray{
+        public IEnemyWave[] Waves;
+    }
+
+    public struct EnemySpawn{
         /*  Struct for the enemy prefab and number of enemies to spawn. */
-        public GameObject Entity;
-        public int maxNumber;
+        public EnemySpawn(int ID, int Max){
+            this.maxNumber = Max;
+            this.Entity = ID < c_Entities.Length? c_Entities[ID] : null;
+            Spawns.Add(this);
+        }
+
+        public EnemySpawn(IEnemySpawn Spawn){
+            this.maxNumber = Spawn.Max;
+            this.Entity = Spawn.ID < c_Entities.Length? c_Entities[Spawn.ID] : null;
+            Spawns.Add(this);
+        }
+        
+        public static List<EnemySpawn> Spawns;
+        public GameObject Entity { get; }
+        public int maxNumber { get; }
     }
 
-    [Serializable] public struct EnemyWaveUI{
-        /*  Struct for interfacing with Unity's inspector. */
-        public List<EnemySpawn> enemySpawns;
-        public int level;
-    }
 
     public struct EnemyWave{
         /* Struct for storing waves of enemies with the level requirement and requirement for next wave. */
-        public EnemyWave(List<EnemySpawn> enemySpawns, int levelReq, int nextLevelReq){
+        public EnemyWave(EnemySpawn[] enemySpawns, int levelReq, int nextLevelReq){
             Spawns = enemySpawns;
             Level = levelReq;       // must be positive integer in terms of the number of points.
             Next = nextLevelReq;    // value of -1 means final wave.
         }
+        
+        public EnemyWave(IEnemyWave wave, int next = -1){
+            Spawns = new EnemySpawn[wave.SpawnID.Length];
+            //foreach(int i in wave.SpawnID){ Spawns[i] = EnemySpawn.Spawns[i]; }
+            Level = wave.level;    
+            Next = next;
+        }
 
-        public List<EnemySpawn> Spawns;
+        public EnemySpawn[] Spawns;
         public int Level;
         public int Next; 
     }
 
-    [Header("Attack Waves")]
-    [SerializeField] List<EnemyWaveUI> m_waves;
+    // Settings:
+    public  float m_SpawnRadius = 2f;      // Radius around camera that enemies spawn.
+    public  float m_SpawnRate = 1f;        // Time(Seconds) between spawns.
+    public  float m_GracePeriod = 5f;      // Time(Seconds) between waves.
+    public  GameObject m_TargetOverride;   // If this value is set, override the default.
+    private GameObject target;             // GameObject for where enemies should spawn.
     
-    [Header("Settings")]
-    [SerializeField] GameObject m_targetPrefab;     // player prefab:   
-    [SerializeField] float m_SpawnRadius = 1.5f;    // Radius around camera that enemies spawn.
-    [SerializeField] float m_SpawnRate = 1f;        // Time(Seconds) between spawns.
-    [SerializeField] float m_GracePeriod = 5f;      // Time(Seconds) between waves.
+    // Score Counters:
+    private int currentWaveCounter = 0;    // Number of waves the player has finished.
+    private int waveScore = 0;             // Score in the current wave.
+    private int score = 0;                 // player's total score.
     
-    public GameObject target;                       // player gameObject
+    // Timers:
+    private float enemyTimer = 0f;         // timer for spawning enemies.
+    private float waveTimer = 0f;          // timer for starting waves.
 
-    private int currentWaveCounter = 0;             // Number of waves the player has finished.
-    private int score = 0;                          // player's total score.
-    private int waveScore = 0;                      // Score in the current wave.
-    private float enemyTimer = 0f;                  // timer for spawning enemies.
-    private float waveTimer = 0f;                   // timer for starting waves.
-
+    // Arrays:
+    private IEnemyWave[] Waves;
     private Queue<EnemyWave> WaveQueue;
-    private EnemyWave currentWave;
 
+    private EnemyWave currentWave;
     private EnemySpawn currentType;
     private bool spawning = false;
-    private int currentTypeIndex = 0;
     private int totalAmount = 0;
     private int totalSpawns = 0;
+    private int currentTypeIndex = 0;
     private int currentTypeAmount = 0;
 
     private List<GameObject> alive = new List<GameObject>();    // list of alive enemies
@@ -65,22 +100,68 @@ using static Utility.Utility;
 
     void Start(){
         // Initialize enemies:
+        
+        IEnemySpawn test1;
+        test1.Max = 1;
+        test1.ID = 0;
+        IEnemySpawn test2;
+        test2.Max = 1;
+        test2.ID = 0;
+        IEnemySpawn test3;
+        test3.Max = 1;
+        test3.ID = 0;
+        IEnemySpawn test4;
+        test4.Max = 1;
+        test4.ID = 0;
+
+        IEnemyWave wave1;
+        wave1.level = 5;
+        wave1.SpawnID = new IEnemySpawn[4]{test1, test2, test3, test4};
+        IEnemyWave wave2;
+
+        wave2.level = 10;
+        wave2.SpawnID = new IEnemySpawn[4]{test1, test2, test3, test4};
+
+        IEnemyWaveArray waves;
+        waves.Waves = new IEnemyWave[2]{wave1,wave2};
+
+        string test = JsonUtility.ToJson(test1, true);
+        Debug.Log(test);
+
+        test = JsonUtility.ToJson(wave1, true);
+        Debug.Log(test);
+        
+        test = JsonUtility.ToJson(waves, true);
+        Debug.Log(test);
+        
+
+        string json = File.ReadAllText($"{Application.dataPath}/Resources/Data/EnemySpawns.json");
+        IEnemyWaveArray newWave = JsonUtility.FromJson<IEnemyWaveArray>(json);
+        
+        test = JsonUtility.ToJson(newWave, true);
+        Debug.Log(test);
+
+        //Waves = LoadArrayFromJson<IEnemyWave>("EnemySpawns", out test);
+        //Debug.Log(test);
         InitializeWaves();
     }
 
     public static void InitializeWaves(){
         /*  This function sorts the waves by level. */
 
-        int iterations = Instance.m_waves.Count;
-        List<EnemyWaveUI> SortedWaves = new List<EnemyWaveUI>();
+        int iterations = Instance.Waves.Length;
+        List<IEnemyWave> SortedWaves = new List<IEnemyWave>();
         Instance.WaveQueue = new Queue<EnemyWave>();
+        
+        Debug.Log(Instance.Waves);
 
         // sort waves by level requirement using insertion sort:
         for (int i = 0; i < iterations; i++){
 
-            EnemyWaveUI smallest = Instance.m_waves[i];
+            IEnemyWave smallest = Instance.Waves[i];
             
-            foreach(EnemyWaveUI wave in Instance.m_waves){
+            foreach(IEnemyWave wave in Instance.Waves){
+                Debug.Log(wave);
                 if ((!SortedWaves.Contains(wave)) && (wave.level < smallest.level)){
                     smallest = wave;
                 }
@@ -91,12 +172,11 @@ using static Utility.Utility;
 
         // Generate list of waves:
         for (int i = 0; i < iterations; i++){ 
-            EnemyWaveUI waveUI = SortedWaves[i];
-            Debug.Log($"wave: {i}, level: {waveUI.level}");
+            IEnemyWave IWave = SortedWaves[i];
+            Debug.Log($"wave: {i}, level: {IWave.level}");
             int nextLevel = (iterations-1 != i)?SortedWaves[i+1].level : -1;
-            Debug.Log(nextLevel);
-            EnemyWave wave = new EnemyWave(waveUI.enemySpawns, waveUI.level,nextLevel);
-            Debug.Log(JsonUtility.ToJson(wave));
+            //Debug.Log(nextLevel);
+            EnemyWave wave = new EnemyWave(IWave, nextLevel);
             Instance.WaveQueue.Enqueue(wave);
         }
 
@@ -171,7 +251,7 @@ using static Utility.Utility;
                 if (currentTypeAmount == currentType.maxNumber){
                     currentTypeAmount = 0;
                     currentTypeIndex++;
-                    if(currentTypeIndex < currentWave.Spawns.Count){
+                    if(currentTypeIndex < currentWave.Spawns.Length){
                         currentType = currentWave.Spawns[currentTypeIndex];
                     }
                     else{
@@ -306,7 +386,7 @@ using static Utility.Utility;
         string ws = (Instance.waveScore != Instance.currentWave.Next)? Instance.waveScore.ToString() : "MAX";
         string rm = (Instance.waveScore != Instance.currentWave.Next)?"" : $"(Foes-Remaining-{Instance.alive.Count})";
         string s = ((Instance.score < 10)? "00" : (Instance.score < 100)? "0" : "") + (Instance.score % 999).ToString();
-        return $"(Total-Score-{s}-Wave-{Instance.currentWaveCounter}-Score-{ws})\n{rm}"; //
+        return $"(Total-Score-{s}-Wave-{Instance.currentWaveCounter}-Score-{ws})\\n{rm}"; //
     }
 
     public static int TotalEnemies(){

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using System.IO;
 using UnityEngine;
 using Unity.Mathematics;
 
@@ -12,18 +13,53 @@ namespace Utility{
 public static class Utility{
     
     // Constants:
-    public const float inv_PI_Div_4 =  1 / (Mathf.PI / 4);   // Constant for dividing by 45 degrees in radians.
+    public const float inv_PI_Div_4 =  1 / (Mathf.PI / 4);   // Divide by 45 degrees in radians.
     public const float PI_2 = Mathf.PI * 2;
     public const float MaxEnemyDistance = 1.75f;
     public const float MaxEnemySqrDistance = MaxEnemyDistance * MaxEnemyDistance;
 
     // Define the expected player object name here. This is for when the scene reloads and every script has to re-find the player.
     public static string PlayerObject = "Player";
+    public static GameObject Player = GameObject.Find(PlayerObject);
 
     /* This is used as a template when generating objects at runtime. 
     I could have done this with prefabs but using this I can make any combination of scripts I want
     on demand This avoids needing a prefab for an empty object. */
     public static GameObject EmptyObject = new GameObject("Empty");
+
+    /*========================================================================================*\
+    |                                    JSON FILE HANDLING                                    |
+    \*========================================================================================*/
+    
+    [Serializable] struct GenericArray<T>{
+        GenericArray(T[] array){
+            Array = array;
+        }
+        public T[] Array { get; set; }
+    }
+
+    public static void SaveToJson<T>(T serializableObject, string filename){
+        /* This function saves a serializable object to a json file. */
+        string output = JsonUtility.ToJson(serializableObject);
+        Debug.Log(Application.persistentDataPath);
+        string path = $"{Application.persistentDataPath}/{filename}.json";
+        System.IO.File.WriteAllText(path, output);
+    }
+
+    public static T LoadFromJson<T>(string filename){
+        string json = File.ReadAllText($"{Application.dataPath}/Resources/Data/{filename}.json");
+        return JsonUtility.FromJson<T>(json);
+    }
+
+    public static T[] LoadArrayFromJson<T>(string filename, out string json){
+        json = File.ReadAllText($"{Application.dataPath}/Resources/Data/{filename}.json");
+        GenericArray<T> array = JsonUtility.FromJson<GenericArray<T>>(json);
+        return array.Array;
+    }
+
+    /*========================================================================================*\
+    |                               3D TRANSFORMATION & ALIGNMENT                              |
+    \*========================================================================================*/
 
     // This will affect globally unless a local overwrite is made.
     public const int PixelsPerUnit = 100;   
@@ -59,6 +95,9 @@ public static class Utility{
         //ot.rotation = Quaternion.Inverse(tt.rotation);
     }
 
+    /*========================================================================================*\
+    |                                       MISCELLANEOUS                                      |
+    \*========================================================================================*/
 
     public static string ushortBitsToString(ushort bits){
         /*  Generate a string from the bits of a ushort. */
@@ -71,6 +110,10 @@ public static class Utility{
         }
         return output;
     } 
+
+    /*========================================================================================*\
+    |                                       INTERPOLATION                                      |
+    \*========================================================================================*/
 
     public static T BoomerangLerp<T>(T a, T b, float t, float smooth = 0f){
         /* Blend between the two boomerang lerps for different levels of smoothness. */

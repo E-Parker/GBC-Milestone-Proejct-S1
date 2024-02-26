@@ -20,24 +20,17 @@ public struct SongData{
     public float duration;      // store the total length of the music.
     public float transition;    // store the transition time.
     
-
     public SongData(int tracks, float transition){
         // This is slightly unsafe, but I wont be making a SongData struct without at least one track.
         this.duration = 0;
         this.numberOfTracks = tracks;
         this.tracks = new AudioClip[tracks]; 
-        this.transition = transition % duration;
+        this.transition = transition;
     }
 
-
     public void Update(){
-        // VERY very bad way of handing this. I hate this code so much.
-        foreach (AudioClip clip in this.tracks){
-            if (clip != null){
-                this.duration = clip.length;
-                return; 
-            }
-        }
+        duration = tracks[0].length;
+        transition = transition % duration;
     }
 }
 
@@ -65,10 +58,15 @@ public class AudioManager : SingletonObject<AudioManager>{
     private float musicVolume = 0.8f;
     private float sfxVolume = 0.6f;
 
-    public string currentSong;
-    private bool switching;                 // flag for if changing state.
-    
+    public string currentSong = "";  // stores the current song being played.
+    public string nextSong = "";     // stores the next song to be played.
 
+
+    // TrackSwitching:
+    private float timeSinceLast = 0.0f;
+    private float timeToNext = 0.0f;
+    private bool loopMusic = true;
+    
     void Start(){
         // Initialize dictionaries
         sfxClips = new Dictionary<string, AudioClip>();
@@ -76,10 +74,44 @@ public class AudioManager : SingletonObject<AudioManager>{
 
         // Assign variables:
         musicTrackVolume = 1f / (float)m_musicTracks;
+        currentSong = "Battle_Theme";
 
         LoadSounds();
         LoadMusic();
-        PlayMusic("Battle_Theme");
+        PlayMusic();
+    }
+
+
+    void Update(){
+
+        // If the current song is null leave early.
+        if (currentSong == null) { return; }
+        
+        // Update timers.
+        timeSinceLast += Time.deltaTime;
+        timeToNext = timeSinceLast - musicClips[currentSong].duration;
+        //Debug.Log(timeToNext);
+        // leave if the track isn't about to end.
+        if(Instance.timeToNext > 0.01f) { return; }
+
+        // otherwise play the next track queued.
+        for (int i = 0; i < Instance.m_musicTracks; i++){
+            Invoke("UpdateMusic",Instance.timeToNext);
+        }
+    }
+
+    private void UpdateMusic(){
+        /* This function plays the next music track. Used in Update function with Invoke. */
+        
+        currentSong = nextSong;                 // Update the current song.
+        nextSong = loopMusic? nextSong : "";    // If looping, queue the next song as itself.
+
+        timeSinceLast = timeToNext;
+
+        SongData clips = musicClips[currentSong];
+        for (int i = 0; i < m_musicTracks; i++){
+            musicTrack[i].PlayOneShot(clips.tracks[i]);
+        }
     }
 
 
@@ -129,7 +161,7 @@ public class AudioManager : SingletonObject<AudioManager>{
                 musicTrack[i] = gameObject.AddComponent<AudioSource>();
                 musicTrack[i].volume = musicTrackVolume * musicVolume * m_volume;
                 musicTrack[i].dopplerLevel = 0f;
-                musicTrack[i].loop = true;
+                musicTrack[i].loop = false;
             }
         }
         
@@ -158,34 +190,6 @@ public class AudioManager : SingletonObject<AudioManager>{
             musicClips[name].Update();                 // Update the track duration.
             // This is not efficient in the slightest but I just need this to work for now.
         }
-    }
-
-
-    public static void SetMusicTrackVolume(int trackNumber, float newVolume){
-        /*  set the volume of a specific track. */
-
-        // Validate input:
-        if (newVolume < 0f || newVolume > 1f){
-            Debug.LogWarning("Music volume must be in range [0,1].");
-            return;
-        }
-
-        if (trackNumber < 0 || trackNumber > Instance.m_musicTracks){
-            Debug.LogWarning("Track out of range. Ignoring request to change volume. ");
-            return;
-        }
-
-        // Set track volume.
-        SetTrackVolume(trackNumber, newVolume);
-
-    }
-
-
-    private static void SetTrackVolume(int trackNumber, float newVolume){
-        /* Hidden version for internal functions that already handel error checking. */
-
-        AudioSource track = Instance.musicTrack[trackNumber];
-        track.volume = newVolume * Instance.musicTrackVolume * Instance.musicVolume * Instance.m_volume;
     }
 
 
@@ -227,48 +231,40 @@ public class AudioManager : SingletonObject<AudioManager>{
 
     public static void switchMusic(string name){
         /* Change music after the current song ends. */ 
-
-        SongData nextSong = Instance.musicClips[name];
-
-        for (int i = 0; i < Instance.m_musicTracks; i++){
-            AudioSource track = Instance.musicTrack[i];
-            track.clip = nextSong.tracks[i];
-            if (nextSong.tracks[i] != null){
-                track.PlayDelayed(track.time);
-            }
-        }
+        Instance.nextSong = name;
     }
     
 
-    public static void PlayMusic(string name){
+    public static void PlayMusic(){
         /*  This function plays a song by its name. */
         
+        // leave if there is no next song.
+        if (Instance.nextSong == ""){ return; }
+
         // If the music cannot be found, leave early.
-        if (!Instance.musicClips.Keys.Contains(name)){
-            Debug.LogError($"Could not play music, {'"'}{name}{'"'}.");
+        if (!Instance.musicClips.Keys.Contains(Instance.nextSong)){
+            Debug.LogError($"Could not play music, {'"'}{Instance.nextSong}{'"'}.");
+            Instance.nextSong = "";
+            Instance.currentSong = "";
             return;
         }
 
-        Instance.currentSong = name;
-  
-        SongData clips = Instance.musicClips[name];
-
-        for (int i = 0; i < Instance.m_musicTracks; i++){
-            Instance.musicTrack[i].Stop();
-            Instance.musicTrack[i].clip = clips.tracks[i];
-            Instance.musicTrack[i].Play();
-        }
+        Instance.currentSong = Instance.nextSong;
+        Instance.UpdateMusic();
     }
 
 
     public static void PlaySound(string name){
         /*  This function plays a sound effect with name "name". */
+
+        Dictionary<string, AudioClip> sfxClips = Instance.sfxClips;
         
         // If the music cannot be found, leave early.
-        if (!Instance.sfxClips.Keys.Contains(name)){
+        if (!sfxClips.Keys.Contains(name)){
             Debug.LogError($"Could not play sound effect, {'"'}{name}{'"'}.");
             return;
         }
-        Instance.sfxSource.PlayOneShot(Instance.sfxClips[name]);     
+
+        Instance.sfxSource.PlayOneShot(Instance.sfxClips[name]);
     }
 }
