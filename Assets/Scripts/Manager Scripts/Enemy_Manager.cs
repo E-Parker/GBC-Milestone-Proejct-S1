@@ -20,11 +20,12 @@ public class Enemy_Manager : SingletonObject<Enemy_Manager>{
 
     [Serializable] public struct IEnemyWave{
         public IEnemySpawn[] SpawnID;   // array of IEnemySpawn indices.
-        public int level;       // level required to progress to the next wave.
+        public int level;               // level required to progress to the next wave.
     }
 
     [Serializable] public struct IEnemyWaveArray{
         public IEnemyWave[] Waves;
+        public int Size;
     }
 
     public struct EnemySpawn{
@@ -104,12 +105,15 @@ public class Enemy_Manager : SingletonObject<Enemy_Manager>{
         IEnemySpawn test1;
         test1.Max = 1;
         test1.ID = 0;
+        
         IEnemySpawn test2;
         test2.Max = 1;
         test2.ID = 0;
+        
         IEnemySpawn test3;
         test3.Max = 1;
         test3.ID = 0;
+        
         IEnemySpawn test4;
         test4.Max = 1;
         test4.ID = 0;
@@ -124,6 +128,7 @@ public class Enemy_Manager : SingletonObject<Enemy_Manager>{
 
         IEnemyWaveArray waves;
         waves.Waves = new IEnemyWave[2]{wave1,wave2};
+        waves.Size = 2;
 
         string test = JsonUtility.ToJson(test1, true);
         Debug.Log(test);
@@ -135,8 +140,13 @@ public class Enemy_Manager : SingletonObject<Enemy_Manager>{
         Debug.Log(test);
         
 
-        string json = File.ReadAllText($"{Application.dataPath}/Resources/Data/EnemySpawns.json");
-        IEnemyWaveArray newWave = JsonUtility.FromJson<IEnemyWaveArray>(json);
+        string rawJson = File.ReadAllText($"{Application.dataPath}/Resources/Data/Level/EnemySpawn.json");
+        //string[] levelJson = rawJson.Split("},\n{");
+        //foreach(string i in levelJson){
+        //    Debug.Log(i);
+        //}
+
+        IEnemyWaveArray newWave = JsonUtility.FromJson<IEnemyWaveArray>(rawJson);
         
         test = JsonUtility.ToJson(newWave, true);
         Debug.Log(test);
