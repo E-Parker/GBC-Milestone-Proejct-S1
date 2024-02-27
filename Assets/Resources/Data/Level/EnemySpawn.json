@@ -3,44 +3,160 @@
         {
             "SpawnID": [
                 {
-                    "ID": 0,
-                    "Max": 1
-                },
-                {
-                    "ID": 0,
-                    "Max": 1
-                },
-                {
-                    "ID": 0,
-                    "Max": 1
-                },
-                {
-                    "ID": 0,
-                    "Max": 1
+                    "ID": "Lowly_Mage",
+                    "Max": 3
                 }
             ],
-            "level": 5
+            "level": 2
         },
         {
             "SpawnID": [
                 {
-                    "ID": 0,
-                    "Max": 1
-                },
-                {
-                    "ID": 0,
-                    "Max": 1
-                },
-                {
-                    "ID": 0,
-                    "Max": 1
-                },
-                {
-                    "ID": 0,
+                    "ID": "Fire_Mage",
                     "Max": 1
                 }
             ],
+            "level": 1
+        },
+        {
+            "SpawnID": [
+                {
+                    "ID": "Fire_Mage",
+                    "Max": 6
+                },
+                {
+                    "ID": "Lowly_Mage",
+                    "Max": 10
+                }
+            ],
+            "level": 6
+        },
+        {
+            "SpawnID": [
+                {
+                    "ID": "Evil_Knight",
+                    "Max": 1
+                },
+                {
+                    "ID": "Lowly_Mage",
+                    "Max": 4
+                }
+            ],
+            "level": 6
+        },
+        {
+            "SpawnID": [
+                {
+                    "ID": "Fire_Mage",
+                    "Max": 10
+                },
+                {
+                    "ID": "Australian_Mage",
+                    "Max": 2
+                },
+                {
+                    "ID": "Lowly_Mage",
+                    "Max": 10
+                },
+                {
+                    "ID": "Evil_Knight",
+                    "Max": 2
+                }
+            ],
             "level": 10
+        },
+        {
+            "SpawnID": [
+                {
+                    "ID": "Evoker_Mage",
+                    "Max": 1
+                }
+            ],
+            "level": 1
+        },
+        {
+            "SpawnID": [
+                {
+                    "ID": "Evoker_Mage",
+                    "Max": 4
+                },
+                {
+                    "ID": "Fire_Mage",
+                    "Max": 6
+                },
+                {
+                    "ID": "Australian_Mage",
+                    "Max": 4
+                },
+                {
+                    "ID": "Lowly_Mage",
+                    "Max": 15
+                }
+            ],
+            "level": 10
+        },
+        {
+            "SpawnID": [
+                {
+                    "ID": "Evoker_Mage",
+                    "Max": 8
+                },
+                {
+                    "ID": "Fire_Mage",
+                    "Max": 6
+                },
+                {
+                    "ID": "Evil_Knight",
+                    "Max": 1
+                },
+                {
+                    "ID": "Lowly_Mage",
+                    "Max": 20
+                }
+            ],
+            "level": 10
+        },
+        {
+            "SpawnID": [
+                {
+                    "ID": "Evoker_Mage",
+                    "Max": 2
+                },
+                {
+                    "ID": "Fire_Mage",
+                    "Max": 10
+                },
+                {
+                    "ID": "Evil_Knight",
+                    "Max": 4
+                },
+                {
+                    "ID": "Lowly_Mage",
+                    "Max": 30
+                }
+            ],
+            "level": 20
+        },
+        {
+            "SpawnID": [
+                {
+                    "ID": "Evoker_Mage",
+                    "Max": 10
+                },
+                {
+                    "ID": "Fire_Mage",
+                    "Max": 20
+                },
+                {
+                    "ID": "Evil_Knight",
+                    "Max": 8
+                },
+                {
+                    "ID": "Lowly_Mage",
+                    "Max": 40
+                }
+            ],
+            "level": 20
         }
     ]
 }

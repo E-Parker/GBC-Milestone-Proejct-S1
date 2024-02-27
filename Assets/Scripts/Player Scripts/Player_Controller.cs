@@ -173,6 +173,13 @@ public class Player_Controller : MonoBehaviour{
     [SerializeField] float m_HealthRate = 2f;
 
     public Player_Controller_Interface controller; 
+    private bool initialized = false;
+
+    void OnEnable(){
+        if (initialized){
+            controller.ResetController();
+        }
+    }
 
     void Start(){
 
@@ -190,6 +197,7 @@ public class Player_Controller : MonoBehaviour{
             gameObject.GetComponent<Projectile_Handler>());
         
         controller.SetCurrentMana(m_Mana);
+        initialized = true;
     }
 
     void Update(){

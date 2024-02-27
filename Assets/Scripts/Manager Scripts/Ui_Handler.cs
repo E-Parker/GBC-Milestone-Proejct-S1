@@ -16,13 +16,11 @@ public class Ui_Handler : SingletonObject<Ui_Handler>{
     const char MP_Missing = '-';
     const char MP_Has = 'x';
 
-    [Header("Display Text:")]
-    [SerializeField] TMP_Text m_ScoreText;
-    [SerializeField] TMP_Text m_HPText;
-    [SerializeField] TMP_Text m_MPText;
-    [SerializeField] GameObject m_GameoverButton;
+    public TMP_Text m_ScoreText;
+    public TMP_Text m_HPText;
+    public TMP_Text m_MPText;
+    public GameObject m_GameoverButton;
 
-    private GameObject player;
     private Health_handler pch;
     private Player_Controller pc;
     
@@ -34,11 +32,8 @@ public class Ui_Handler : SingletonObject<Ui_Handler>{
 
 
     void Start(){
-        DontDestroyOnLoad(EmptyObject);
-        player = GameObject.Find(PlayerObject);
-
-        pc = player.GetComponent<Player_Controller>();
-        pch = player.GetComponent<Health_handler>();
+        pc = Player.GetComponent<Player_Controller>();
+        pch = Player.GetComponent<Health_handler>();
     }
 
 

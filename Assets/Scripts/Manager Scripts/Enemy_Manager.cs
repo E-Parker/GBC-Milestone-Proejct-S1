@@ -9,13 +9,20 @@ using static Utility.Utility;
 
 public class Enemy_Manager : SingletonObject<Enemy_Manager>{   
 
-    public static GameObject[] c_Entities;
+    const int MAX_UNIQUE_ENTITIES = 64;
+
+    static readonly string SPAWN_DATA = "EnemySpawn.json";
+    static readonly string SPAWN_PATH = $"{Application.dataPath}/Resources/Data/Level/{SPAWN_DATA}";
+    static readonly string PREFAB_PATH = "Prefabs/Enemies/";
+
+    public static UnityEngine.Object[] EntityPrefabs = new UnityEngine.Object[MAX_UNIQUE_ENTITIES];
+    public static Dictionary<string, UnityEngine.Object> EntityLookup = new Dictionary<string, UnityEngine.Object>();
 
     // enemy spawn handling structs:
 
     [Serializable] public struct IEnemySpawn{
-        public int ID;  // Stores the index of the entity in the list of possible entities.
-        public int Max; // Maximum of this type.
+        public string ID;   // Stores the index of the entity in the dictionary of possible entities.
+        public int Max;     // Maximum of this type.
     }
 
     [Serializable] public struct IEnemyWave{
@@ -30,20 +37,18 @@ public class Enemy_Manager : SingletonObject<Enemy_Manager>{
 
     public struct EnemySpawn{
         /*  Struct for the enemy prefab and number of enemies to spawn. */
-        public EnemySpawn(int ID, int Max){
+        
+        public EnemySpawn(string ID, int Max){
             this.maxNumber = Max;
-            this.Entity = ID < c_Entities.Length? c_Entities[ID] : null;
-            Spawns.Add(this);
+            this.Entity = EntityLookup[ID];
         }
 
         public EnemySpawn(IEnemySpawn Spawn){
             this.maxNumber = Spawn.Max;
-            this.Entity = Spawn.ID < c_Entities.Length? c_Entities[Spawn.ID] : null;
-            Spawns.Add(this);
+            this.Entity = EntityLookup[Spawn.ID];
         }
         
-        public static List<EnemySpawn> Spawns;
-        public GameObject Entity { get; }
+        public UnityEngine.Object Entity { get; }
         public int maxNumber { get; }
     }
 
@@ -58,7 +63,11 @@ public class Enemy_Manager : SingletonObject<Enemy_Manager>{
         
         public EnemyWave(IEnemyWave wave, int next = -1){
             Spawns = new EnemySpawn[wave.SpawnID.Length];
-            //foreach(int i in wave.SpawnID){ Spawns[i] = EnemySpawn.Spawns[i]; }
+
+            for (int i = 0; i < wave.SpawnID.Length; i ++){
+                Spawns[i] = new EnemySpawn(wave.SpawnID[i]);
+            }
+
             Level = wave.level;    
             Next = next;
         }
@@ -72,8 +81,6 @@ public class Enemy_Manager : SingletonObject<Enemy_Manager>{
     public  float m_SpawnRadius = 2f;      // Radius around camera that enemies spawn.
     public  float m_SpawnRate = 1f;        // Time(Seconds) between spawns.
     public  float m_GracePeriod = 5f;      // Time(Seconds) between waves.
-    public  GameObject m_TargetOverride;   // If this value is set, override the default.
-    private GameObject target;             // GameObject for where enemies should spawn.
     
     // Score Counters:
     private int currentWaveCounter = 0;    // Number of waves the player has finished.
@@ -101,69 +108,61 @@ public class Enemy_Manager : SingletonObject<Enemy_Manager>{
 
     void Start(){
         // Initialize enemies:
-        
-        IEnemySpawn test1;
-        test1.Max = 1;
-        test1.ID = 0;
-        
-        IEnemySpawn test2;
-        test2.Max = 1;
-        test2.ID = 0;
-        
-        IEnemySpawn test3;
-        test3.Max = 1;
-        test3.ID = 0;
-        
-        IEnemySpawn test4;
-        test4.Max = 1;
-        test4.ID = 0;
-
-        IEnemyWave wave1;
-        wave1.level = 5;
-        wave1.SpawnID = new IEnemySpawn[4]{test1, test2, test3, test4};
-        IEnemyWave wave2;
-
-        wave2.level = 10;
-        wave2.SpawnID = new IEnemySpawn[4]{test1, test2, test3, test4};
-
-        IEnemyWaveArray waves;
-        waves.Waves = new IEnemyWave[2]{wave1,wave2};
-        waves.Size = 2;
-
-        string test = JsonUtility.ToJson(test1, true);
-        Debug.Log(test);
-
-        test = JsonUtility.ToJson(wave1, true);
-        Debug.Log(test);
-        
-        test = JsonUtility.ToJson(waves, true);
-        Debug.Log(test);
-        
-
-        string rawJson = File.ReadAllText($"{Application.dataPath}/Resources/Data/Level/EnemySpawn.json");
-        //string[] levelJson = rawJson.Split("},\n{");
-        //foreach(string i in levelJson){
-        //    Debug.Log(i);
-        //}
-
-        IEnemyWaveArray newWave = JsonUtility.FromJson<IEnemyWaveArray>(rawJson);
-        
-        test = JsonUtility.ToJson(newWave, true);
-        Debug.Log(test);
-
-        //Waves = LoadArrayFromJson<IEnemyWave>("EnemySpawns", out test);
-        //Debug.Log(test);
+        LoadEntities();
+        LoadSpawnPatterns();
         InitializeWaves();
     }
 
+
+    void LoadSpawnPatterns(){
+        /* This function reads the Json file containing the spawn patterns. */
+        string rawJson = File.ReadAllText(SPAWN_PATH);
+        IEnemyWaveArray data = JsonUtility.FromJson<IEnemyWaveArray>(rawJson);
+        Waves = data.Waves;
+    }
+
+
+    void LoadEntities(){
+        /* This function finds and loads all enemy entities. */
+        
+        // Load the assets in the prefab folder:
+        UnityEngine.Object[] EntityData = Resources.LoadAll(PREFAB_PATH);
+        
+        // Instance each one and add it to the Arrays.
+        for(int i = 0; i < EntityData.Length; i++) {
+            EntityPrefabs[i] = EntityData[i]; //Instantiate(, this.transform);
+            Debug.Log(EntityData[i].name);
+            EntityLookup.Add(EntityData[i].name, EntityPrefabs[i]);
+        }
+        //foreach(var key in EntityLookup.Keys){Debug.Log(key);}
+        
+    }
+
     public static void InitializeWaves(){
+        /* The same as the function below, just without the sorting. */
+        
+        int iterations = Instance.Waves.Length;
+        Instance.WaveQueue = new Queue<EnemyWave>();
+        
+        // Generate list of waves:
+        
+        for (int i = 0; i < iterations; i++){ 
+            IEnemyWave IWave = Instance.Waves[i];
+            Debug.Log($"wave: {i}, level: {IWave.level}");
+            int nextLevel = (iterations-1 != i)?Instance.Waves[i+1].level : -1;
+            EnemyWave wave = new EnemyWave(IWave, nextLevel);
+            Instance.WaveQueue.Enqueue(wave);
+        }
+        Instance.currentWave = Instance.WaveQueue.Dequeue();
+    }
+
+
+    public static void InitializeWavesSorted(){
         /*  This function sorts the waves by level. */
 
         int iterations = Instance.Waves.Length;
         List<IEnemyWave> SortedWaves = new List<IEnemyWave>();
         Instance.WaveQueue = new Queue<EnemyWave>();
-        
-        Debug.Log(Instance.Waves);
 
         // sort waves by level requirement using insertion sort:
         for (int i = 0; i < iterations; i++){
@@ -171,7 +170,6 @@ public class Enemy_Manager : SingletonObject<Enemy_Manager>{
             IEnemyWave smallest = Instance.Waves[i];
             
             foreach(IEnemyWave wave in Instance.Waves){
-                Debug.Log(wave);
                 if ((!SortedWaves.Contains(wave)) && (wave.level < smallest.level)){
                     smallest = wave;
                 }
@@ -214,7 +212,7 @@ public class Enemy_Manager : SingletonObject<Enemy_Manager>{
             // Generate the max number enemys of each type, set inactive and add to the dead list.
             for (int i = 0; i < enemyType.maxNumber; i++){
                 // Create new enemy:
-                GameObject enemy = Instantiate(enemyType.Entity,transform.position,quaternion.identity);
+                GameObject enemy = Instantiate(enemyType.Entity as GameObject, transform.position, quaternion.identity);
                 
                 // Disable enemy and at to list of dead enemies:
                 enemy.SetActive(false);
@@ -271,7 +269,7 @@ public class Enemy_Manager : SingletonObject<Enemy_Manager>{
                 }
 
                 // Create new enemy:
-                GameObject enemy = Instantiate(currentType.Entity, transform.position, Quaternion.identity);
+                GameObject enemy = Instantiate(currentType.Entity as GameObject, transform.position, Quaternion.identity);
                 enemy.SetActive(false);
                 dead.Add(enemy);  
                 currentTypeAmount++;
@@ -329,7 +327,7 @@ public class Enemy_Manager : SingletonObject<Enemy_Manager>{
 
         // Get random position on radius:
         Vector3 position = new Vector3(UnityEngine.Random.Range(-1f,1f),
-                                    target.transform.position.y,
+                                    Player.transform.position.y,
                                     UnityEngine.Random.Range(-1f,1f));
         
         // Varify position is not zero vector before normalization.
@@ -396,7 +394,7 @@ public class Enemy_Manager : SingletonObject<Enemy_Manager>{
         string ws = (Instance.waveScore != Instance.currentWave.Next)? Instance.waveScore.ToString() : "MAX";
         string rm = (Instance.waveScore != Instance.currentWave.Next)?"" : $"(Foes-Remaining-{Instance.alive.Count})";
         string s = ((Instance.score < 10)? "00" : (Instance.score < 100)? "0" : "") + (Instance.score % 999).ToString();
-        return $"(Total-Score-{s}-Wave-{Instance.currentWaveCounter}-Score-{ws})\\n{rm}"; //
+        return $"(Total-Score-{s}-Wave-{Instance.currentWaveCounter}-Score-{ws})\n{rm}"; //
     }
 
     public static int TotalEnemies(){
