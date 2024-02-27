@@ -112,7 +112,7 @@ public class Enemy_Manager : SingletonObject<Enemy_Manager>{
         LoadSpawnPatterns();
         InitializeWaves();
     }
-    
+
 
     void LoadSpawnPatterns(){
         /* This function reads the Json file containing the spawn patterns. */
@@ -252,7 +252,7 @@ public class Enemy_Manager : SingletonObject<Enemy_Manager>{
         // get the amount of spawns that should have happened, minus the amount that already happened.
         int spawns = (int)(waveTimer / m_GracePeriod * (float)totalAmount) - totalSpawns;
         totalSpawns += spawns;
-        Debug.Log($"spawns: {spawns}, totalAmount: {totalAmount}, TotalSpawns: {totalSpawns}");
+        //Debug.Log($"spawns: {spawns}, totalAmount: {totalAmount}, TotalSpawns: {totalSpawns}");
         if (totalSpawns <= totalAmount){
             for (int i = 0; i < spawns; i++){
                 // update the type being spawned:

@@ -1,0 +1,68 @@
+{
+    "animations": [
+        {
+            "animation_name": "Walk",
+            "oneShot": false,
+            "framerate": 8.0,
+            "frame_indecies": [
+                0,
+                1,
+                2,
+                3
+            ]
+        },
+        {
+            "animation_name": "Idle",
+            "oneShot": false,
+            "framerate": 8.0,
+            "frame_indecies": [
+                0
+            ]
+        },
+        {
+            "animation_name": "Attack",
+            "oneShot": true,
+            "framerate": 4.0,
+            "frame_indecies": [
+                4,
+                4,
+                4
+            ]
+        },
+        {
+            "animation_name": "Dying",
+            "oneShot": true,
+            "framerate": 8.0,
+            "frame_indecies": [
+                5,
+                7,
+                7,
+                8,
+                9,
+                10,
+                11
+            ]
+        },
+        {
+            "animation_name": "Dead",
+            "oneShot": false,
+            "framerate": 8.0,
+            "frame_indecies": [
+                11
+            ]
+        },
+        {
+            "animation_name": "Hurt",
+            "oneShot": false,
+            "framerate": 8.0,
+            "frame_indecies": [
+                5,
+                6,
+                5,
+                6,
+                5,
+                6
+            ]
+        }
+    ]
+}

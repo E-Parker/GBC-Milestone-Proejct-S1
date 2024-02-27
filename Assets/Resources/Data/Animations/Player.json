@@ -1,0 +1,90 @@
+{
+    "animations": [
+        {
+            "animation_name": "Walk",
+            "oneShot": false,
+            "framerate": 8.0,
+            "frame_indecies": [
+                0,
+                1,
+                2,
+                3
+            ]
+        },
+        {
+            "animation_name": "Idle",
+            "oneShot": false,
+            "framerate": 8.0,
+            "frame_indecies": [
+                0
+            ]
+        },
+        {
+            "animation_name": "AttackSword",
+            "oneShot": true,
+            "framerate": 12.0,
+            "frame_indecies": [
+                1,
+                4,
+                5
+            ]
+        },
+        {
+            "animation_name": "AttackFlame",
+            "oneShot": true,
+            "framerate": 8.0,
+            "frame_indecies": [
+                4,
+                6,
+                6
+            ]
+        },
+        {
+            "animation_name": "Pickup",
+            "oneShot": true,
+            "framerate": 8.0,
+            "frame_indecies": [
+                0,
+                7,
+                7,
+                7,
+                0
+            ]
+        },
+        {
+            "animation_name": "Dying",
+            "oneShot": true,
+            "framerate": 8.0,
+            "frame_indecies": [
+                8,
+                8,
+                9,
+                8,
+                8,
+                10,
+                11
+            ]
+        },
+        {
+            "animation_name": "Dead",
+            "oneShot": false,
+            "framerate": 8.0,
+            "frame_indecies": [
+                11
+            ]
+        },
+        {
+            "animation_name": "Hurt",
+            "oneShot": false,
+            "framerate": 8.0,
+            "frame_indecies": [
+                8,
+                9,
+                8,
+                9,
+                8,
+                9
+            ]
+        }
+    ]
+}

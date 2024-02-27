@@ -51,7 +51,7 @@ using UnityEngine;
     void Start(){
 
         writeAnimationsToJson();
-        
+
         // Initialize Dictionary:
         animationLookup = new Dictionary<string, AnimationFrames>();
 
@@ -122,8 +122,8 @@ using UnityEngine;
         /*  This function dumps the animations to the path specified. */
         AnimationFramesArray array;
         array.animations = m_Animations;
-        string json = JsonUtility.ToJson(array);
-        File.WriteAllText($"{Application.dataPath}/Data/Animations/{gameObject.name}.json", json);
+        string json = JsonUtility.ToJson(array, true);
+        Debug.Log($"{gameObject.name}\n\n{json}");
     }
 
 

@@ -4,6 +4,31 @@
             "SpawnID": [
                 {
                     "ID": "Lowly_Mage",
+                    "Max": 1
+                },
+                {
+                    "ID": "Fire_Mage",
+                    "Max": 1
+                },
+                {
+                    "ID": "Evil_Knight",
+                    "Max": 1
+                },
+                {
+                    "ID": "Evoker_Mage",
+                    "Max": 1
+                },
+                {
+                    "ID": "Australian_Mage",
+                    "Max": 1
+                }
+            ],
+            "level": 100
+        },
+        {
+            "SpawnID": [
+                {
+                    "ID": "Lowly_Mage",
                     "Max": 3
                 }
             ],
