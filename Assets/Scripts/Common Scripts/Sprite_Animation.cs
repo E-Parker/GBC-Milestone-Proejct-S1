@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 using UnityEngine;
 
 
@@ -21,9 +22,13 @@ using UnityEngine;
     // Constants / Readonly:
     [Serializable] public struct AnimationFrames{
         public string animation_name;   // name of the animation.
-        public int[] frame_indecies;    // array corresponding to the frames of an animation.
         public bool oneShot;            // bool for if the animation should loop / be interrupted.
         public float framerate;         // framerate in FPS of the animation.
+        public int[] frame_indecies;    // array corresponding to the frames of an animation.
+    }
+
+    [Serializable] public struct AnimationFramesArray{
+        public AnimationFrames[] animations; 
     }
 
     // I used an array here because Unity does not support serialized dictionaries.
@@ -45,6 +50,8 @@ using UnityEngine;
 
     void Start(){
 
+        writeAnimationsToJson();
+        
         // Initialize Dictionary:
         animationLookup = new Dictionary<string, AnimationFrames>();
 
@@ -110,6 +117,15 @@ using UnityEngine;
         // Update current frame:
         frame = currentAnimation.frame_indecies[frameCounter];
     }
+    
+    void writeAnimationsToJson(){
+        /*  This function dumps the animations to the path specified. */
+        AnimationFramesArray array;
+        array.animations = m_Animations;
+        string json = JsonUtility.ToJson(array);
+        File.WriteAllText($"{Application.dataPath}/Data/Animations/{gameObject.name}.json", json);
+    }
+
 
     public bool Contains(string name){
         return animationLookup.Keys.Contains(name);    

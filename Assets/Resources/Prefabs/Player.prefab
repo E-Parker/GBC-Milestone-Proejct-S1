@@ -302,7 +302,7 @@ MonoBehaviour:
   m_Interact: 99
   m_Acceleration: 0.6
   m_Friction: 0.2
-  m_Speed: 0.4
+  m_Speed: 0.5
   m_Turnrate: 0.6
   m_Mana: 5
   m_ManaRate: 1

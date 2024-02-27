@@ -23,16 +23,18 @@ public class System_Manger : SingletonObject<System_Manger>{
     [SerializeField] TMP_Text m_MPText;
     [SerializeField] GameObject m_GameoverButton;
 
+
     public override void CustomAwake(){
 
         // Attempt to instance all other scripts.
         AudioManager.MakeInstance();
         Enemy_Manager.MakeInstance();
         Ui_Handler.MakeInstance();
-        
+
         DontDestroyOnLoad(EmptyObject);
         DontDestroyOnLoad(Player);
     }
+
 
     void Start(){
         // Set up Audio:
@@ -46,5 +48,28 @@ public class System_Manger : SingletonObject<System_Manger>{
         Ui_Handler.Instance.m_HPText = m_HPText;
         Ui_Handler.Instance.m_MPText = m_MPText;
         Ui_Handler.Instance.m_GameoverButton = m_GameoverButton;
+    }
+
+
+    public static void ChangeSceneTo(int index){
+        /*  Swaps the current scene to the one named "name". */
+
+        // Check for valid index:
+        if(index < 0 || index > SceneManager.sceneCountInBuildSettings){
+            Debug.LogError($"Invalid scene index: {index}");
+            return;
+        }
+
+        // Load the scene from index:
+        SceneManager.LoadScene(index);
+    }
+
+
+    public static void RestartScene(){
+        /*  This could be better but this is the fastest way i can think of to reload the scene. */
+        Scene scene = SceneManager.GetActiveScene();
+        string sceneName = scene.name;
+        SceneManager.UnloadSceneAsync(scene);
+        SceneManager.LoadSceneAsync(sceneName);
     }
 }

@@ -112,7 +112,7 @@ public class Enemy_Manager : SingletonObject<Enemy_Manager>{
         LoadSpawnPatterns();
         InitializeWaves();
     }
-
+    
 
     void LoadSpawnPatterns(){
         /* This function reads the Json file containing the spawn patterns. */

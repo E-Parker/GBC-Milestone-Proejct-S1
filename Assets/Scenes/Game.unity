@@ -324,7 +324,7 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 892515089}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: AudioManager, Assembly-CSharp
         m_MethodName: SetMusicVolume
         m_Mode: 0
@@ -6957,55 +6957,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e05653434a05d7428afde6f55c6dba8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &892515087
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 892515088}
-  - component: {fileID: 892515089}
-  m_Layer: 0
-  m_Name: Audio_Manager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &892515088
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 892515087}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.100000024, y: -0.05, z: 0.099998474}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1586570550}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &892515089
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 892515087}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2bc6269bbd9e7b140b2d84cb6fef2646, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_musicTracks: 4
-  m_dopplerLevel: 0
-  m_volume: 0.5
-  m_spatialize: 0
-  currentSong: 
 --- !u!1 &899060409
 GameObject:
   m_ObjectHideFlags: 0
@@ -8041,7 +7992,6 @@ GameObject:
   - component: {fileID: 1376057628}
   - component: {fileID: 1376057627}
   - component: {fileID: 1376057626}
-  - component: {fileID: 1376057629}
   m_Layer: 5
   m_Name: UI
   m_TagString: Untagged
@@ -8137,22 +8087,6 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 3
   m_TargetDisplay: 0
---- !u!114 &1376057629
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1376057624}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3aedc4e69032cfe4681b0715abccec2c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_ScoreText: {fileID: 1205428761}
-  m_HPText: {fileID: 1795765530}
-  m_MPText: {fileID: 304906747}
-  m_GameoverButton: {fileID: 2133094074}
 --- !u!1 &1475234105
 GameObject:
   m_ObjectHideFlags: 0
@@ -8267,6 +8201,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1586570550}
+  - component: {fileID: 1586570551}
   m_Layer: 0
   m_Name: Systems
   m_TagString: Untagged
@@ -8286,11 +8221,29 @@ Transform:
   m_LocalPosition: {x: 0, y: 0.05, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 892515088}
-  - {fileID: 1779495452}
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1586570551
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1586570549}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 479ab21e8448e8a428f3b64d99e15850, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_musicTracks: 4
+  m_dopplerLevel: 0
+  m_volume: 0.5
+  m_spatialize: 0
+  m_ScoreText: {fileID: 1205428761}
+  m_HPText: {fileID: 1795765530}
+  m_MPText: {fileID: 304906747}
+  m_GameoverButton: {fileID: 2133094074}
 --- !u!1 &1594138580
 GameObject:
   m_ObjectHideFlags: 0
@@ -8381,7 +8334,7 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 892515089}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: AudioManager, Assembly-CSharp
         m_MethodName: SetSfxVolume
         m_Mode: 0
@@ -8957,102 +8910,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -5}
   m_SizeDelta: {x: 0, y: -20}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!1 &1779495451
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1779495452}
-  - component: {fileID: 1779495453}
-  m_Layer: 0
-  m_Name: Enemy_Manager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1779495452
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1779495451}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1586570550}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1779495453
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1779495451}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4b279a64861ff8d468a7df505edf7956, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_waves:
-  - enemySpawns:
-    - Entity: {fileID: 0}
-      maxNumber: 0
-    level: 3
-  - enemySpawns:
-    - Entity: {fileID: 0}
-      maxNumber: 0
-    - Entity: {fileID: 0}
-      maxNumber: 0
-    level: 5
-  - enemySpawns:
-    - Entity: {fileID: 0}
-      maxNumber: 0
-    - Entity: {fileID: 0}
-      maxNumber: 0
-    level: 10
-  - enemySpawns:
-    - Entity: {fileID: 0}
-      maxNumber: 0
-    - Entity: {fileID: 0}
-      maxNumber: 0
-    - Entity: {fileID: 0}
-      maxNumber: 0
-    level: 10
-  - enemySpawns:
-    - Entity: {fileID: 0}
-      maxNumber: 0
-    - Entity: {fileID: 0}
-      maxNumber: 0
-    - Entity: {fileID: 0}
-      maxNumber: 0
-    - Entity: {fileID: 0}
-      maxNumber: 0
-    level: 20
-  - enemySpawns:
-    - Entity: {fileID: 0}
-      maxNumber: 0
-    - Entity: {fileID: 0}
-      maxNumber: 0
-    - Entity: {fileID: 0}
-      maxNumber: 0
-    - Entity: {fileID: 0}
-      maxNumber: 0
-    - Entity: {fileID: 0}
-      maxNumber: 0
-    level: 20
-  m_targetPrefab: {fileID: 547713432738287873, guid: 9445c87cc30b11544a42f48e9b2f95ce, type: 3}
-  m_SpawnRadius: 1.5
-  m_SpawnRate: 0.25
-  m_GracePeriod: 1
-  target: {fileID: 0}
 --- !u!1 &1795765528
 GameObject:
   m_ObjectHideFlags: 0
@@ -9629,9 +9486,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1376057629}
+      - m_Target: {fileID: 1586570549}
         m_TargetAssemblyTypeName: Ui_Handler, Assembly-CSharp
-        m_MethodName: RestartScene
+        m_MethodName: 
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
