@@ -146,7 +146,7 @@ public class Player_Controller_Interface : SpriteController{
 |                                   INTERFACING WITH UNITY ENGINE                                  |
 \*================================================================================================*/
 
-public class Player_Controller : MonoBehaviour{
+public class Player_Controller : SingletonObject<Player_Controller>{
 
     // Variables:
     

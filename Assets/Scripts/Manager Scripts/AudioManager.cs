@@ -58,14 +58,14 @@ public class AudioManager : SingletonObject<AudioManager>{
     private float musicVolume = 0.8f;
     private float sfxVolume = 0.6f;
 
-    public string currentSong = "";  // stores the current song being played.
+    public string currentSong = "Battle";  // stores the current song being played.
     public string nextSong = "";     // stores the next song to be played.
 
 
-    // TrackSwitching:
-    private float timeSinceLast = 0.0f;
-    private float timeToNext = 0.0f;
-    private bool loopMusic = true;
+    // Track Switching:
+    private int ticksToNext = -1;
+    public bool loopMusic = true;
+    public bool loopMusicLatch = true;
     
     void Start(){
         // Initialize dictionaries
@@ -74,44 +74,55 @@ public class AudioManager : SingletonObject<AudioManager>{
 
         // Assign variables:
         musicTrackVolume = 1f / (float)m_musicTracks;
-        currentSong = "Battle_Theme";
 
+        // DEBUG:
+        loopMusic = false;
+        loopMusicLatch = true;
+        
         LoadSounds();
         LoadMusic();
         PlayMusic();
     }
 
-
-    void Update(){
-
-        // If the current song is null leave early.
-        if (currentSong == null) { return; }
+    void FixedUpdate(){
+        /* Every fixed update, subtract one from the number of ticks remaining until the next 
+        chance to switch songs. */
         
-        // Update timers.
-        timeSinceLast += Time.deltaTime;
-        timeToNext = timeSinceLast - musicClips[currentSong].duration;
-        //Debug.Log(timeToNext);
-        // leave if the track isn't about to end.
-        if(Instance.timeToNext > 0.01f) { return; }
-
-        // otherwise play the next track queued.
-        for (int i = 0; i < Instance.m_musicTracks; i++){
-            Invoke("UpdateMusic",Instance.timeToNext);
+        if (ticksToNext == -1){
+            getTimeToNext();
+            return; 
         }
+        
+        if (ticksToNext != 0){
+            ticksToNext--;
+            return;
+        }
+        UpdateMusic();
+        
     }
 
-    private void UpdateMusic(){
+    private void getTimeToNext(){
+        if (currentSong == ""){ return; }
+
+        ticksToNext = (int)(musicClips[currentSong].tracks[0].length / Time.fixedDeltaTime) - 1;
+    }
+
+    public void UpdateMusic(){
         /* This function plays the next music track. Used in Update function with Invoke. */
         
-        currentSong = nextSong;                 // Update the current song.
-        nextSong = loopMusic? nextSong : "";    // If looping, queue the next song as itself.
+        // If not looping, set the current song to the next song.
+        currentSong = loopMusic? currentSong : nextSong;
 
-        timeSinceLast = timeToNext;
+        // If not looping, after changing songs, set loop music if it should repeat.
+        if (!loopMusic){ loopMusic = loopMusicLatch; }
 
-        SongData clips = musicClips[currentSong];
-        for (int i = 0; i < m_musicTracks; i++){
-            musicTrack[i].PlayOneShot(clips.tracks[i]);
-        }
+        // leave early if the current song is blank.
+        if (currentSong == "" ){ return; }
+
+        // play the new tracks.
+        PlayMusic();
+        getTimeToNext();
+        
     }
 
 
@@ -213,6 +224,16 @@ public class AudioManager : SingletonObject<AudioManager>{
   
         }
     }
+    
+
+    public static bool CheckValidSongName(string name){
+        /* Checks if a song "name" is a valid one that has been loaded. */
+        if (!Instance.musicClips.Keys.Contains(name)){
+            Debug.LogError($"Could not play music, {'"'}{name}{'"'}.");
+            return false;
+        }
+        return true;
+    }
 
 
     public static void SetSfxVolume(float newVolume){
@@ -231,26 +252,30 @@ public class AudioManager : SingletonObject<AudioManager>{
 
     public static void switchMusic(string name){
         /* Change music after the current song ends. */ 
+
+        if (!CheckValidSongName(name)){ return; }
+
         Instance.nextSong = name;
+        Instance.currentSong = (Instance.currentSong == "") ? name : Instance.currentSong;
+        Instance.loopMusic = false;
+        Instance.loopMusicLatch = true;
+        
+        Debug.Log($"Now playing: {'"'}{name}{'"'}.");
     }
     
 
     public static void PlayMusic(){
         /*  This function plays a song by its name. */
         
-        // leave if there is no next song.
-        if (Instance.nextSong == ""){ return; }
+        SongData clips = Instance.musicClips[Instance.currentSong];
 
-        // If the music cannot be found, leave early.
-        if (!Instance.musicClips.Keys.Contains(Instance.nextSong)){
-            Debug.LogError($"Could not play music, {'"'}{Instance.nextSong}{'"'}.");
-            Instance.nextSong = "";
-            Instance.currentSong = "";
-            return;
-        }
+        for (int i = 0; i < Instance.m_musicTracks; i++){
+            Instance.musicTrack[i].Stop();
+            if (clips.tracks[i] == null){ continue; }
+            Instance.musicTrack[i].clip = clips.tracks[i];
+            Instance.musicTrack[i].Play();
 
-        Instance.currentSong = Instance.nextSong;
-        Instance.UpdateMusic();
+        }   
     }
 
 

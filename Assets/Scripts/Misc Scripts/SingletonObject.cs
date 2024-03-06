@@ -17,7 +17,7 @@ singletons to cause a slowdown anyway.
 public abstract class SingletonObject<T> : MonoBehaviour where T : SingletonObject<T>, new(){
     
     // Dictionary of singletons, indexed by their type. I feel so damn smart for this right now.
-    public static Dictionary<Type,SingletonObject<T>> Instances = new();
+    public static Dictionary<Type, SingletonObject<T>> Instances = new();
 
     // These private fields are of type T meaning they are static and local to each singleton Type.
     //private static T IndexerObjectType = new();

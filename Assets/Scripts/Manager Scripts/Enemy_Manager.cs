@@ -5,12 +5,12 @@ using Unity.Mathematics;
 using UnityEngine;
 using System.IO;
 using static Utility.Utility;
+using Unity.VisualScripting;
 
 
 public class Enemy_Manager : SingletonObject<Enemy_Manager>{   
 
     const int MAX_UNIQUE_ENTITIES = 64;
-
     static readonly string SPAWN_DATA = "EnemySpawn.json";
     static readonly string SPAWN_PATH = $"{Application.dataPath}/Resources/Data/Level/{SPAWN_DATA}";
     static readonly string PREFAB_PATH = "Prefabs/Enemies/";
@@ -28,6 +28,7 @@ public class Enemy_Manager : SingletonObject<Enemy_Manager>{
     [Serializable] public struct IEnemyWave{
         public IEnemySpawn[] SpawnID;   // array of IEnemySpawn indices.
         public int level;               // level required to progress to the next wave.
+        public string song;             // Song that should play with the current level.
     }
 
     [Serializable] public struct IEnemyWaveArray{
@@ -55,26 +56,25 @@ public class Enemy_Manager : SingletonObject<Enemy_Manager>{
 
     public struct EnemyWave{
         /* Struct for storing waves of enemies with the level requirement and requirement for next wave. */
-        public EnemyWave(EnemySpawn[] enemySpawns, int levelReq, int nextLevelReq){
-            Spawns = enemySpawns;
-            Level = levelReq;       // must be positive integer in terms of the number of points.
-            Next = nextLevelReq;    // value of -1 means final wave.
-        }
         
         public EnemyWave(IEnemyWave wave, int next = -1){
-            Spawns = new EnemySpawn[wave.SpawnID.Length];
 
+            Spawns = new EnemySpawn[wave.SpawnID.Length];
+            
             for (int i = 0; i < wave.SpawnID.Length; i ++){
                 Spawns[i] = new EnemySpawn(wave.SpawnID[i]);
             }
 
+            Song = wave.song;
             Level = wave.level;    
             Next = next;
         }
 
         public EnemySpawn[] Spawns;
+        public string Song;
         public int Level;
         public int Next; 
+        
     }
 
     // Settings:
@@ -154,6 +154,7 @@ public class Enemy_Manager : SingletonObject<Enemy_Manager>{
             Instance.WaveQueue.Enqueue(wave);
         }
         Instance.currentWave = Instance.WaveQueue.Dequeue();
+        AudioManager.switchMusic(Instance.currentWave.Song);
     }
 
 
@@ -189,6 +190,7 @@ public class Enemy_Manager : SingletonObject<Enemy_Manager>{
         }
 
         Instance.currentWave = Instance.WaveQueue.Dequeue();
+        AudioManager.switchMusic(Instance.currentWave.Song);
     }
 
 

@@ -50,8 +50,6 @@ using UnityEngine;
 
     void Start(){
 
-        writeAnimationsToJson();
-
         // Initialize Dictionary:
         animationLookup = new Dictionary<string, AnimationFrames>();
 
@@ -118,8 +116,15 @@ using UnityEngine;
         frame = currentAnimation.frame_indecies[frameCounter];
     }
     
+    
+    void ReadAnimationsFromJson(TextAsset asset){
+        AnimationFramesArray array = JsonUtility.FromJson<AnimationFramesArray>(asset.text);
+        m_Animations = array.animations;
+    }
+
+
     void writeAnimationsToJson(){
-        /*  This function dumps the animations to the path specified. */
+        /* This function dumps the animations to the path specified. */
         AnimationFramesArray array;
         array.animations = m_Animations;
         string json = JsonUtility.ToJson(array, true);

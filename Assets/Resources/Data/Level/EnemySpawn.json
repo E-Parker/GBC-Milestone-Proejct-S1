@@ -4,35 +4,11 @@
             "SpawnID": [
                 {
                     "ID": "Lowly_Mage",
-                    "Max": 1
-                },
-                {
-                    "ID": "Fire_Mage",
-                    "Max": 1
-                },
-                {
-                    "ID": "Evil_Knight",
-                    "Max": 1
-                },
-                {
-                    "ID": "Evoker_Mage",
-                    "Max": 1
-                },
-                {
-                    "ID": "Australian_Mage",
-                    "Max": 1
-                }
-            ],
-            "level": 100
-        },
-        {
-            "SpawnID": [
-                {
-                    "ID": "Lowly_Mage",
                     "Max": 3
                 }
             ],
-            "level": 2
+            "level": 2,
+            "song": "Tittle"
         },
         {
             "SpawnID": [
@@ -41,7 +17,8 @@
                     "Max": 1
                 }
             ],
-            "level": 1
+            "level": 1,
+            "song": "Battle"
         },
         {
             "SpawnID": [
@@ -54,20 +31,32 @@
                     "Max": 10
                 }
             ],
-            "level": 6
+            "level": 6,
+            "song": "Battle"
         },
         {
             "SpawnID": [
                 {
                     "ID": "Evil_Knight",
-                    "Max": 1
+                    "Max": 4
                 },
                 {
                     "ID": "Lowly_Mage",
-                    "Max": 4
+                    "Max": 6
                 }
             ],
-            "level": 6
+            "level": 6,
+            "song": "Battle"
+        },
+        {
+            "SpawnID": [
+                {
+                    "ID": "Evil_King",
+                    "Max": 1
+                }
+            ],
+            "level": 5,
+            "song": "Battle"
         },
         {
             "SpawnID": [
@@ -88,7 +77,8 @@
                     "Max": 2
                 }
             ],
-            "level": 10
+            "level": 10,
+            "song": "Battle"
         },
         {
             "SpawnID": [
@@ -97,7 +87,8 @@
                     "Max": 1
                 }
             ],
-            "level": 1
+            "level": 1,
+            "song": "Battle"
         },
         {
             "SpawnID": [
@@ -118,7 +109,8 @@
                     "Max": 15
                 }
             ],
-            "level": 10
+            "level": 10,
+            "song": "Battle"
         },
         {
             "SpawnID": [
@@ -139,7 +131,8 @@
                     "Max": 20
                 }
             ],
-            "level": 10
+            "level": 10,
+            "song": "Battle"
         },
         {
             "SpawnID": [
@@ -160,7 +153,8 @@
                     "Max": 30
                 }
             ],
-            "level": 20
+            "level": 20,
+            "song": "Battle"
         },
         {
             "SpawnID": [
@@ -181,7 +175,8 @@
                     "Max": 40
                 }
             ],
-            "level": 20
+            "level": 20,
+            "song": "Battle"
         }
     ]
 }
