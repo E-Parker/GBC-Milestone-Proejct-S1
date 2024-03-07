@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using System.IO;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Unity.Mathematics;
 
 /*  This file contains various classes that are used by multiple scripts. */
@@ -61,25 +62,22 @@ public static class Utility{
     |                               3D TRANSFORMATION & ALIGNMENT                              |
     \*========================================================================================*/
 
-    // This will affect globally unless a local overwrite is made.
     public const int PixelsPerUnit = 100;   
+    public const float inv_ppu = 1f / (float)PixelsPerUnit;
 
-    public static Vector3 TransformToPixels(Vector3 position, int pixelsPerUnit=PixelsPerUnit){
+    public static Vector3 TransformToPixels(Vector3 position){
         /* This function rounds a Vector3 to the pixels per unit. */
-        float inv_ppu = 1f / pixelsPerUnit;
-        return new Vector3(math.round(position.x * pixelsPerUnit) * inv_ppu, 
-                           math.round(position.y * pixelsPerUnit) * inv_ppu, 
-                           math.round(position.z * pixelsPerUnit) * inv_ppu);
+        return new Vector3(math.round(position.x * PixelsPerUnit) * inv_ppu, 
+                           math.round(position.y * PixelsPerUnit) * inv_ppu, 
+                           math.round(position.z * PixelsPerUnit) * inv_ppu);
     }
-    
     
     public static float SignedAngleFromVector(float ax, float ay, float bx, float by){
         return Mathf.Atan2( ax*by - ay*bx, ax*bx + ay*by );
     }
 
-
     public static void LookAtTransform(GameObject Original, GameObject Target){
-        /*  This function points the gameobject, "Original" towards the Target's position. */
+        /*  This function points the GameObject, "Original" towards the Target's position. */
         
         /* This is a bit dumb as this will break if RectTransform ends up losing the .LookAt()
         function. I think this is okay for now. I might rewrite this later with a better more
@@ -110,6 +108,13 @@ public static class Utility{
         }
         return output;
     } 
+
+    public static void DestroyOnLoad(GameObject gameObject){
+        /* This is literally the dumbest thing I have ever written besides maybe the sprite fixer. 
+        All this does is move an object marked as don't destroy on load from the scene to the 
+        current one. */
+        SceneManager.MoveGameObjectToScene(gameObject, SceneManager.GetActiveScene());
+    }
 
     /*========================================================================================*\
     |                                       INTERPOLATION                                      |

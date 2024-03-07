@@ -184,7 +184,7 @@ public class Player_Controller : SingletonObject<Player_Controller>{
     void Start(){
 
         // Initialize health.
-        this.gameObject.GetComponent<Health_handler>().Initialize(m_Health,m_Health);
+        this.gameObject.GetComponent<Health_handler>().Initialize(m_Health, m_Health);
 
         // Initialize the interface script. 
         controller = new Player_Controller_Interface(
@@ -258,5 +258,14 @@ public class Player_Controller : SingletonObject<Player_Controller>{
         /* Handle Collisions / movement here. */
         controller.FixedUpdate(controller.CurrentStateIs(controller.anim_Walk));
     }
+
+    public int GetHealth(){
+        return controller.Health.GetHealth();
+    }
+    
+    public float GetPercentHealth(){
+        return (float)controller.Health.GetHealth() / (float)controller.Health.GetMaxHealth();
+    }
+    
 }
 

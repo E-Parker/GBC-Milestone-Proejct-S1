@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using static Utility.Utility;
-using UnityEngine.SceneManagement;
 
 // cool symbols 🗡
 
@@ -16,71 +15,71 @@ public class Ui_Handler : SingletonObject<Ui_Handler>{
     const char MP_Missing = '-';
     const char MP_Has = 'x';
 
-    public TMP_Text m_ScoreText;
-    public TMP_Text m_HPText;
-    public TMP_Text m_MPText;
-    public GameObject m_GameoverButton;
+    private TMP_Text ScoreText;
+    private TMP_Text HPText;
+    private TMP_Text MPText;
+    private GameObject GameoverButton;
+    private GameObject UI_Parent;
 
-    private Health_handler pch;
-    private Player_Controller pc;
-    
     private int health;
-    private int maxHealth;
-
+    private int healthDiff;
     private int mana;
-    private int maxMana;
-
+    private int manaDiff;
 
     void Start(){
-        pc = Player.GetComponent<Player_Controller>();
-        pch = Player.GetComponent<Health_handler>();
+        // This is a dumb hack but it'll work.
+        UI_Parent = GameObject.FindGameObjectWithTag("GameUI");
+        ScoreText = GameObject.FindGameObjectWithTag("ScoreText").GetComponent<TMP_Text>();
+        HPText = GameObject.FindGameObjectWithTag("HPText").GetComponent<TMP_Text>();
+        MPText = GameObject.FindGameObjectWithTag("MPText").GetComponent<TMP_Text>();
+        GameoverButton = GameObject.FindGameObjectWithTag("GameoverButton");
+
+        DontDestroyOnLoad(UI_Parent);
     }
 
-
     void Update(){
-        maxHealth = pch.GetMaxHealth();
-        maxMana = pc.controller.GetMaxMana();
-
         // If player is dead, show the respawn button.
-        if (pch.GetHealth() > 0){
-            m_GameoverButton.SetActive(false);
+        if (Player_Controller.Instance.GetHealth() > 0){
+            GameoverButton.SetActive(false);
         }
-        else if (!m_GameoverButton.activeSelf){
-            m_GameoverButton.SetActive(true);
+        else if (!GameoverButton.activeSelf){
+            GameoverButton.SetActive(true);
         }
         
-        if(health != pch.GetHealth()){
-            health = pch.GetHealth();
+        if(health != Player_Controller.Instance.GetHealth()){
+            health = Player_Controller.Instance.GetHealth();
+            healthDiff = Player_Controller.Instance.controller.GetMaxHealth() - health;
 
-            m_HPText.text = "(Health-";
+            HPText.text = "(Health-";
 
             if (health > 0){
-                m_HPText.text += new string(HP_Has, health);
+                HPText.text += new string(HP_Has, health);
             }
-
-            if ((maxHealth - health) > 0){
-                m_HPText.text += new string(HP_Missing, Mathf.Abs(maxHealth - health));
+            
+            if (healthDiff > 0){
+                HPText.text += new string(HP_Missing, healthDiff);
             }
-            m_HPText.text += ")";
+            HPText.text += ")";
         }
 
-        if(mana != pc.controller.GetCurrentMana()){
-            mana = pc.controller.GetCurrentMana();
+        if(mana != Player_Controller.Instance.controller.GetCurrentMana()){
+            mana = Player_Controller.Instance.controller.GetCurrentMana();
+            manaDiff = Player_Controller.Instance.controller.GetCurrentMana() - mana;
+
+            MPText.text = "(Mana-";
             
-            m_MPText.text = "(Mana-";
-            
-            if (mana != 0){
-                m_MPText.text += new string(MP_Has, mana);
+            if (mana > 0){
+                MPText.text += new string(MP_Has, mana);
             }
             
-            if ((maxMana - mana) != 0){
-                m_MPText.text += new string(MP_Missing, Mathf.Abs(maxMana - mana));
+            if (manaDiff > 0){
+                MPText.text += new string(MP_Missing, manaDiff);
             } 
-            m_MPText.text += ")";
+            MPText.text += ")";
         }
 
-        m_ScoreText.text = Enemy_Manager.GetScoreText();
-        //m_DebugText.text = Utility.ushortBitsToString(pc.controller.state);
+        ScoreText.text = Enemy_Manager.GetScoreText();
+        //DebugText.text = Utility.ushortBitsToString(Player_Controller.Instance.controller.state);
     }
 }
 
