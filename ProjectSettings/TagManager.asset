@@ -6,6 +6,11 @@ TagManager:
   tags:
   - Enemy
   - ProjectileDestroy
+  - GameUI_GameOverButton
+  - GameUI_Mana
+  - GameUI_Score
+  - GameUI_Health
+  - GameUI
   layers:
   - Default
   - TransparentFX

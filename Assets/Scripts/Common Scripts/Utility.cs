@@ -120,11 +120,111 @@ public static class Utility{
     |                                       INTERPOLATION                                      |
     \*========================================================================================*/
 
+    public struct GradientNode<T>{
+
+        public float position;  // Position in the gradient.
+        public T value;         // Value at the position.
+
+        public GradientNode(float position, T value)
+        {
+            this.position = Mathf.Clamp01(position);
+            this.value = value;
+        }
+    }
+
+    public struct ValueGradient<T>{
+        /* Struct for sampling a gradient defined by a list of position-value pairs. */
+        
+        private List<GradientNode<T>> nodes;
+
+        public ValueGradient(float[] points, T[] values){
+
+            this.nodes = new();
+
+            // if the arrays are valid, add a node for each pair.
+            if (points.Length == values.Length){
+                for(int i = 0; i < points.Length; i++){
+                    this.nodes.Add(new GradientNode<T>(points[i], values[i]));
+                }
+                SortNodes();
+            }
+        }
+
+        public ValueGradient(List<GradientNode<T>> nodes){
+            this.nodes = nodes;
+            SortNodes();
+        }
+
+        public void Add(GradientNode<T> node){
+            nodes.Add(node);
+            SortNodes();
+        }
+
+        private void SortNodes(){
+            nodes.Sort((a, b) => a.position.CompareTo(b.position));
+        }
+
+        private void SearchNodes(int approxIndex, float t, out GradientNode<T> left,  out GradientNode<T> right){
+            /* Check the nodes left and right of the approximate index. if a better value is found 
+            recessively search the new best indices. */
+
+            int leftIndex = Mathf.Clamp(approxIndex - 1, 0, nodes.Count);
+            int rightIndex = Mathf.Clamp(approxIndex + 1, 0, nodes.Count);
+
+            float leftDist = t - nodes[leftIndex].position;
+            float rightDist = t - nodes[rightIndex].position;
+
+            // The left and right pivots have opposing signs. the aproximate index is the nearest.
+            if(leftDist < 0.0f && rightDist > 0.0f ){
+                left = nodes[leftIndex];
+                right = nodes[rightIndex];
+                return;
+            }
+
+            if (leftDist > 0.0f && rightDist > 0.0f ){
+                SearchNodes(leftIndex, t, out left, out right);
+                return;
+            }
+
+            SearchNodes(rightIndex, t, out left, out right);
+            return;
+        }
+
+        public T Sample(float input, Func<T, T, float, float, T> interpolation = null){
+            /* This function returns the gradient at "t" from the list of nodes. */
+            
+            // Check for interpolation type.
+            if (interpolation == null){
+                interpolation = Lerp<T>;
+            }
+
+            // No nodes. return the default for this type.
+            if (nodes.Count == 0)
+                return default;
+            
+            // Only one value, interpolation cannot be done. Return the value from the only node.
+            if (nodes.Count == 1){
+                return nodes[0].value;
+            }
+
+            // Find the nearest nodes on the left and right of the input.
+            GradientNode<T> left, right;
+
+            /* Since the nodes are sorted, truncate to the nearest index into the list of nodes. 
+            This would only work first try if the nodes happen to be evenly spaced, although
+            this does massively cut down on the number of checks needed to find the actual nearest 
+            left and right. */
+
+            SearchNodes((int)(input * nodes.Count), Mathf.Clamp01(input), out left, out right);
+            float t = Mathf.InverseLerp(left.position, right.position, input);  // Calculate the interpolation factor:
+            return interpolation(left.value, left.value, t, 0.0f);              // Interpolate the values:
+        }
+    }
+
     public static T BoomerangLerp<T>(T a, T b, float t, float smooth = 0f){
         /* Blend between the two boomerang lerps for different levels of smoothness. */
         return Lerp(LinearBoomerangLerp(a, b, t), CosBoomerangLerp(a, b, t), smooth);
     }
-
 
     public static T LinearBoomerangLerp<T>(T a, T b, float t, float exp = 0f){
         /* Return to sender! */

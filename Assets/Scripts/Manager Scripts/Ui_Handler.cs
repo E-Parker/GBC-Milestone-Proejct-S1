@@ -29,10 +29,10 @@ public class Ui_Handler : SingletonObject<Ui_Handler>{
     void Start(){
         // This is a dumb hack but it'll work.
         UI_Parent = GameObject.FindGameObjectWithTag("GameUI");
-        ScoreText = GameObject.FindGameObjectWithTag("ScoreText").GetComponent<TMP_Text>();
-        HPText = GameObject.FindGameObjectWithTag("HPText").GetComponent<TMP_Text>();
-        MPText = GameObject.FindGameObjectWithTag("MPText").GetComponent<TMP_Text>();
-        GameoverButton = GameObject.FindGameObjectWithTag("GameoverButton");
+        ScoreText = GameObject.FindGameObjectWithTag("GameUI_Score").GetComponent<TMP_Text>();
+        HPText = GameObject.FindGameObjectWithTag("GameUI_Health").GetComponent<TMP_Text>();
+        MPText = GameObject.FindGameObjectWithTag("GameUI_Mana").GetComponent<TMP_Text>();
+        GameoverButton = GameObject.FindGameObjectWithTag("GameUI_GameOverButton");
 
         DontDestroyOnLoad(UI_Parent);
     }

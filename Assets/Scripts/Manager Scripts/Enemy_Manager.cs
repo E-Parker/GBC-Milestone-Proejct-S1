@@ -134,8 +134,6 @@ public class Enemy_Manager : SingletonObject<Enemy_Manager>{
             Debug.Log(EntityData[i].name);
             EntityLookup.Add(EntityData[i].name, EntityPrefabs[i]);
         }
-        //foreach(var key in EntityLookup.Keys){Debug.Log(key);}
-        
     }
 
     public static void InitializeWaves(){

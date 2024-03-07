@@ -62,17 +62,12 @@ public class System_Manger : SingletonObject<System_Manger>{
         Application.Quit();
     }
 
-    public static void ChangeSceneTo(int index){
+    public static void ChangeSceneTo(string name){
         /*  Swaps the current scene to the one named "name". */
+        Debug.Log($"Now loading {'"'}{name}{'"'} scene.");
 
-        // Check for valid index:
-        if(index < 0 || index > SceneManager.sceneCountInBuildSettings){
-            Debug.LogError($"Invalid scene index: {index}");
-            return;
-        }
-
-        // Load the scene from index:
-        SceneManager.LoadScene(index);
+        // Load the scene from name:
+        SceneManager.LoadSceneAsync(name);
     }
 
 
