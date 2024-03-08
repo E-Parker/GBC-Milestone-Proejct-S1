@@ -19,9 +19,7 @@ public static class Utility{
     public const float MaxEnemyDistance = 1.75f;
     public const float MaxEnemySqrDistance = MaxEnemyDistance * MaxEnemyDistance;
 
-    // Define the expected player object name here. This is for when the scene reloads and every script has to re-find the player.
-    public static string PlayerObject = "Player";
-    public static GameObject Player = GameObject.Find(PlayerObject);
+    public static Scene CurrentScene; 
 
     /* This is used as a template when generating objects at runtime. 
     I could have done this with prefabs but using this I can make any combination of scripts I want

@@ -6,8 +6,6 @@ using static Utility.Utility;
 
 
 public class DampedTrack : MonoBehaviour{
-    
-    
 
     [HideInInspector] public Transform target;
     [SerializeField] private string m_TargetName;

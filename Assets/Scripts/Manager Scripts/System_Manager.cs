@@ -17,6 +17,8 @@ public class System_Manger : SingletonObject<System_Manger>{
         /* This function gets called with Awake defined in SingletonObject. */
 
         // housekeeping stuff:
+        IsPersistent = true;
+        CurrentScene = SceneManager.GetActiveScene();
         DontDestroyOnLoad(EmptyObject);
         
     }
@@ -24,36 +26,39 @@ public class System_Manger : SingletonObject<System_Manger>{
 
     void Start(){
         Initialize();
+        AudioManager.PlayMusic("Tittle");
     }
 
 
     void Initialize(){
         /* This method instances manager scripts depending on what the current scene is. */
-
-        Debug.Log(SceneManager.GetActiveScene().name);
-
-        switch(SceneManager.GetActiveScene().name){
-            
-            case "Start":
-                // Make Instances:
-                AudioManager.MakeInstance();
-                AudioManager.IsPersistent = true;
-                AudioManager.PlayMusic("Tittle");
-                
-                // Destroy old / unused objects:
-                Enemy_Manager.DestroyInstance();
-                Ui_Handler.DestroyInstance();
-
-                break;
-
-            case "Game":
-                // Make Instances:
-                AudioManager.MakeInstance();
-                Enemy_Manager.MakeInstance();
-                Ui_Handler.MakeInstance();
-                break;
-        }
         
+        if (CurrentScene.name == "Start"){
+            
+            // Destroy old / unused objects:
+            Enemy_Manager.DestroyInstance();
+            Ui_Handler.DestroyInstance();
+            
+            // Make Instances:
+            AudioManager.MakeInstance();
+            AudioManager.IsPersistent = true;
+
+        }
+
+        if(CurrentScene.name == "Game"){
+
+            Debug.Log("Loaded Game Scene.");
+
+            // Destroy old / unused objects:
+            Enemy_Manager.DestroyInstance();
+            Ui_Handler.DestroyInstance();
+
+            // Make Instances:
+            Enemy_Manager.MakeInstance();
+            Ui_Handler.MakeInstance();
+            AudioManager.MakeInstance();
+
+        }
     }
 
     public static void ExitGame(){
@@ -65,17 +70,19 @@ public class System_Manger : SingletonObject<System_Manger>{
     public static void ChangeSceneTo(string name){
         /*  Swaps the current scene to the one named "name". */
         Debug.Log($"Now loading {'"'}{name}{'"'} scene.");
-
+        CurrentScene = SceneManager.GetSceneByName(name);
         // Load the scene from name:
-        SceneManager.LoadSceneAsync(name);
+        SceneManager.LoadScene(name, LoadSceneMode.Single);
+        Instance.Invoke("Initialize", 0.1f);    // This is awful. but i literally cant get this to work any other way.
     }
 
 
     public static void RestartScene(){
         /*  This could be better but this is the fastest way i can think of to reload the scene. */
-        Scene scene = SceneManager.GetActiveScene();
-        int sceneIndex = scene.buildIndex;
-        SceneManager.UnloadSceneAsync(scene);
+        CurrentScene = SceneManager.GetActiveScene();
+        int sceneIndex = CurrentScene.buildIndex;
+        SceneManager.UnloadSceneAsync(CurrentScene);
         SceneManager.LoadSceneAsync(sceneIndex);
+        Instance.Invoke("Initialize", 0.1f);
     }
 }

@@ -43,15 +43,15 @@ public class AudioManager : SingletonObject<AudioManager>{
     private Dictionary<string, AudioClip> sfxClips;     // Store sfx here.
     private Dictionary<string, SongData> musicClips;    // store music with this.
 
-    public float m_volume = 0.5f;       // Master volume control.
+    public float m_volume = 0.5f;               // Master volume control.
+    public float m_fadeRate = 0.05f;            // rate at which the fade sh
     private float musicMasterVolume = 0.8f;
     private float sfxMasterVolume = 0.6f;
 
-    public string currentSong = "";         // stores the current song being played.
-    public string nextSong = "";            // stores the next song to be played.
+    public string currentSong = "";             // stores the current song being played.
+    public string nextSong = "";                // stores the next song to be played.
 
     // Track Switching:
-    private int ticksToNext = -1;
     public bool loopMusic = true;
     public bool loopMusicLatch = true;
     
@@ -62,25 +62,41 @@ public class AudioManager : SingletonObject<AudioManager>{
 
         // Assign variables:
         musicVolumeOffset = 1f / (float)c_musicTracks;
-
-        // DEBUG:
+        musicTrackVolume =  new float[]{1.0f, 1.0f, 1.0f, 1.0f};
+        musicTrackVolumeTarget = new float[]{1.0f, 1.0f, 1.0f, 1.0f};
         loopMusic = true;
         loopMusicLatch = true;
         
         LoadSounds();
         LoadMusic();
+        UpdateMusic();
+
         StartCoroutine(ScheduleNextSong());
+        StartCoroutine(FadeVolume());
+    }
+
+
+    IEnumerator FadeVolume(){
+        /* This function fades the volume towards a target. */
+
+        while(true){
+            for (int i = 0; i < c_musicTracks; i++){
+                musicTrackVolume[i] = Lerp<float>(musicTrackVolume[i], musicTrackVolumeTarget[i], 0.05f);
+            }
+            yield return new WaitForSeconds(0.05f);
+        }
     }
 
 
     IEnumerator ScheduleNextSong(){
         /* Coroutine for scheduling the next song to be played.  */
+
         while (true){
             if(currentSong != ""){
-                yield return new WaitForSeconds(musicClips[currentSong].duration);
                 UpdateMusic();
+                yield return new WaitForSeconds(musicClips[currentSong].duration);
             }
-            yield return new WaitForSeconds(0.1f);
+            yield return null;
         }
     }
 
@@ -246,8 +262,12 @@ public class AudioManager : SingletonObject<AudioManager>{
         Instance.currentSong = song;
 
         for (int i = 0; i < c_musicTracks; i++){
-            Instance.musicTrack[i].Stop();
-            if (clips.tracks[i] == null){ continue; }
+
+            if (clips.tracks[i] == null){ 
+                Instance.musicTrack[i].Stop();
+                continue; 
+            }
+            
             Instance.musicTrack[i].clip = clips.tracks[i];
             Instance.musicTrack[i].Play();
         }   
@@ -259,8 +279,6 @@ public class AudioManager : SingletonObject<AudioManager>{
     public static void StopMusic(){
         /* This function disables looping. the current song with stop after it finishes the 
         current loop */
-
-        switchMusic("");
         Instance.loopMusicLatch = false;
     }
 

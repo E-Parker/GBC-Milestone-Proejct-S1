@@ -79,7 +79,7 @@ public class EnemyMage_Controller_Interface : SpriteController{
     public void SetTarget(){
         /*  This function sets the target to the player. */ 
         if (target == null){
-            target = GameObject.Find(PlayerObject);
+            target = Player_Controller.Instance.gameObject;
         
             TargetPosition = target.transform.position;
             LastTargetPosition = target.transform.position;

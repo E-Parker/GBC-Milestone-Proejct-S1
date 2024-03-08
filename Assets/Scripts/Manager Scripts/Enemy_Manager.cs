@@ -15,8 +15,8 @@ public class Enemy_Manager : SingletonObject<Enemy_Manager>{
     static readonly string SPAWN_PATH = $"{Application.dataPath}/Resources/Data/Level/{SPAWN_DATA}";
     static readonly string PREFAB_PATH = "Prefabs/Enemies/";
 
-    public static UnityEngine.Object[] EntityPrefabs = new UnityEngine.Object[MAX_UNIQUE_ENTITIES];
-    public static Dictionary<string, UnityEngine.Object> EntityLookup = new Dictionary<string, UnityEngine.Object>();
+    public static UnityEngine.Object[] EntityPrefabs;
+    public static Dictionary<string, UnityEngine.Object> EntityLookup;
 
     // enemy spawn handling structs:
 
@@ -103,8 +103,15 @@ public class Enemy_Manager : SingletonObject<Enemy_Manager>{
     private int currentTypeIndex = 0;
     private int currentTypeAmount = 0;
 
-    private List<GameObject> alive = new List<GameObject>();    // list of alive enemies
-    private List<GameObject> dead = new List<GameObject>();     // list of dead (marked inactive) enemies.
+    private List<GameObject> alive;    // list of alive enemies
+    private List<GameObject> dead;     // list of dead (marked inactive) enemies.
+
+    public override void CustomAwake(){
+        EntityPrefabs = new UnityEngine.Object[MAX_UNIQUE_ENTITIES];
+        EntityLookup = new Dictionary<string, UnityEngine.Object>();
+        alive = new();
+        dead = new();
+    }
 
     void Start(){
         // Initialize enemies:
@@ -327,7 +334,7 @@ public class Enemy_Manager : SingletonObject<Enemy_Manager>{
 
         // Get random position on radius:
         Vector3 position = new Vector3(UnityEngine.Random.Range(-1f,1f),
-                                    Player.transform.position.y,
+                                    Player_Controller.Instance.transform.position.y,
                                     UnityEngine.Random.Range(-1f,1f));
         
         // Varify position is not zero vector before normalization.

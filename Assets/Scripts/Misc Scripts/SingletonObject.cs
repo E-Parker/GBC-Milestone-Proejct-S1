@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.VisualScripting;
 using Unity.Mathematics;
 using static Utility.Utility;
 
@@ -51,6 +52,7 @@ public abstract class SingletonObject<T> : MonoBehaviour where T : SingletonObje
             //DontDestroyOnLoad(this);      // Ensure the same object persists between Loads.
         }
         catch(ArgumentException){
+            Debug.Log("Instance Already In scene.");
             Destroy(gameObject);            // Since It already exits in the scene, destroy it.
         }
         CustomAwake();                      // Call custom overrides for Awake function.
@@ -73,7 +75,7 @@ public abstract class SingletonObject<T> : MonoBehaviour where T : SingletonObje
         // Otherwise, make a new GameObject with the class T. 
         GameObject newObject;
         newObject = Instantiate(EmptyObject, Vector3.zero, quaternion.identity);
-        newObject.AddComponent<T>();
+        Instances[Indexer] = newObject.AddComponent<T>();
         newObject.name = Indexer.FullName;
     }
     
@@ -81,18 +83,23 @@ public abstract class SingletonObject<T> : MonoBehaviour where T : SingletonObje
     public static void DestroyInstance(){
         /* This function destroys the instance of a singleton. This will break many things if used 
         improperly. This is only intended to be called once */
-        
-        try{
+
+            if (!Instances.ContainsKey(Indexer)){
+                Debug.Log("Cannot destroy a singleton which has not been initialized! ");
+                return;
+            }
+
             // Find and destroy the instance.
             SingletonObject<T> singleton = Instances[Indexer];
-            Destroy(singleton.gameObject);
             
+            // Check if the gameObject is already destroyed.
+            if (!singleton.IsDestroyed()){
+                Destroy(singleton.gameObject);
+            }
+
             // Remove the instance from the dictionary. 
             Instances.Remove(Indexer);
-        }
-        catch{
-            Debug.Log("Cannot destroy a singleton which has not been initialized! ");
-        }
+
     }
 }
 

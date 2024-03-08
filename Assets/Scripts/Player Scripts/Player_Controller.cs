@@ -146,7 +146,7 @@ public class Player_Controller_Interface : SpriteController{
 |                                   INTERFACING WITH UNITY ENGINE                                  |
 \*================================================================================================*/
 
-public class Player_Controller : SingletonObject<Player_Controller>{
+public class Player_Controller : MonoBehaviour{
 
     // Variables:
     
@@ -172,8 +172,13 @@ public class Player_Controller : SingletonObject<Player_Controller>{
     [SerializeField] int m_Health = 5;
     [SerializeField] float m_HealthRate = 2f;
 
+    static public Player_Controller Instance;
     public Player_Controller_Interface controller; 
     private bool initialized = false;
+    
+    void Awake(){
+        Instance = this;
+    }
 
     void OnEnable(){
         if (initialized){

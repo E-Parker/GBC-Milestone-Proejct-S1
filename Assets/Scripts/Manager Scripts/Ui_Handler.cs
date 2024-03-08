@@ -15,27 +15,25 @@ public class Ui_Handler : SingletonObject<Ui_Handler>{
     const char MP_Missing = '-';
     const char MP_Has = 'x';
 
-    private TMP_Text ScoreText;
-    private TMP_Text HPText;
-    private TMP_Text MPText;
-    private GameObject GameoverButton;
-    private GameObject UI_Parent;
+    private TMP_Text ScoreText = null;
+    private TMP_Text HPText = null;
+    private TMP_Text MPText = null;
+    private GameObject GameoverButton = null;
 
     private int health;
     private int healthDiff;
     private int mana;
     private int manaDiff;
 
-    void Start(){
-        // This is a dumb hack but it'll work.
-        UI_Parent = GameObject.FindGameObjectWithTag("GameUI");
-        ScoreText = GameObject.FindGameObjectWithTag("GameUI_Score").GetComponent<TMP_Text>();
-        HPText = GameObject.FindGameObjectWithTag("GameUI_Health").GetComponent<TMP_Text>();
-        MPText = GameObject.FindGameObjectWithTag("GameUI_Mana").GetComponent<TMP_Text>();
-        GameoverButton = GameObject.FindGameObjectWithTag("GameUI_GameOverButton");
 
-        DontDestroyOnLoad(UI_Parent);
+    void Start(){
+        gameObject.layer = 5;
+        ScoreText = GameObject.FindWithTag("GameUI_Score").GetComponent<TMP_Text>();
+        HPText = GameObject.FindWithTag("GameUI_Health").GetComponent<TMP_Text>();
+        MPText = GameObject.FindWithTag("GameUI_Mana").GetComponent<TMP_Text>();
+        GameoverButton = GameObject.FindWithTag("GameUI_GameOverButton");
     }
+    
 
     void Update(){
         // If player is dead, show the respawn button.
@@ -64,7 +62,7 @@ public class Ui_Handler : SingletonObject<Ui_Handler>{
 
         if(mana != Player_Controller.Instance.controller.GetCurrentMana()){
             mana = Player_Controller.Instance.controller.GetCurrentMana();
-            manaDiff = Player_Controller.Instance.controller.GetCurrentMana() - mana;
+            manaDiff = Player_Controller.Instance.controller.GetMaxMana() - mana;
 
             MPText.text = "(Mana-";
             
