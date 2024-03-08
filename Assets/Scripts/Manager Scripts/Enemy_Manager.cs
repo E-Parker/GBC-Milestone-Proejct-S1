@@ -312,6 +312,7 @@ public class Enemy_Manager : SingletonObject<Enemy_Manager>{
             // if no enemies are alive, handle loading next wave. 
             if (alive.Count == 0){
                 currentWave = WaveQueue.Dequeue();
+                AudioManager.switchMusic(Instance.currentWave.Song);
                 currentWaveCounter++;
                 waveTimer = 0;
                 waveScore = 0;

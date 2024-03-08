@@ -8,7 +8,7 @@
                 }
             ],
             "level": 2,
-            "song": "Battle"
+            "song": "BattleCalm"
         },
         {
             "SpawnID": [
@@ -46,7 +46,7 @@
                 }
             ],
             "level": 3,
-            "song": "Battle"
+            "song": "BattleCalm"
         },
         {
             "SpawnID": [
@@ -106,7 +106,7 @@
                 }
             ],
             "level": 1,
-            "song": "Battle"
+            "song": "BattleCalm"
         },
         {
             "SpawnID": [
@@ -150,7 +150,7 @@
                 }
             ],
             "level": 10,
-            "song": "Battle"
+            "song": "Boss"
         },
         {
             "SpawnID": [
@@ -172,7 +172,7 @@
                 }
             ],
             "level": 20,
-            "song": "Battle"
+            "song": "Boss"
         },
         {
             "SpawnID": [
@@ -194,7 +194,33 @@
                 }
             ],
             "level": 20,
-            "song": "Battle"
+            "song": "Boss"
+        },
+        {
+            "SpawnID": [
+                {
+                    "ID": "Evoker_Mage",
+                    "Max": 10
+                },
+                {
+                    "ID": "Fire_Mage",
+                    "Max": 20
+                },
+                {
+                    "ID": "Evil_Knight",
+                    "Max": 8
+                },
+                {
+                    "ID": "Evil_King",
+                    "Max": 2
+                },
+                {
+                    "ID": "Lowly_Mage",
+                    "Max": 40
+                }
+            ],
+            "level": 50,
+            "song": "Boss"
         }
     ]
 }

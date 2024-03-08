@@ -26,7 +26,6 @@ public class System_Manger : SingletonObject<System_Manger>{
 
     void Start(){
         Initialize();
-        AudioManager.PlayMusic("Tittle");
     }
 
 
@@ -41,7 +40,7 @@ public class System_Manger : SingletonObject<System_Manger>{
             
             // Make Instances:
             AudioManager.MakeInstance();
-            AudioManager.IsPersistent = true;
+            AudioManager.switchMusic("BattleCalm");
 
         }
 

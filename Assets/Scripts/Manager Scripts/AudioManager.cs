@@ -45,8 +45,8 @@ public class AudioManager : SingletonObject<AudioManager>{
 
     public float m_volume = 0.5f;               // Master volume control.
     public float m_fadeRate = 0.05f;            // rate at which the fade sh
-    private float musicMasterVolume = 0.8f;
-    private float sfxMasterVolume = 0.6f;
+    private float musicMasterVolume = 0.5f;
+    private float sfxMasterVolume = 0.5f;
 
     public string currentSong = "";             // stores the current song being played.
     public string nextSong = "";                // stores the next song to be played.
@@ -56,6 +56,9 @@ public class AudioManager : SingletonObject<AudioManager>{
     public bool loopMusicLatch = true;
     
     public override void CustomAwake(){
+        
+        IsPersistent = true;
+
         // Initialize dictionaries
         sfxClips = new Dictionary<string, AudioClip>();
         musicClips = new Dictionary<string, SongData>();
@@ -265,6 +268,7 @@ public class AudioManager : SingletonObject<AudioManager>{
 
             if (clips.tracks[i] == null){ 
                 Instance.musicTrack[i].Stop();
+                Instance.musicTrack[i].clip = null;
                 continue; 
             }
             
