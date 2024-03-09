@@ -111,7 +111,7 @@ GameObject:
   - component: {fileID: 5074756732703009133}
   - component: {fileID: 8902437735156694916}
   m_Layer: 0
-  m_Name: GreaterHealthPotion
+  m_Name: Poison
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -177,7 +177,7 @@ MonoBehaviour:
     y: 4
     width: 32
     height: 32
-  varient: 0
+  varient: 3
 --- !u!114 &5074756732703009133
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -229,6 +229,6 @@ MonoBehaviour:
   m_Caster_Intensity: 1
   m_Caster_Range: 0.2
   m_Lifetime: 5
-  m_Damage: -5
+  m_Damage: 3
   m_Sfx_cast: 
   m_Sfx_Hit: 

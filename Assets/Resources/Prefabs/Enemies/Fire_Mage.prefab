@@ -298,3 +298,5 @@ MonoBehaviour:
   m_ManaRate: 5
   m_ActionOpertunity: 1.5
   m_Health: 2
+  DropOnDeath: {fileID: 4722450577736150645, guid: 5c9046ca15a74d24594a2a9a45776d0a, type: 3}
+  DropRate: 0.1

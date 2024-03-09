@@ -288,6 +288,10 @@ public class EnemyMage_Controller: MonoBehaviour{
     [SerializeField] float m_ManaRate = 0.5f;
     [SerializeField] float m_ActionOpertunity = 1.5f;
     [SerializeField] int m_Health = 3;
+    
+    [Header("Other")]
+    [SerializeField] GameObject DropOnDeath;
+    [SerializeField] float DropRate = 0.25f;
 
     //private EnemyMage_Controller_Interface controller;
     protected SpriteController controller;
@@ -296,6 +300,7 @@ public class EnemyMage_Controller: MonoBehaviour{
     void Awake(){
         initialized = false;
     }
+
 
     void Start(){
         // Initialize health.
@@ -345,7 +350,12 @@ public class EnemyMage_Controller: MonoBehaviour{
     void LateUpdate(){
         // Check for dead state at the last possibility.
         if(!controller.Health.Alive() && controller.Health.IsDying() && controller.Animation.GetAnimationName() != "Dying"){
-            this.gameObject.SetActive(false);
+            
+            if(DropOnDeath != null && Random.Range(0f,1f) < DropRate){
+                Instantiate(DropOnDeath,transform.position,transform.rotation).GetComponent<Projectile_Controller>().Setvalues(Vector3.zero, this.gameObject);
+            }
+            
+            gameObject.SetActive(false);
         }
     }
     

@@ -59,6 +59,13 @@ public class Health_handler : MonoBehaviour{
     }
 
     public void SubHealth(int amount){
+
+        if (amount < 0){
+            this.health -= amount;
+            this.health = Mathf.Clamp(health, 0, maxHealth);
+            return;
+        }
+
         if (!IsHit()){
             AudioManager.PlaySound("Hit_Hurt");
             this.health -= amount;
