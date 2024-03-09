@@ -99,7 +99,6 @@ public abstract class SingletonObject<T> : MonoBehaviour where T : SingletonObje
 
             // Remove the instance from the dictionary. 
             Instances.Remove(Indexer);
-
     }
 }
 

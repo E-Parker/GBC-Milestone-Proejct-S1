@@ -73,7 +73,7 @@ public class Projectile_Controller : MonoBehaviour{
     
     [Header("Settings")]
     [SerializeField] float m_Lifetime = 10;             // Time in seconds before self destruct.
-    [SerializeField] public int m_Damage = 1;           // Amount of damage dealt on collision.
+    [SerializeField] public short m_Damage = 1;         // Amount of damage dealt on collision.
     [SerializeField] string m_Sfx_cast = "Cast_Magic";
     [SerializeField] string m_Sfx_Hit = "Metallic_Hit";
 
@@ -158,7 +158,7 @@ public class Projectile_Controller : MonoBehaviour{
 
         // Set Direction:
         this.direction = newDirection;
-        this.endpos = startpos+(direction * m_Lifetime);
+        this.endpos = startpos + (direction * m_Lifetime);
     }
 
 
@@ -269,7 +269,7 @@ public class Projectile_Controller : MonoBehaviour{
         }
         
         // If it's dead, ignore the collision.
-        if (!health.Alive()){
+        if (!health.Alive){
             return;
         }
 

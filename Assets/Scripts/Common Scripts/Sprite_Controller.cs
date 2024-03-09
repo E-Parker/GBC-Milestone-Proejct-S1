@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using static Utility.Utility;
+using Unity.VisualScripting;
 
 
 /*================================================================================================*\
@@ -72,7 +73,7 @@ public static class StateData{
 \*================================================================================================*/
 
 public class SpriteController{
-    /*Prototyoe of sprite controller used for moving animated sprites across a scene. */
+    /*Prototype of sprite controller used for moving animated sprites across a scene. */
     
     /* Any animation with these names will be ignored by StatesFromAnimations(). 
     These are still expected to be there since they are played manually. */
@@ -81,33 +82,51 @@ public class SpriteController{
 
     protected static string[] IgnoreAnimations = new string[]{"Dead", "Dying", "Idle", "Hurt"};
 
-    public Vector3 direction = Vector3.forward; // Unit vector facing direction.
-    public Vector3 velocity = Vector3.zero;     // Sprite velocity.
+    private Vector3 _direction = Vector3.forward;
+    private Vector3 _targetDirection = Vector3.forward;
 
+    public Vector3 direction {  // Unit vector facing direction.
+        get {return _direction; }
+        set { _targetDirection = (value != Vector3.zero)? value: _targetDirection; }   
+    }
+
+    public Vector3 position {       // Proxy for rigidBody's position.
+        get{ return rigidBody.position; }
+        set {rigidBody.position = value; } 
+    }
+    
+    public Vector3 velocity {       // Proxy for rigidBody's velocity.
+        get{ return rigidBody.velocity; }    
+        set{ rigidBody.velocity = value; }
+    }
+    
     public float friction = 0.05f;              // amount velocity decays by over time.
     public float acceleration = 0.01f;          // amount velocity changes by over time.
     public float speed = 1;
+    public float turnRate = 0.25f;
 
     public Sprite_Animation Animation;          // Animation Script.
     public Sprite_Animator Animator;            // Animator Script to controller animation.
     public Health_handler Health;               // Health script.
     public Collider collider;
-    public Rigidbody rigidbody;                 // Handle movement with ridged body.
+    public Rigidbody rigidBody;                 // Handle movement with ridged body.
 
     public ushort state;                        // holds the current sprite state. see ActorData.
     protected ushort lastState;                 // holds the last sprite state.
     public Dictionary<string, ushort> states;   // dictionary of named states.
-    
+    private Vector3 lastDirection = Vector3.forward;
+
     // Initialization:
 
-    public SpriteController(float friction, float acceleration, float speed,
-        Rigidbody rigidbody, Collider collider, Health_handler Health, 
+    public SpriteController(float friction, float acceleration, float speed, float turnRate,
+        Rigidbody rigidBody, Collider collider, Health_handler Health, 
         Sprite_Animation Animation, Sprite_Animator Animator){
         
-        this.rigidbody = rigidbody;
+        this.rigidBody = rigidBody;
         this.friction = friction;
         this.acceleration = acceleration;
         this.speed = speed;
+        this.turnRate = turnRate;
         this.Health = Health;
         this.Animation = Animation;
         this.Animator = Animator;
@@ -119,33 +138,12 @@ public class SpriteController{
         // Ignore the Idle animation and add it as the default state. 
         states.Add("Idle", StateData.Idle);
 
-        // Bitshift left by i, start at 8 to ignore first 4 bits reserved for directional movement. 
+        // Bit-shift left by i, start at 8 to ignore first 4 bits reserved for directional movement. 
         for (int i = 0; i < names.Length; i++){
             if (!IgnoreAnimations.Contains(names[i]) && !states.Keys.Contains(names[i])){
                 this.states.Add(names[i], (ushort)(16 << i));
             }
         }
-    }
-
-    public void SetDirection(Vector3 newDirection){
-        /*  This function Changes the direction. */
-
-        if (newDirection == Vector3.zero){
-            Debug.LogError("Cannot set direction to zero vector. ");
-            return;
-        }
-
-        // Direction is always supposed to be a unit vector, if it isn't normalize the vector.
-        if (Vector3.SqrMagnitude(newDirection) != 1f){
-            //Debug.LogWarning("newDirection was not of length 1. ");
-            newDirection = Vector3.Normalize(newDirection);
-        }
-
-        this.direction = newDirection;
-        
-        // Set the sprite facing direction:
-        Animator.ChangeVarient(StateData.directionFromVector(ref this.state, 
-                                                             direction.x, direction.z));
     }
 
     public virtual void ResetController(){
@@ -160,10 +158,11 @@ public class SpriteController{
         // Clear vectors:
         velocity = Vector3.zero;
         direction = Vector3.forward;
+        lastDirection = Vector3.forward;
 
-        // Set state from direction and change to correct animation varient:
-        Animator.ChangeVarient(StateData.directionFromVector(ref this.state, direction.x, direction.z));
-
+        // Set state from direction and change to correct animation variant:
+        int variant = StateData.directionFromVector(ref state, direction.x, direction.z);
+        Animator.ChangeVariant(variant);
     }
     
     // Update functions:
@@ -177,19 +176,22 @@ public class SpriteController{
         /*  Check states and play animations. This is called AFTER getting the player input. */
 
         // If the character is hit, play the hurt animation. Skip playing any other animations.
-        if (Health.IsHit()){
+        if (Health.Hit){
             Animation.Play("Hurt");
             return;
         }
 
         // Check if dying. Check to make sure there isn't an action happening either.
-        if(!Health.Alive()){
+        if(!Health.Alive){
             OnDeath();
             return;
         }
 
         // Update special conditions:
         UpdateSpecial();
+
+        // Update the facing direction.
+        UpdateDirection();
 
         // Check that state has changes:
         if(lastState != state)
@@ -201,28 +203,61 @@ public class SpriteController{
 
     public void FixedUpdate(bool isMoving){
         // Update position and velocity:
-        UpdateVelocity(direction, isMoving);
+        UpdateVelocity(isMoving);
     }
 
-    public void UpdateVelocity(Vector3 direction, bool isMoving){
+    public IEnumerator ApplyTurnRate(){
+        while(true){
+            _direction = _direction * (1f - turnRate) + _targetDirection * turnRate;
+            yield return new WaitForSeconds(0.05f);
+        }
+    }
+
+    public void OverrideTurnRate(){
+        _direction = _targetDirection;
+    }
+
+    private void UpdateDirection(){
+        /*  This function Changes the direction. */
+
+        // If the direction hasn't changed, leave early.
+        if (direction == lastDirection){ 
+            return; 
+        }
+
+        if (direction == Vector3.zero){
+            direction = lastDirection;
+            return;
+        }
+
+        // Direction is always supposed to be a unit vector, if it isn't normalize the vector.
+        if (Vector3.SqrMagnitude(direction) != 1f){ direction = Vector3.Normalize(direction); }
+        
+        lastDirection = direction;
+        
+        // Set the sprite facing direction:
+        int variant = StateData.directionFromVector(ref state, direction.x, direction.z);
+        Animator.ChangeVariant( variant );
+    }
+
+    public void UpdateVelocity( bool isMoving ){
         /* This function handles updating velocity, based of the direction. */ 
         
         // apply friction to velocity;
-        this.velocity *= (1f - this.friction);
+        velocity *= 1f - friction;
 
         /*Calculate the amount of speed that can be gained. if velocity is 0, then margin is at it's
         maximum, but as velocity approaches speed the amount of speed that can be gained decreases. */
         float margin = speed - Vector3.Magnitude(velocity);        
-        if (isMoving) this.velocity += direction * this.acceleration * margin;
-        this.rigidbody.velocity = this.velocity;
+        if (isMoving) { velocity += direction * acceleration * margin; }
     }
 
     public void OnDeath(){
-        /*  This function checks if the sprite is dying, returns the time untill destruct. Add 
+        /*  This function checks if the sprite is dying, returns the time until destruct. Add 
         implementation for this on Unity script. */
 
         // if "not alive" but still "not dying", Handle dying animation then die.
-        if(!Health.Alive() && !Health.IsDying()){
+        if(!Health.Alive && !Health.Dying){
 
             // Clear state so character doesn't keep walking while dead.
             unsetAll();
@@ -231,7 +266,7 @@ public class SpriteController{
             Animation.Stop();
 
             // Set dying state. prevents OnDeath() from being called more than once.
-            Health.SetDying();
+            Health.Dying = true;
 
             // Play animations last. If one or both are missing the object will still be destroyed.
             Animation.Play("Dying");
@@ -253,7 +288,8 @@ public class SpriteController{
         /*  Does what it says on the tin. this is meant to be called at the start of Update to keep
         track of if the sprite state has changed over the frame. */
         
-        if (!Health.IsHit()){   // If not stun-locked, store last state.
+        // If not stun-locked, store last state.
+        if (!Health.Hit){   
             this.lastState = new ushort();
             this.lastState = this.state;
         }
@@ -268,8 +304,8 @@ public class SpriteController{
         /*  This function sets the sprite state from a name. name must be in the dictionary of
         possible states. */
 
-        // If not stunlocked, check for valid state, set state from name.
-        if (!Health.IsHit()){
+        // If not stun-locked, check for valid state, set state from name.
+        if (!Health.Hit){
             if (isValidState(name)){        
                 StateData.set(ref this.state, states[name]);
             }
@@ -296,24 +332,6 @@ public class SpriteController{
                 Animation.Play(state);
             }    
         }
-    }
-
-    public Vector3 GetDirecion(){
-        return this.direction;
-    }
-
-    public Vector3 GetPosition(){
-        return this.rigidbody.position;
-    }
-
-    public int GetMaxHealth(){
-        /* Returns the maximum health. */
-        return this.Health.GetHealth();
-    }
-
-    public int GetCurrentHealth(){
-        /* Returns the current health. */
-        return this.Health.GetMaxHealth();
     }      
 }
 

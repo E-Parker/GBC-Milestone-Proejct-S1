@@ -5,7 +5,7 @@ using UnityEngine;
 using static Utility.Utility;
 
 
-public class Sprite_Animator : MonoBehaviour{
+[Serializable] public class Sprite_Animator : MonoBehaviour{
     /*  This class handles loading and animating spritesheet. */
 
     // Variables:
@@ -54,7 +54,7 @@ public class Sprite_Animator : MonoBehaviour{
         m_TargetSprite.transform.position = m_offset + TransformToPixels(gameObject.transform.position);
     }
 
-    public void ChangeVarient(int index){
+    public void ChangeVariant(int index){
         /*  This function updates the varient value for this animator. */
         
         // validate input.

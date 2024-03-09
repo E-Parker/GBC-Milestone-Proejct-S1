@@ -25,6 +25,7 @@ public static class Utility{
     I could have done this with prefabs but using this I can make any combination of scripts I want
     on demand This avoids needing a prefab for an empty object. */
     public static GameObject EmptyObject = new GameObject("Empty");
+    static public IPlayer_Controller Player;
 
     /*========================================================================================*\
     |                                    JSON FILE HANDLING                                    |

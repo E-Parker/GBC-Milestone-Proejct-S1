@@ -5,7 +5,7 @@ using Unity.Mathematics;
 using UnityEngine;
 using System.IO;
 using static Utility.Utility;
-using Unity.VisualScripting;
+
 
 
 public class Enemy_Manager : SingletonObject<Enemy_Manager>{   
@@ -213,10 +213,10 @@ public class Enemy_Manager : SingletonObject<Enemy_Manager>{
         }
         dead.Clear();
 
-        // For each type of enemy in the wave instanciate a copy, set active to false.
+        // For each type of enemy in the wave instantiate a copy, set active to false.
         foreach(EnemySpawn enemyType in currentWave.Spawns){
             
-            // Generate the max number enemys of each type, set inactive and add to the dead list.
+            // Generate the max number enemies of each type, set inactive and add to the dead list.
             for (int i = 0; i < enemyType.maxNumber; i++){
                 // Create new enemy:
                 GameObject enemy = Instantiate(enemyType.Entity as GameObject, transform.position, quaternion.identity);
@@ -295,7 +295,7 @@ public class Enemy_Manager : SingletonObject<Enemy_Manager>{
             GenerateEnemies();
         }
         
-        //  HANDLE SPAWNING NORMALY, STILL FIGHTING CURRENT WAVE:
+        //  HANDLE SPAWNING NORMALLY, STILL FIGHTING CURRENT WAVE:
         if(waveScore < currentWave.Next || currentWave.Next == -1){
             // Update spawn timer:
             enemyTimer += Time.deltaTime;
@@ -332,13 +332,13 @@ public class Enemy_Manager : SingletonObject<Enemy_Manager>{
 
     private Vector3 GetSpawnPosition(){
         /*  Returns a random vector m_SpawnRadius distance from the target. */
-
+        
         // Get random position on radius:
         Vector3 position = new Vector3(UnityEngine.Random.Range(-1f,1f),
-                                    Player_Controller.Instance.transform.position.y,
+                                    Player.position.y,
                                     UnityEngine.Random.Range(-1f,1f));
         
-        // Varify position is not zero vector before normalization.
+        // Verify position is not zero vector before normalization.
         if (position == Vector3.zero){position = Vector3.down;}
         return Vector3.Normalize(position) * m_SpawnRadius;
     }
@@ -358,8 +358,9 @@ public class Enemy_Manager : SingletonObject<Enemy_Manager>{
             if (!enemy.activeSelf){
                 
                 // Change score by the max health the dead enemy had.
-                score += enemy.GetComponent<Health_handler>().GetMaxHealth(); 
-                waveScore += enemy.GetComponent<Health_handler>().GetMaxHealth();
+                ushort maxHealth = enemy.GetComponent<Health_handler>().maxHealth;
+                score += maxHealth; 
+                waveScore += maxHealth;
                 
                 // Update Lists:
                 dead.Add(enemy);

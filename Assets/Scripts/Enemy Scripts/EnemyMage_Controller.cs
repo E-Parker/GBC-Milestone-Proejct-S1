@@ -7,11 +7,11 @@ using UnityEngine;
 using static Utility.Utility;
 
 
-/*  This class handles the implementation for the mage enemy. I REALLY dont want too but I might
+/*  This class handles the implementation for the mage enemy. I REALLY don't want too but I might
 have to do multiple layers of inheritance here if I want to avoid duplicate code. */
 
 
-public class EnemyMage_Controller_Interface : SpriteController{
+public class IEnemyMage : SpriteController{
 
     /*  This class handles the implementation for the player controller The actual script 
     accessed by Unity instances this class and populates it's fields. */
@@ -24,21 +24,22 @@ public class EnemyMage_Controller_Interface : SpriteController{
 
     // holder for target to shoot at:
     public GameObject target;
+    public bool m_lunge;
 
     private Projectile_Handler Projectile;
-    private float turnrate;             // amount direction can change over time.
     private int mana;                   // the maximum mana the player can have.
     private int currentMana = 0;        // the current amount of mana the player has.
     private float manaRate;             // the amount of time it takes for mana to recharge.
     private float manaTimer = 0f;       // timer used to handle changing manaRate.
     private float MaxDistance;          // Distance the player can be seen from.
     private float MinDistance;          // Distance the mage will stay away from.
-    private float ActionOpertunity;     // Amount of time(seconds) before the enemy choeses to move.
+    private float ActionOpportunity;     // Amount of time(seconds) before the enemy choses to move.
     private float ActionTimer;          // Tracks the amount of time since last action taken.
     public Vector3 wanderTarget;        // Random location min distance from player to wander too.
 
-    private float aggression;            // Likelyhood that the AI will chose to shoot at the player.
+    private float aggression;            // Likelihood that the AI will chose to shoot at the player.
     private float overshoot = 10f;      // aim ahead by this amount.
+    private bool Action = true;
 
      // This is for Predicting where the target will be.
     private Vector3 TargetPosition;     // Stores the target's transform.position.
@@ -46,15 +47,15 @@ public class EnemyMage_Controller_Interface : SpriteController{
     private Vector3 toTarget;           // Stores the predicted position of the target.
     private Vector3 LastPosition;       // stores last position. for checking if stuck on something.
 
-    public EnemyMage_Controller_Interface(
-        float friction, float acceleration, float speed, float turnrate, int Mana, float manaRate,
-        float ActionOpertunity, float MinDistance, float MaxDistance, 
-        float overshoot, float aggression,
-        Rigidbody rigidbody, Collider collider, Health_handler Health, Sprite_Animation Animation, 
+    public IEnemyMage(
+        float friction, float acceleration, float speed, float turnRate, int Mana, float manaRate,
+        float ActionOpportunity, float MinDistance, float MaxDistance, 
+        float overshoot, float aggression, bool m_lunge,
+        Rigidbody rigidBody, Collider collider, Health_handler Health, Sprite_Animation Animation, 
         Sprite_Animator Animator, Projectile_Handler Projectile)
-        :base(friction, acceleration, speed, rigidbody, collider, Health, Animation, Animator){
+        :base(friction, acceleration, speed, turnRate, rigidBody, collider, Health, Animation, Animator){
         
-        this.turnrate = turnrate;
+        this.turnRate = turnRate;
         this.MinDistance = MinDistance;
         this.MaxDistance = MaxDistance;
         this.overshoot = overshoot;
@@ -62,9 +63,9 @@ public class EnemyMage_Controller_Interface : SpriteController{
 
         mana = Mana;
         this.manaRate = manaRate;
-        this.ActionOpertunity = ActionOpertunity;
-        
+        this.ActionOpportunity = ActionOpportunity;
         this.Projectile = Projectile;
+        this.m_lunge = m_lunge;
 
         // Make a dictionary of the states by their animation name.
         states = new Dictionary<string, ushort>();                             
@@ -79,11 +80,11 @@ public class EnemyMage_Controller_Interface : SpriteController{
     public void SetTarget(){
         /*  This function sets the target to the player. */ 
         if (target == null){
-            target = Player_Controller.Instance.gameObject;
+            target = Player.gameObject;
         
             TargetPosition = target.transform.position;
             LastTargetPosition = target.transform.position;
-            LastPosition = rigidbody.position;
+            LastPosition = position;
             toTarget = target.transform.position;
         }
     }
@@ -93,6 +94,7 @@ public class EnemyMage_Controller_Interface : SpriteController{
         
         // Check that the character has enough mana:
         if (currentMana > 0){
+            OverrideTurnRate();
             Projectile.On_Fire(direction);
             currentMana--;
         }
@@ -114,8 +116,6 @@ public class EnemyMage_Controller_Interface : SpriteController{
     }
 
     public override void UpdateSpecial(){
-        // Check for missing target:
-        SetTarget();
         
         // Update Timers
         if(currentMana != mana){
@@ -140,35 +140,35 @@ public class EnemyMage_Controller_Interface : SpriteController{
     public void UpdateAi(){
 
         // Check if enough time as passed to take an action:
-        if (!ActionOpertunityCheck()){
+        if (!Action || Animation.GetAnimationName() == anim_Attack){
             return;
         }
         
+        Action = false;
+
         LastTargetPosition = TargetPosition;        // Store position for next frame predictions.
         TargetPosition = target.transform.position; // Update current Target Position:
         
-        Vector3 RelativeTargetPosition = GetPosition() - TargetPosition;
+        Vector3 RelativeTargetPosition = position - TargetPosition;
         toTarget = RelativeTargetPosition + ((LastTargetPosition - TargetPosition) * overshoot);
         
         float relativeSqrDistance = Vector3.SqrMagnitude(RelativeTargetPosition); 
 
-
         // Reset state, Process AI will set new state values.
         unsetAll();     
-
+        
         // Process AI:
 
         // if the enemy is too far away, teleport in front of the player.
         if(relativeSqrDistance > MaxEnemySqrDistance){
-            direction = Vector3.Normalize(RelativeTargetPosition);
-            rigidbody.gameObject.transform.position = TargetPosition - direction; // this is nasty.
+            position = TargetPosition - Vector3.Normalize(RelativeTargetPosition);;
             setState(anim_Walk);
         }
         // If the enemy is to far away walk towards the player.
         else if (relativeSqrDistance > SqrMaxDistance()){
             // if the enemy has not moved very much since the last frame, try to get un-stuck.
-            if(Vector3.SqrMagnitude(rigidbody.position - LastPosition) < 0.025f){
-                MovementOpertunity();
+            if(Vector3.SqrMagnitude(position - LastPosition) < 0.025f){
+                MovementOpportunity();
             }
             // otherwise, walk towards the player.
             else{
@@ -182,55 +182,54 @@ public class EnemyMage_Controller_Interface : SpriteController{
             setState(anim_Walk);
         }
         // Aggression determines how likely the character is to attack.
-        else if(Random.Range(0f,1f) > aggression){
-            MovementOpertunity();
+        else if(Random.Range(0f, 1f) > aggression){
+            MovementOpportunity();
         }
         else{
-            AttackOpertunity(toTarget);
+            AttackOpportunity(toTarget);
         }
     }
 
-    public bool ActionOpertunityCheck(){
+    public IEnumerator ActionOpportunityCheck(){
         /*  Check for a movement opertunities. Called in Update function. */
 
-        /*  This works by taking the amount of time that has passed as a fraction of time specified 
-        by ActionOpertunity, which determines the probability that something will happen.
-        Think of it like this, if its been the maximum time, there is a 100% chance to do something,
-        if an action was just performed the chance is 0%, if half the time has passed its 50% etc.*/
-
-        ActionTimer += Time.deltaTime;
-        float fractionalTime = ActionTimer / ActionOpertunity;
-        if (Random.Range(0f,1f) < fractionalTime){
-            ActionTimer = 0f;   // Reset timer.
-            return true;   
+        const float interval = 0.01f;
+        
+        while(true){
+            ActionTimer += interval;
+            float fractionalTime = ActionTimer / ActionOpportunity;
+            if (Random.Range(0f,1f) < fractionalTime){
+                ActionTimer = 0f;   // Reset timer.
+                Action = true;
+                yield return null;
+            }
+            Action = false;
+            yield return new WaitForSeconds(interval);
         }
-        return false;
+        
     }
 
-    private void AttackOpertunity(Vector3 ToTarget){
+    private void AttackOpportunity(Vector3 ToTarget){
         /* this function attacks in the predicted direction of the player. */
         
         // Check that the character has enough mana:
         if (currentMana > 0){
             direction = Vector3.Normalize(-ToTarget);
             setState(anim_Attack);
+            if (m_lunge){ velocity += Vector3.Normalize(-ToTarget) * 8f; };  
         }
     }
 
-    private void MovementOpertunity(){   
+    private void MovementOpportunity(){   
         /*  Randomly walk in any direction. */
         Vector3 wander = new Vector3(Random.Range(-MaxDistance, MaxDistance), 0, 
                                      Random.Range(-MaxDistance, MaxDistance));
-        
-        // Get the current direction.
-        Vector3 newDirection = direction * (1f - turnrate);
-        
+
         // If wander is not a zero vector, change direction.
         if (wander != Vector3.zero){
-            newDirection -= Vector3.Normalize(wander) * turnrate * 1.25f;    
+            direction = Lerp(Vector3.Normalize(wander), direction, turnRate);
         }
-        Vector3.Normalize(newDirection);
-        SetDirection(newDirection);
+
         setState(anim_Walk);
     }
 
@@ -275,21 +274,22 @@ public class EnemyMage_Controller: MonoBehaviour{
     [SerializeField] float m_Acceleration = 0.6f;
     [SerializeField] float m_Friction = 0.2f;
     [SerializeField] float m_Speed = 0.005f;
-    [SerializeField] float m_Turnrate = 0.25f; //determines how much direction can change per frame.
+    [SerializeField] float m_TurnRate = 0.25f; //determines how much direction can change per frame.
 
     [Header("Behavior")]
     [SerializeField] float m_MaxDistance = 3f;
     [SerializeField] float m_MinDistance = 0.5f;
-    [SerializeField] float m_Agression = 0.5f;
+    [SerializeField] float m_Aggression = 0.5f;
     [SerializeField] float m_Overshoot = 10f;
 
     [Header("Statistics")]
     [SerializeField] int m_Mana = 3;
     [SerializeField] float m_ManaRate = 0.5f;
-    [SerializeField] float m_ActionOpertunity = 1.5f;
+    [SerializeField] float m_ActionOpportunity = 1.5f;
     [SerializeField] int m_Health = 3;
+    [SerializeField] bool m_lunge = false;
 
-    //private EnemyMage_Controller_Interface controller;
+    public Health_handler Health;
     protected SpriteController controller;
     private bool initialized;
 
@@ -302,39 +302,33 @@ public class EnemyMage_Controller: MonoBehaviour{
         GetComponent<Health_handler>().Initialize(m_Health, m_Health);
 
         // Initialize the interface script. 
-        controller = new EnemyMage_Controller_Interface(
-            m_Friction, m_Acceleration, m_Speed, m_Turnrate, m_Mana, m_ManaRate, m_ActionOpertunity,
-            m_MinDistance, m_MaxDistance, m_Overshoot, m_Agression,
+        controller = new IEnemyMage(
+            m_Friction, m_Acceleration, m_Speed, m_TurnRate, m_Mana, m_ManaRate, m_ActionOpportunity,
+            m_MinDistance, m_MaxDistance, m_Overshoot, m_Aggression, m_lunge,
             GetComponent<Rigidbody>(),
             GetComponent<Collider>(),
             GetComponent<Health_handler>(),
-            GetComponent<Sprite_Animation>(), 
+            GetComponent<Sprite_Animation>(),
             GetComponent<Sprite_Animator>(),
-            GetComponent<Projectile_Handler>());
-        controller.rigidbody.position = transform.position;
+            GetComponent<Projectile_Handler>())
+            { position = transform.position };
+            Health = controller.Health;
+        StartCoroutine(controller.ApplyTurnRate());
+        StartCoroutine(((IEnemyMage)controller).ActionOpportunityCheck());
         initialized = true;
     }
 
     void Update(){
         /* update character controller. */
+        
+        IEnemyMage parsed = (IEnemyMage)controller;
 
-        // Parse controller to get local variables:
-        EnemyMage_Controller_Interface parsed = (EnemyMage_Controller_Interface)(controller);
-        
-        // only process AI if target exists.
-        if (parsed.target == null){
-            return;
-        }
-        
         controller.RememberLastState();             // Remember the previous state
         controller.unsetState(parsed.anim_Attack);  // Clear all states
         parsed.UpdateAi();                  // Update AI code with new predicted target location.
         controller.Update();                // Call standard update function from SpriteController.
         
-        if (controller.Health.Alive()){
-            // Stupid workaround to keep enemies on the ground.
-            transform.position = new Vector3(transform.position.x, 0.06f, transform.position.z);  
-        }
+        controller.position = new Vector3(controller.position.x, 0.06f, controller.position.z);
     }
     
     void FixedUpdate(){
@@ -343,28 +337,28 @@ public class EnemyMage_Controller: MonoBehaviour{
     }
     
     void LateUpdate(){
-        // Check for dead state at the last possibility.
-        if(!controller.Health.Alive() && controller.Health.IsDying() && controller.Animation.GetAnimationName() != "Dying"){
-            this.gameObject.SetActive(false);
+        // Check if dead and everything else has finished execution:
+        if(!controller.Health.Alive && controller.Health.Dying && controller.Animation.GetAnimationName() != "Dying"){
+            gameObject.SetActive(false);
         }
     }
     
     void OnEnable(){
         if (initialized){
             ResetController();
+            StartCoroutine(controller.ApplyTurnRate());
+            StartCoroutine(((IEnemyMage)controller).ActionOpportunityCheck());
         }
     }
 
     public void ResetController(){
-        /*  Reset the enemy here, avoids reinstanciating copies every time an enemy is killed. */
+        /*  Reset the enemy here, avoids re-instantiating copies every time an enemy is killed. */
 
         // Initialize health.
         GetComponent<Health_handler>().Initialize(m_Health, m_Health);
         
         // Clear variables.
         controller.ResetController();
-
     }
-
 }
 

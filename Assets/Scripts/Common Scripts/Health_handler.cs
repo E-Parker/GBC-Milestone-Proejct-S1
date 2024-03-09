@@ -4,75 +4,57 @@ using UnityEngine;
 
 
 public class Health_handler : MonoBehaviour{
-    // This function handles health.
 
-    // Variables
-    int health;
-    int maxHealth;
-    [SerializeField] float invulnTime = 0.25f;  // Time before character can be hit again:
-    float invulnTimer;
-    bool isAlive;
-    bool isDying;
+    // Variables:
+    [Header("Health Settings")]
+    [SerializeField] float Invulnerability = 0.25f;     // Time before character can be hit again:
+    public short Current {get; private set; } = 5;     // Current health of the object.
+    public ushort maxHealth { get; private set; } = 5;  // Maximum Health the object can have.
 
-    public void Initialize(int health, int maxHealth){
-        // Initialize Values.
-        isDying = false;
-        isAlive = true;
-        invulnTimer = invulnTime;
-        this.health = health;
-        this.maxHealth = maxHealth;
-    }
+    private bool isDying = false;   // private flag for if the object is currently dying.
+    
+    [HideInInspector]
+    public float Percent { get {return (float)Current / (float)maxHealth; } } // Health as a percent of the maximum.
+    
+    public bool Hit { get; private set; } = false;  // flag for if currently being hit.
 
-    void Update(){
-        // Check that health has is zero:
-        isAlive = health > 0;
-        
-        // Update timer.
-        if (invulnTimer < invulnTime){
-            invulnTimer += Time.deltaTime;
+    public bool Dying { // public accessor for "isDying" flag.
+        get{ return isDying; }
+        set{
+            if (value){
+                AudioManager.PlaySound("Hit_Hurt_Big");
+            }
+            isDying = value; 
         }
     }
 
-    public int GetHealth(){
-        return health;
+    public bool Alive{  // public accessor for "Alive" flag.
+        get{ return Current > 0; }
     }
 
-    public int GetMaxHealth(){
-        return maxHealth;
+    private IEnumerator MarkAsInvulnerable(){
+        /* Coroutine for marking the object invulnerable for a set time. */
+        Hit = true;
+        yield return new WaitForSeconds(Invulnerability);
+        Hit = false;
     }
 
-    public bool Alive(){
-        return this.isAlive;
+    public void Initialize(int newCurrent, int newMax){
+        maxHealth = (ushort)newMax;
+        Current = (short)newCurrent;
     }
 
-    public bool IsDying(){
-        return this.isDying;
-    } 
-
-    public void SetDying(){
-        AudioManager.PlaySound("Hit_Hurt_Big");
-        this.isDying = true;
-    }
-
-    public void SetHealth(int amount){
-        this.health = amount;    // I intentionally let this be any value to alow for overheal.
-    }
-
-    public void SubHealth(int amount){
-        if (!IsHit()){
-            AudioManager.PlaySound("Hit_Hurt");
-            this.health -= amount;
-            invulnTimer = 0f;
+    public void SubHealth(short amount){
+        // Check that the object isn't invulnerable.
+        if (!Hit){
+            AudioManager.PlaySound("Hit_Hurt");     // Play hurt sound.
+            Current -= amount;                      // Subtract amount from health.
+            StartCoroutine(MarkAsInvulnerable());   // mark as invulnerable until a set time.
         }
     }
 
-    public void AddHealth(int amount){
-        this.health += amount;
-    }
-
-    public bool IsHit(){
-        /* Returns true if character is in InvulnTime. */
-        return invulnTimer < invulnTime;
+    public void AddHealth(short amount){
+        Current += amount;
     }
 }
 
