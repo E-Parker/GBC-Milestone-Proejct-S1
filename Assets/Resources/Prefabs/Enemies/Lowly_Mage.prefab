@@ -198,29 +198,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Animations:
   - animation_name: Walk
+    oneShot: 0
+    framerate: 8
     frame_indecies: 00000000010000000200000003000000
-    oneShot: 0
-    framerate: 8
   - animation_name: Idle
-    frame_indecies: 00000000
     oneShot: 0
     framerate: 8
+    frame_indecies: 00000000
   - animation_name: Attack
-    frame_indecies: 040000000400000004000000
     oneShot: 1
     framerate: 4
+    frame_indecies: 040000000400000004000000
   - animation_name: Dying
-    frame_indecies: 05000000070000000700000008000000090000000a0000000b000000
     oneShot: 1
     framerate: 8
+    frame_indecies: 05000000070000000700000008000000090000000a0000000b000000
   - animation_name: Dead
+    oneShot: 0
+    framerate: 8
     frame_indecies: 0b000000
-    oneShot: 0
-    framerate: 8
   - animation_name: Hurt
-    frame_indecies: 050000000600000005000000060000000500000006000000
     oneShot: 0
     framerate: 8
+    frame_indecies: 050000000600000005000000060000000500000006000000
   frame: 0
 --- !u!114 &28906703703604902
 MonoBehaviour:
@@ -258,7 +258,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12bfdb15bc0c61644bf5d07e51a6081c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  invulnTime: 0.25
+  Invulnerability: 0.25
 --- !u!114 &6645384622714547171
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -287,14 +287,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Acceleration: 0.6
-  m_Friction: 0.3
-  m_Speed: 0.3
-  m_Turnrate: 0.5
+  m_Friction: 0.45
+  m_Speed: 0.5
+  m_TurnRate: 1
   m_MaxDistance: 0.6
   m_MinDistance: 0.5
-  m_Agression: 0.25
+  m_Aggression: 0.5
   m_Overshoot: 10
   m_Mana: 1
   m_ManaRate: 3
-  m_ActionOpertunity: 2
+  m_ActionOpportunity: 1.5
   m_Health: 1
+  m_lunge: 0
+  Health: {fileID: 0}

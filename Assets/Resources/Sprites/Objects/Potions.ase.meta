@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: e89a713e908f7954783429257c38fe98
+guid: b7b0425c1dd97dd468c4dd4a49a95622
 ScriptedImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -32,7 +32,7 @@ ScriptedImporter:
     sRGBTexture: 1
     spriteMode: 2
     spriteExtrude: 1
-    spriteMeshType: 1
+    spriteMeshType: 0
     alignment: 0
     spritePivot: {x: 0.5, y: 0.5}
     spritePixelsToUnits: 100
@@ -95,7 +95,7 @@ ScriptedImporter:
     addSortingGroup: 1
     addShadowCasters: 0
   importFileNodeState: 1
-  platformSettingsDirtyTick: 0
+  platformSettingsDirtyTick: 638454942005411404
   textureAssetName: 
   singleSpriteImportData:
   - name: 
@@ -119,18 +119,18 @@ ScriptedImporter:
     tessellationDetail: 0
     uvTransform: {x: 0, y: 0}
   animatedSpriteImportData:
-  - name: evil_knight
+  - name: Potions
     originalName: 
-    pivot: {x: 0.48809525, y: -0.007936508}
+    pivot: {x: 0.5, y: 0}
     alignment: 9
     border: {x: 0, y: 0, z: 0, w: 0}
     rect:
       serializedVersion: 2
       x: 4
       y: 4
-      width: 168
-      height: 126
-    spriteID: 2c6145edae857f24b9265fe24ee2b777
+      width: 32
+      height: 32
+    spriteID: 725a2c5321552804a82972716fa22bc8
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -142,23 +142,59 @@ ScriptedImporter:
   spriteSheetImportData: []
   asepriteLayers:
   - layerIndex: 0
-    guid: -1373396316
-    name: evil_knight
+    guid: -553977338
+    name: Potions
     layerFlags: 0
     layerType: 0
     blendMode: 0
     cells:
-    - name: evil_knight
+    - name: Potions
       frameIndex: 0
       cellRect:
-        x: 6
-        y: 1
-        width: 168
-        height: 126
-      spriteId: 2c6145edae857f24b9265fe24ee2b777
+        x: 0
+        y: 0
+        width: 32
+        height: 32
+      spriteId: 725a2c5321552804a82972716fa22bc8
     linkedCells: []
     parentIndex: -1
-  platformSettings: []
+  platformSettings:
+  - name: DefaultTexturePlatform
+    overridden: 0
+    ignorePlatformSupport: 0
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    androidETC2FallbackOverride: 0
+  - name: Standalone
+    overridden: 0
+    ignorePlatformSupport: 0
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    androidETC2FallbackOverride: 0
+  - name: Server
+    overridden: 0
+    ignorePlatformSupport: 0
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    androidETC2FallbackOverride: 0
   secondarySpriteTextures: []
   spritePackingTag: 
-  canvasSize: {x: 176, y: 128}
+  canvasSize: {x: 32, y: 32}

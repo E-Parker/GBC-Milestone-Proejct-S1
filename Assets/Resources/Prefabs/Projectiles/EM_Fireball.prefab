@@ -167,7 +167,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_TargetSprite: {fileID: 782013020036899006}
-  m_SpriteSheet: {fileID: -8216633146786729983, guid: 36322fad2f7262243aae2f4237564ccb, type: 3}
+  m_SpriteSheet: {fileID: 1474051868043152777, guid: cc2244c1543a860448e1c32b9546c8cc, type: 3}
   m_offset: {x: 0, y: 0, z: 0}
   m_Rows: 6
   m_Collums: 10
@@ -192,17 +192,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Animations:
   - animation_name: Idle
-    frame_indecies: 000000000100000002000000
     oneShot: 0
     framerate: 8
+    frame_indecies: 000000000100000002000000
   - animation_name: Destruct
+    oneShot: 1
+    framerate: 8
     frame_indecies: 030000000400000005000000
-    oneShot: 1
-    framerate: 8
   - animation_name: Spawn
-    frame_indecies: 00000000
     oneShot: 1
     framerate: 8
+    frame_indecies: 00000000
   frame: 0
 --- !u!114 &8902437735156694916
 MonoBehaviour:

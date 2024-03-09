@@ -197,37 +197,37 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Animations:
   - animation_name: Walk
+    oneShot: 0
+    framerate: 8
     frame_indecies: 00000000010000000200000003000000
-    oneShot: 0
-    framerate: 8
   - animation_name: Idle
-    frame_indecies: 00000000
     oneShot: 0
     framerate: 8
+    frame_indecies: 00000000
   - animation_name: AttackSword
-    frame_indecies: 010000000400000005000000
     oneShot: 1
     framerate: 12
+    frame_indecies: 010000000400000005000000
   - animation_name: AttackFlame
+    oneShot: 1
+    framerate: 8
     frame_indecies: 040000000600000006000000
-    oneShot: 1
-    framerate: 8
   - animation_name: Pickup
+    oneShot: 1
+    framerate: 8
     frame_indecies: 0000000007000000070000000700000000000000
-    oneShot: 1
-    framerate: 8
   - animation_name: Dying
-    frame_indecies: 08000000080000000900000008000000080000000a0000000b000000
     oneShot: 1
     framerate: 8
+    frame_indecies: 08000000080000000900000008000000080000000a0000000b000000
   - animation_name: Dead
+    oneShot: 0
+    framerate: 8
     frame_indecies: 0b000000
-    oneShot: 0
-    framerate: 8
   - animation_name: Hurt
-    frame_indecies: 080000000900000008000000090000000800000009000000
     oneShot: 0
     framerate: 8
+    frame_indecies: 080000000900000008000000090000000800000009000000
   frame: 0
 --- !u!114 &7571568773289039875
 MonoBehaviour:
@@ -280,7 +280,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12bfdb15bc0c61644bf5d07e51a6081c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  invulnTime: 0.25
+  Invulnerability: 0.1
 --- !u!114 &7774598091930346721
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -301,13 +301,14 @@ MonoBehaviour:
   m_Attack_special: 118
   m_Interact: 99
   m_Acceleration: 0.6
-  m_Friction: 0.2
+  m_Friction: 0.4
   m_Speed: 0.5
-  m_Turnrate: 0.6
+  m_TurnRate: 1
   m_Mana: 5
   m_ManaRate: 1
   m_Health: 5
   m_HealthRate: 5
+  Health: {fileID: 0}
 --- !u!1 &5254683270120683151
 GameObject:
   m_ObjectHideFlags: 0

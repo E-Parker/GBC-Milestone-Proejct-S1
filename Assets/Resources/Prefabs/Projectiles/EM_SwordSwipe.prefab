@@ -27,7 +27,7 @@ RectTransform:
   m_GameObject: {fileID: 782013020036899006}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 4, y: 4, z: 4}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4721683886159376243}
@@ -111,7 +111,7 @@ GameObject:
   - component: {fileID: 5074756732703009133}
   - component: {fileID: 8902437735156694916}
   m_Layer: 0
-  m_Name: EM_ThrowSword
+  m_Name: EM_SwordSwipe
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -177,7 +177,7 @@ MonoBehaviour:
     y: 4
     width: 80
     height: 48
-  varient: 4
+  varient: 2
 --- !u!114 &5074756732703009133
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -202,7 +202,7 @@ MonoBehaviour:
   - animation_name: Spawn
     oneShot: 1
     framerate: 8
-    frame_indecies: 00000000
+    frame_indecies: 00000000000000000000000000000000
   frame: 0
 --- !u!114 &8902437735156694916
 MonoBehaviour:
@@ -219,13 +219,13 @@ MonoBehaviour:
   falloff: 3
   falloffDirection: 0
   m_CosineExponent: 0.8
-  m_Exponent: 0.78
+  m_Exponent: 0.15
   m_Smoothness: 0.8
   lighting: 0
-  m_Projectile_Color: {r: 0.7311321, g: 1, b: 0.9692812, a: 0}
+  m_Projectile_Color: {r: 1, g: 0.5853372, b: 0.18396229, a: 0}
   m_Projectile_Intensity: 1
   m_Projectile_Range: 0.1
-  m_Caster_Color: {r: 0, g: 0, b: 0, a: 0}
+  m_Caster_Color: {r: 0.7686275, g: 0.23529413, b: 0.21568629, a: 0}
   m_Caster_Intensity: 1.5
   m_Caster_Range: 0.25
   m_Lifetime: 1

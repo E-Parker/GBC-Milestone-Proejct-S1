@@ -34,7 +34,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.0009, y: -0.0005}
+  m_AnchoredPosition: {x: 0.0036, y: -0.0005}
   m_SizeDelta: {x: 1, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!212 &6490818255067172220
@@ -57,7 +57,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5fee740721abaa349bd90c5dd71e79c2, type: 2}
+  - {fileID: 2100000, guid: 72e165fafbaabcf448c514daf7f61278, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -111,7 +111,7 @@ GameObject:
   - component: {fileID: 5074756732703009133}
   - component: {fileID: 8902437735156694916}
   m_Layer: 0
-  m_Name: EM_ThrowSword
+  m_Name: GreaterHealthPotion
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -167,17 +167,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_TargetSprite: {fileID: 782013020036899006}
-  m_SpriteSheet: {fileID: 1474051868043152777, guid: cc2244c1543a860448e1c32b9546c8cc, type: 3}
+  m_SpriteSheet: {fileID: -4521976572832207788, guid: b7b0425c1dd97dd468c4dd4a49a95622, type: 3}
   m_offset: {x: 0, y: 0, z: 0}
-  m_Rows: 6
-  m_Collums: 10
+  m_Rows: 4
+  m_Collums: 4
   m_bounds:
     serializedVersion: 2
-    x: 4
-    y: 4
-    width: 80
-    height: 48
-  varient: 4
+    x: 0
+    y: 0
+    width: 32
+    height: 32
+  varient: 0
 --- !u!114 &5074756732703009133
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -194,11 +194,11 @@ MonoBehaviour:
   - animation_name: Idle
     oneShot: 0
     framerate: 8
-    frame_indecies: 0000000001000000020000000300000004000000050000000600000007000000
+    frame_indecies: 00000000010000000200000003000000
   - animation_name: Destruct
     oneShot: 1
     framerate: 8
-    frame_indecies: 08000000090000000900000009000000
+    frame_indecies: 00000000
   - animation_name: Spawn
     oneShot: 1
     framerate: 8
@@ -216,19 +216,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca0a4a54004f7d84a91e09b59bdd620f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  falloff: 3
+  falloff: 0
   falloffDirection: 0
   m_CosineExponent: 0.8
-  m_Exponent: 0.78
+  m_Exponent: 0.75
   m_Smoothness: 0.8
-  lighting: 0
-  m_Projectile_Color: {r: 0.7311321, g: 1, b: 0.9692812, a: 0}
-  m_Projectile_Intensity: 1
+  lighting: 1
+  m_Projectile_Color: {r: 0.90196085, g: 0.27058825, b: 0.22352943, a: 0}
+  m_Projectile_Intensity: 0.5
   m_Projectile_Range: 0.1
-  m_Caster_Color: {r: 0, g: 0, b: 0, a: 0}
-  m_Caster_Intensity: 1.5
-  m_Caster_Range: 0.25
-  m_Lifetime: 1
-  m_Damage: 3
-  m_Sfx_cast: Cast_Magic
-  m_Sfx_Hit: Metallic_Hit
+  m_Caster_Color: {r: 1, g: 0.43049258, b: 0.07843137, a: 0}
+  m_Caster_Intensity: 1
+  m_Caster_Range: 0.2
+  m_Lifetime: 5
+  m_Damage: -1
+  m_Sfx_cast: 
+  m_Sfx_Hit: 

@@ -22,7 +22,7 @@
                 }
             ],
             "level": 4,
-            "song": "Battle"
+            "song": "BattleCalm"
         },
         {
             "SpawnID": [
@@ -65,15 +65,15 @@
         {
             "SpawnID": [
                 {
-                    "ID": "Evil_King",
-                    "Max": 1
+                    "ID": "Evil_Knight",
+                    "Max": 3
                 },
                 {
-                    "ID": "Evil_Knight",
-                    "Max": 6
-                }
+                    "ID": "Evil_King",
+                    "Max": 1
+                }   
             ],
-            "level": 30,
+            "level": 15,
             "song": "Boss"
         },
         {

@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 36322fad2f7262243aae2f4237564ccb
+guid: cc2244c1543a860448e1c32b9546c8cc
 ScriptedImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -95,7 +95,7 @@ ScriptedImporter:
     addSortingGroup: 1
     addShadowCasters: 0
   importFileNodeState: 1
-  platformSettingsDirtyTick: 638364452808056657
+  platformSettingsDirtyTick: 638454942099162340
   textureAssetName: 
   singleSpriteImportData:
   - name: 
@@ -130,7 +130,7 @@ ScriptedImporter:
       y: 4
       width: 80
       height: 48
-    spriteID: 727b172953e5e8c488c68878784e367f
+    spriteID: 8d2042d76327a2d4a812c9b6933ff727
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -155,7 +155,7 @@ ScriptedImporter:
         y: 0
         width: 80
         height: 48
-      spriteId: 727b172953e5e8c488c68878784e367f
+      spriteId: 8d2042d76327a2d4a812c9b6933ff727
     linkedCells: []
     parentIndex: -1
   platformSettings:
