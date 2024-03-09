@@ -242,8 +242,8 @@ public class AudioManager : SingletonObject<AudioManager>{
             Debug.LogWarning("Music volume must be in range [0,1].");
             return;
         }
-
         // Update the sfxSoruce volume:
+        Instance.sfxMasterVolume = newVolume;
         Instance.sfxSource.volume = newVolume;
     }
 

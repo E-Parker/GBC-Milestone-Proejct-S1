@@ -14,8 +14,8 @@ scripts. */
 
 public class System_Manger : SingletonObject<System_Manger>{
 
-    const float DefaultSfxVolume = 0.5f;
-    const float DefaultMusVolume = 0.5f;
+    const float DefaultSfxVolume = 0.25f;
+    const float DefaultMusVolume = 0.1f;
     static string path;
    
     [Serializable] private struct SoundVolumeData{
