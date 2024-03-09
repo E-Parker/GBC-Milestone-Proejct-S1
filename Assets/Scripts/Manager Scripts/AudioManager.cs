@@ -198,6 +198,16 @@ public class AudioManager : SingletonObject<AudioManager>{
     }
 
 
+    public static bool CheckValidSongName(string name){
+        /* Checks if a song "name" is a valid one that has been loaded. */
+        if (!Instance.musicClips.Keys.Contains(name)){
+            Debug.LogError($"Could not play music, {'"'}{name}{'"'}.");
+            return false;
+        }
+        return true;
+    }
+
+
     public static void SetmusicMasterVolume(float newVolume){
         /*  Set the music to a specific volume. */
 
@@ -218,15 +228,9 @@ public class AudioManager : SingletonObject<AudioManager>{
   
         }
     }
-    
 
-    public static bool CheckValidSongName(string name){
-        /* Checks if a song "name" is a valid one that has been loaded. */
-        if (!Instance.musicClips.Keys.Contains(name)){
-            Debug.LogError($"Could not play music, {'"'}{name}{'"'}.");
-            return false;
-        }
-        return true;
+    public static float getmusicMasterVolume(){
+        return Instance.musicMasterVolume;
     }
 
 
@@ -241,6 +245,10 @@ public class AudioManager : SingletonObject<AudioManager>{
 
         // Update the sfxSoruce volume:
         Instance.sfxSource.volume = newVolume;
+    }
+
+    public static float getsfxMasterVolume(){
+        return Instance.sfxMasterVolume;
     }
     
 
@@ -300,4 +308,5 @@ public class AudioManager : SingletonObject<AudioManager>{
 
         Instance.sfxSource.PlayOneShot(Instance.sfxClips[name]);
     }
+    
 }

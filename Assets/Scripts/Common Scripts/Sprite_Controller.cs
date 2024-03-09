@@ -131,7 +131,7 @@ public class SpriteController{
         /*  This function Changes the direction. */
 
         if (newDirection == Vector3.zero){
-            Debug.LogError("Cannot set direction to zero vector. ");
+            //Debug.LogError("Cannot set direction to zero vector. ");
             return;
         }
 

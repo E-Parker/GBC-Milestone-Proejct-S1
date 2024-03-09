@@ -1,10 +1,11 @@
+
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using static Utility.Utility;
 
-// cool symbols 🗡
 
 public class Ui_Handler : SingletonObject<Ui_Handler>{
     /*  Script for handling UI elements. */
@@ -19,7 +20,11 @@ public class Ui_Handler : SingletonObject<Ui_Handler>{
     private TMP_Text HPText = null;
     private TMP_Text MPText = null;
     private GameObject GameoverButton = null;
+    private GameObject PauseScene = null;
+    private Slider music;
+    private Slider sound;
 
+    private bool paused = false;
     private int health;
     private int healthDiff;
     private int mana;
@@ -28,10 +33,26 @@ public class Ui_Handler : SingletonObject<Ui_Handler>{
 
     void Start(){
         gameObject.layer = 5;
+
         ScoreText = GameObject.FindWithTag("GameUI_Score").GetComponent<TMP_Text>();
         HPText = GameObject.FindWithTag("GameUI_Health").GetComponent<TMP_Text>();
         MPText = GameObject.FindWithTag("GameUI_Mana").GetComponent<TMP_Text>();
         GameoverButton = GameObject.FindWithTag("GameUI_GameOverButton");
+        PauseScene = GameObject.FindWithTag("GameUI");
+        music = GameObject.Find("Music").GetComponent<Slider>();
+        sound = GameObject.Find("Sfx").GetComponent<Slider>();
+
+        music.value = AudioManager.getmusicMasterVolume();
+        sound.value = AudioManager.getsfxMasterVolume();
+
+        OnPauseChange();
+    }
+
+
+    void OnPauseChange(){
+        Time.timeScale = paused? 0.0f: 1.0f;
+        PauseScene.SetActive(paused);
+        AudioListener.pause = paused;
     }
     
 
@@ -43,6 +64,17 @@ public class Ui_Handler : SingletonObject<Ui_Handler>{
         else if (!GameoverButton.activeSelf){
             GameoverButton.SetActive(true);
         }
+        
+        if(Input.GetKeyDown(KeyCode.P)){
+            paused = !paused;
+            OnPauseChange();
+        }
+        
+        if (paused){
+            AudioManager.SetmusicMasterVolume(music.value);
+            AudioManager.SetsfxMasterVolume(sound.value);
+        }
+
         
         if(health != Player_Controller.Instance.GetHealth()){
             health = Player_Controller.Instance.GetHealth();
