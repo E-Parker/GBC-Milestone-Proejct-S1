@@ -5,18 +5,11 @@ using Unity.VisualScripting;
 using Unity.Mathematics;
 using static Utility.Utility;
 
-/*  
-This class allows for any script to instantly become a singleton object, while still inheriting 
-functionality from MonoBehavior.
-
-This is a very slow way to check this sort of thing, but Singletons are only supposed to be 
-instanced once, and at scene load anyway. It's not likely that you could ever create enough 
-singletons to cause a slowdown anyway.
-
-*/
 
 public abstract class SingletonObject<T> : MonoBehaviour where T : SingletonObject<T>, new(){
-    
+    /* This class allows for any script to instantly become a singleton object, while still 
+    inheriting functionality from MonoBehavior. */
+
     // Dictionary of singletons, indexed by their type.
     public static Dictionary<Type, SingletonObject<T>> Instances = new();
     public static Dictionary<Type, bool> Persistent = new();
@@ -45,7 +38,7 @@ public abstract class SingletonObject<T> : MonoBehaviour where T : SingletonObje
     }
 
 
-    public void Awake(){
+    protected void Awake(){
         /* This function ensures that only one instance of type T exists. */
         try{
             Instances.Add(Indexer, this);   // Try to add this object to the list of singletons. 
