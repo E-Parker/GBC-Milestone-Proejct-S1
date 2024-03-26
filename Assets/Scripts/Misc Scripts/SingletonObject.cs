@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.VisualScripting;
-using Unity.Mathematics;
 using static Utility.Utility;
 
 
@@ -18,9 +17,9 @@ public abstract class SingletonObject<T> : MonoBehaviour where T : SingletonObje
     private static Type Indexer = typeof(T);
     
     public static T Instance{
-        get {     
+        get {  
             try{ return (T)Instances[Indexer]; }
-            catch{ return null; } 
+            catch{ MakeInstance(); return (T)Instances[Indexer]; } 
         }
     }
 
@@ -67,7 +66,7 @@ public abstract class SingletonObject<T> : MonoBehaviour where T : SingletonObje
 
         // Otherwise, make a new GameObject with the class T. 
         GameObject newObject;
-        newObject = Instantiate(EmptyObject, Vector3.zero, quaternion.identity);
+        newObject = Instantiate(EmptyObject, Vector3.zero, Quaternion.identity);
         Instances[Indexer] = newObject.AddComponent<T>();
         newObject.name = Indexer.FullName;
     }
@@ -77,21 +76,21 @@ public abstract class SingletonObject<T> : MonoBehaviour where T : SingletonObje
         /* This function destroys the instance of a singleton. This will break many things if used 
         improperly. This is only intended to be called once */
 
-            if (!Instances.ContainsKey(Indexer)){
-                Debug.Log("Cannot destroy a singleton which has not been initialized! ");
-                return;
-            }
+        if (!Instances.ContainsKey(Indexer)){
+            Debug.Log("Cannot destroy a singleton which has not been initialized! ");
+            return;
+        }
 
-            // Find and destroy the instance.
-            SingletonObject<T> singleton = Instances[Indexer];
-            
-            // Check if the gameObject is already destroyed.
-            if (!singleton.IsDestroyed()){
-                Destroy(singleton.gameObject);
-            }
+        // Find and destroy the instance.
+        SingletonObject<T> singleton = Instances[Indexer];
+        
+        // Check if the gameObject is already destroyed.
+        if (!singleton.IsDestroyed()){
+            Destroy(singleton.gameObject);
+        }
 
-            // Remove the instance from the dictionary. 
-            Instances.Remove(Indexer);
+        // Remove the instance from the dictionary. 
+        Instances.Remove(Indexer);
 
     }
 }

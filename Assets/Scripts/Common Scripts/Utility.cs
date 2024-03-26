@@ -27,36 +27,6 @@ public static class Utility{
     public static GameObject EmptyObject = new GameObject("Empty");
 
     /*========================================================================================*\
-    |                                    JSON FILE HANDLING                                    |
-    \*========================================================================================*/
-    
-    [Serializable] struct GenericArray<T>{
-        GenericArray(T[] array){
-            Array = array;
-        }
-        public T[] Array { get; set; }
-    }
-
-    public static void SaveToJson<T>(T serializableObject, string filename){
-        /* This function saves a serializable object to a json file. */
-        string output = JsonUtility.ToJson(serializableObject);
-        Debug.Log(Application.persistentDataPath);
-        string path = $"{Application.persistentDataPath}/{filename}.json";
-        System.IO.File.WriteAllText(path, output);
-    }
-
-    public static T LoadFromJson<T>(string filename){
-        string json = File.ReadAllText($"{Application.dataPath}/Resources/Data/{filename}.json");
-        return JsonUtility.FromJson<T>(json);
-    }
-
-    public static T[] LoadArrayFromJson<T>(string filename, out string json){
-        json = File.ReadAllText($"{Application.dataPath}/Resources/Data/{filename}.json");
-        GenericArray<T> array = JsonUtility.FromJson<GenericArray<T>>(json);
-        return array.Array;
-    }
-
-    /*========================================================================================*\
     |                               3D TRANSFORMATION & ALIGNMENT                              |
     \*========================================================================================*/
 
@@ -117,7 +87,7 @@ public static class Utility{
     /*========================================================================================*\
     |                                       INTERPOLATION                                      |
     \*========================================================================================*/
-
+    
     public struct GradientNode<T>{
 
         public float position;  // Position in the gradient.
@@ -172,7 +142,7 @@ public static class Utility{
             float leftDist = t - nodes[leftIndex].position;
             float rightDist = t - nodes[rightIndex].position;
 
-            // The left and right pivots have opposing signs. the aproximate index is the nearest.
+            // The left and right pivots have opposing signs. the approximate index is the nearest.
             if(leftDist < 0.0f && rightDist > 0.0f ){
                 left = nodes[leftIndex];
                 right = nodes[rightIndex];

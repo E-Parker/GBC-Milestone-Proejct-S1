@@ -33,11 +33,11 @@ public class EnemyMage_Controller_Interface : SpriteController{
     private float manaTimer = 0f;       // timer used to handle changing manaRate.
     private float MaxDistance;          // Distance the player can be seen from.
     private float MinDistance;          // Distance the mage will stay away from.
-    private float ActionOpertunity;     // Amount of time(seconds) before the enemy choeses to move.
+    private float ActionOpertunity;     // Amount of time(seconds) before the enemy choses to move.
     private float ActionTimer;          // Tracks the amount of time since last action taken.
     public Vector3 wanderTarget;        // Random location min distance from player to wander too.
 
-    private float aggression;            // Likelyhood that the AI will chose to shoot at the player.
+    private float aggression;            // Likelihood that the AI will chose to shoot at the player.
     private float overshoot = 10f;      // aim ahead by this amount.
 
      // This is for Predicting where the target will be.

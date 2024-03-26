@@ -144,8 +144,7 @@ public class SpriteController{
         this.direction = newDirection;
         
         // Set the sprite facing direction:
-        Animator.ChangeVarient(StateData.directionFromVector(ref this.state, 
-                                                             direction.x, direction.z));
+        Animator.ChangeVarient(StateData.directionFromVector(ref state, direction.x, direction.z));
     }
 
     public virtual void ResetController(){
@@ -161,8 +160,8 @@ public class SpriteController{
         velocity = Vector3.zero;
         direction = Vector3.forward;
 
-        // Set state from direction and change to correct animation varient:
-        Animator.ChangeVarient(StateData.directionFromVector(ref this.state, direction.x, direction.z));
+        // Set state from direction and change to correct animation variant:
+        Animator.ChangeVarient(StateData.directionFromVector(ref state, direction.x, direction.z));
 
     }
     
@@ -243,7 +242,7 @@ public class SpriteController{
 
     private bool isValidState(string name){
         if (!states.ContainsKey(name)){
-            Debug.LogError($"State, {'"'}{name}{'"'} is not defined as a possible state. ");
+            Debug.LogError($"State, \"{name}\" is not defined as a possible state. ");
             return false;
         }
         return true;
@@ -308,12 +307,12 @@ public class SpriteController{
 
     public int GetMaxHealth(){
         /* Returns the maximum health. */
-        return this.Health.GetHealth();
+        return this.Health.GetMaxHealth();
     }
 
     public int GetCurrentHealth(){
         /* Returns the current health. */
-        return this.Health.GetMaxHealth();
+        return this.Health.GetHealth();
     }      
 }
 

@@ -78,7 +78,7 @@ public class Ui_Handler : SingletonObject<Ui_Handler>{
         
         if(health != Player_Controller.Instance.GetHealth()){
             health = Player_Controller.Instance.GetHealth();
-            healthDiff = Player_Controller.Instance.controller.GetMaxHealth() - health;
+            healthDiff = Mathf.Abs(Player_Controller.Instance.controller.GetMaxHealth() - health);
 
             HPText.text = "(Health-";
 
