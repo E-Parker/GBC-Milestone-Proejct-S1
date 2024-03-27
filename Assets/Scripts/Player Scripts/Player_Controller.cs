@@ -146,7 +146,7 @@ public class Player_Controller_Interface : SpriteController{
 |                                   INTERFACING WITH UNITY ENGINE                                  |
 \*================================================================================================*/
 
-public class Player_Controller : MonoBehaviour{
+public class Player_Controller : MonoBehaviour, IReceiver{
 
     // Variables:
     
@@ -174,6 +174,7 @@ public class Player_Controller : MonoBehaviour{
 
     static public Player_Controller Instance;
     public Player_Controller_Interface controller; 
+    public List<IObserver> Observers { get; private set; }
     private bool initialized = false;
     
     void Awake(){
@@ -203,6 +204,10 @@ public class Player_Controller : MonoBehaviour{
         
         controller.SetCurrentMana(m_Mana);
         initialized = true;
+
+        Observers = new();
+        this.AddObserver(new AchievementObserver());
+
     }
 
     void Update(){
@@ -254,6 +259,11 @@ public class Player_Controller : MonoBehaviour{
         if(Input.GetKeyDown(m_Attack))          {controller.setState(controller.anim_AttackSword);}
         if(Input.GetKeyDown(m_Attack_special))  {controller.setState(controller.anim_AttackFlame);}
         if(Input.GetKeyDown(m_Interact))        {controller.setState(controller.anim_Pickup);}
+
+        // Update Observers:
+        if(controller.CurrentStateIs(controller.anim_Walk)){
+            this.NotifyObservers(Event.PlayerMoved);
+        }
 
         // Update player controller:
         controller.Update();

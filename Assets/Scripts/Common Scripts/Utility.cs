@@ -27,6 +27,68 @@ public static class Utility{
     public static GameObject EmptyObject = new GameObject("Empty");
 
     /*========================================================================================*\
+    |                                  USHORT STATE HANDLER CLASS                              |
+    \*========================================================================================*/
+
+    public static class StateData{
+        /* This class handles bitwise comparisons for actor states. States are stored as a ushort giving
+        16 bits for actions. Note that the first 4 bits are reserved for directions leaving 12 bits 
+        free for any additional states. */
+
+        // Constants:
+
+        //                                   Decimal        Binary 
+        public const ushort Idle        = 0;            // 0000 0000
+        public const ushort South       = 1;            // 0000 0001
+        public const ushort East        = 2;            // 0000 0010
+        public const ushort North       = 4;            // 0000 0100
+        public const ushort West        = 8;            // 0000 1000
+        public const ushort SouthEast   = South | East; // 0000 0011
+        public const ushort NorthEast   = North | East; // 0000 0110
+        public const ushort SouthWest   = South | West; // 0000 1001
+        public const ushort NorthWest   = North | West; // 0000 1100
+
+        static ushort[] lookup = new ushort[8]{South, SouthEast, East, NorthEast, 
+                                            North, NorthWest, West, SouthWest};
+
+        public static bool compare(ushort a, ushort b){
+            return (a & b) == b;
+        }
+        
+        public static void set(ref ushort a, ushort b){
+            a |= b;
+        }
+        public static void unset(ref ushort a, ushort b){
+            a &= (ushort)~b; // cast to ushort because bitwise not converts to int.. this sucks.
+        }
+
+        public static int directionFromVector(ref ushort a, float x, float y, int offset=2){
+            /*  This function sets a to the nearest cardinal direction given a directional vector. */
+            
+            // Get angle as float in radians:
+            float angle = Mathf.Atan2(y, x);
+
+            // Normalize angle to be positive:
+            if (angle < 0) angle += PI_2;
+            
+            // Convert angle to index 0-7: inv_PI_Div_4 is equivalent to angle(as degrees) / 45 degrees.
+            int index = (Mathf.RoundToInt(angle * inv_PI_Div_4) + offset) % 8;
+
+            // Set a to the corresponding direction.
+            set(ref a, directionLookup(index));
+
+            // return the index here because i cant figure out a better way to do this.
+            return index;
+        }
+
+        public static ushort directionLookup(int direction){
+            /*  This function returns the direction from the lookup table. index must be int 0-7 */
+            return lookup[direction];
+        }
+    }
+
+
+    /*========================================================================================*\
     |                               3D TRANSFORMATION & ALIGNMENT                              |
     \*========================================================================================*/
 

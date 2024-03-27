@@ -1,14 +1,6 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using static Utility.Utility;
-
-
-/*  I'm sure there's a faster way to do this, I'm not a fan of the amount of stuff that needs to 
-happened every single time a projectile is created and i can probably integrate this into the 
-handler script. */
 
 
 public class Projectile_Controller : MonoBehaviour{  
