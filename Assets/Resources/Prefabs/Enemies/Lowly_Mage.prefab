@@ -286,6 +286,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b386060074640440b6a1b55f8f7aa7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  friction: 0.05
+  acceleration: 0.01
+  speed: 1
+  Animation: {fileID: 0}
+  Animator: {fileID: 0}
+  Health: {fileID: 0}
+  collider: {fileID: 0}
+  rigidbody: {fileID: 0}
+  state: 0
   m_Acceleration: 0.6
   m_Friction: 0.45
   m_Speed: 0.25
@@ -298,3 +307,7 @@ MonoBehaviour:
   m_ManaRate: 3
   m_ActionOpertunity: 1.5
   m_Health: 1
+  DropOnDeath: {fileID: 0}
+  DropRate: 0.25
+  target: {fileID: 0}
+  wanderTarget: {x: 0, y: 0, z: 0}

@@ -20,7 +20,7 @@ public class Sprite_Animator : MonoBehaviour{
     [SerializeField] int m_Rows;
     [SerializeField] int m_Collums;         // yes, this is misspelled. I would fix it, but this clears literally every single sprite so no.
     [SerializeField] Rect m_bounds;         // Aesprite importer weirdness.               
-    [SerializeField] int variant;           // current row of animation variants.       
+    [SerializeField] int varient;           // current row of animation variants.       
     
     private Sprite[] sprites;
     private Sprite_Animation Animation;
@@ -38,7 +38,7 @@ public class Sprite_Animator : MonoBehaviour{
     void Update(){
         /* Update target sprite to the current frame from the animation handler */
         // set current sprite:
-        targetSprite.sprite = sprites[(variant * m_Collums) + Animation.frame];
+        targetSprite.sprite = sprites[(varient * m_Collums) + Animation.frame];
         
         // point sprite towards camera:
         LookAtTransform(m_TargetSprite, Camera.main.gameObject);                                    
@@ -54,14 +54,7 @@ public class Sprite_Animator : MonoBehaviour{
     public void ChangeVariant(int index){
         /*  This function updates the variant value for this animator. */
         
-        // validate input.
-        if ((index < 0) || (index > m_Collums)){
-            Debug.LogError("invalid variant index.");
-            return;
-        }
-        
-        // update variant.
-        variant = index;
+        varient = index;
         
     }
 }

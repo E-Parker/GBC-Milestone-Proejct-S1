@@ -69,11 +69,8 @@ public static class Utility{
             /*  This function sets a to the nearest cardinal direction given a directional vector. */
             
             // Get angle as float in radians:
-            float angle = Mathf.Atan2(y, x);
+            float angle = Mathf.Atan2(y, x)% TWO_PI;
 
-            // Normalize angle to be positive:
-            if (angle < 0) angle += TWO_PI;
-            
             // Convert angle to index 0-7: inv_PI_Div_4 is equivalent to angle(as degrees) / 45 degrees.
             int index = (Mathf.RoundToInt(angle * inv_PI_Div_4) + offset) % 8;
 
@@ -106,7 +103,7 @@ public static class Utility{
     }
     
     public static float AngleFromVector(float ax, float ay, float bx, float by){
-        return (Mathf.Atan2( ax*by - ay*bx, ax*bx + ay*by ) - PI_Div_4) % TWO_PI;
+        return Mathf.Atan2( ax*by - ay*bx, ax*bx + ay*by );
     }
 
     public static void LookAtTransform(GameObject Original, GameObject Target){

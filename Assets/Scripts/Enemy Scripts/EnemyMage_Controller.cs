@@ -64,7 +64,7 @@ public class EnemyMage_Controller: SpriteController{
         mana = m_Mana;
         friction = m_Friction;
         acceleration = m_Acceleration;
-        speed = m_Speed;
+        speed = m_Speed * 1.25f;
         SetTarget();
     }
     
@@ -120,12 +120,8 @@ public class EnemyMage_Controller: SpriteController{
 
     public override void UpdateSpecial(){
 
-        // Stupid workaround to keep enemies on the ground.
-        transform.position = new Vector3(transform.position.x, 0.06f, transform.position.z);  
-    
         SetTarget();            // Check for missing target:
         RememberLastState();    // Remember the previous state
-        unsetState(anim_Attack);
         UpdateAi();             // Update AI code with new predicted target location.
         
         // Update Timers
@@ -140,12 +136,15 @@ public class EnemyMage_Controller: SpriteController{
         // Check that the current animation is not locking input:
         if (StopMovement.Contains(Animation.GetAnimationName())){
             unsetState("Walk");
-            return;
         }
 
         // Check for attack:
         if (CurrentStateIs(anim_Attack))
             FireProjectile();
+
+        // Stupid workaround to keep enemies on the ground.
+        transform.position = new Vector3(transform.position.x, 0.06f, transform.position.z);  
+    
     }
     
     public void UpdateAi(){

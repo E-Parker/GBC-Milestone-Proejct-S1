@@ -55,7 +55,7 @@ public class Ui_Handler : SingletonObject<Ui_Handler>{
 
     void Update(){
         // If player is dead, show the respawn button.
-        if (Player_Controller.Instance.GetHealth() > 0){
+        if (Player_Controller.Instance.Health.GetHealth() > 0){
             GameoverButton.SetActive(false);
         }
         else if (!GameoverButton.activeSelf){
@@ -73,8 +73,8 @@ public class Ui_Handler : SingletonObject<Ui_Handler>{
         }
 
         
-        if(health != Player_Controller.Instance.GetHealth()){
-            health = Player_Controller.Instance.GetHealth();
+        if(health != Player_Controller.Instance.Health.GetHealth()){
+            health = Player_Controller.Instance.Health.GetHealth();
             healthDiff = Mathf.Abs(Player_Controller.Instance.Health.GetMaxHealth() - health);
 
             HPText.text = "(Health-";

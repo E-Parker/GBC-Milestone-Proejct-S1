@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
@@ -74,11 +73,6 @@ public class Player_Controller : SpriteController, IReceiver{
 
     public override void UpdateSpecial(){
 
-        // Fix projectile handler if resetting scene:
-        //if (Projectile == null){
-        //    Projectile = gameObject.GetComponent<Projectile_Handler>();
-        //}
-
         if (!Health.Alive()){
             OnDeath();
             return;
@@ -90,29 +84,30 @@ public class Player_Controller : SpriteController, IReceiver{
         // Handle Input:
 
         // Get the current direction.
-        direction *= 1f - m_Turnrate;
+        Vector3 newDirection = direction * (1f - m_Turnrate);
 
         // Change direction by keypress * turnrate.
         if (Input.GetKey(m_Up)){
-            direction += Vector3.forward * m_Turnrate * 1.25f;
+            newDirection += Vector3.forward * m_Turnrate * 1.25f;
             setState(anim_Walk);
         }
 
         if (Input.GetKey(m_Left)){
-            direction += Vector3.left * m_Turnrate * 1.25f;
+            newDirection += Vector3.left * m_Turnrate * 1.25f;
             setState(anim_Walk);
         }
 
         if (Input.GetKey(m_Right)){
-            direction += Vector3.right * m_Turnrate * 1.25f;
+            newDirection += Vector3.right * m_Turnrate * 1.25f;
             setState(anim_Walk);
         }
         
         if (Input.GetKey(m_Down)){
-            direction += Vector3.back * m_Turnrate * 1.25f;
+            newDirection += Vector3.back * m_Turnrate * 1.25f;
             setState(anim_Walk);
         }
 
+        direction = newDirection.normalized;
 
         // Set states by keypress.
         if(Input.GetKeyDown(m_Attack))          {setState(anim_AttackSword);}
@@ -133,7 +128,7 @@ public class Player_Controller : SpriteController, IReceiver{
         }
 
         // Update Timers
-        if(currentMana != mana){
+        if(currentMana < m_Mana){
             manaTimer += Time.deltaTime;
             if (manaTimer > m_ManaRate){
                 manaTimer %= m_ManaRate;
@@ -165,7 +160,7 @@ public class Player_Controller : SpriteController, IReceiver{
         /*  handles raycasting in the direction the player is facing to check for sword hits. */
         
         RaycastHit hit;
-        float angle = AngleFromVector(direction.x, -direction.z, 0, 1) * Mathf.Rad2Deg;
+        float angle = ((AngleFromVector(direction.x, -direction.z, 0, 1) * Mathf.Rad2Deg) - 90f) % 360f;
         Vector3 newDirection;
         Health_handler targetHealth;
         
@@ -186,7 +181,7 @@ public class Player_Controller : SpriteController, IReceiver{
 
     public int GetMaxMana(){
         /* Returns the maximum mana of the player. */
-        return mana;
+        return m_Mana;
     }
 
     public int GetCurrentMana(){
@@ -194,15 +189,9 @@ public class Player_Controller : SpriteController, IReceiver{
         return currentMana;
     }
 
-    public void SetMana(int amount){
-        mana = amount;
-    }
+
     public void SetCurrentMana(int amount){
         currentMana = amount;
-    }
-
-    public int GetHealth(){
-        return Health.GetHealth();
     }
     
     public float GetPercentHealth(){

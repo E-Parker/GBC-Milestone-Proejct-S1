@@ -20,16 +20,21 @@ public abstract class SpriteController : MonoBehaviour{
         set { rigidbody.position = value; }
     }
 
-    public Vector3 direction{
-        get { return true_direction; }
-        set { true_direction = value.normalized;
-              Animator.ChangeVariant(StateData.directionFromVector(ref state, value.x, value.z)); }
-    } 
-
     public Vector3 velocity {
         get { return rigidbody.velocity; } 
         set { rigidbody.velocity = value; }
     }
+
+    public Vector3 direction{
+        get { return true_direction; }
+        set { 
+            if(value == Vector3.zero){
+                return;
+            }
+            true_direction = value.normalized;
+            Animator.ChangeVariant(StateData.directionFromVector(ref state, value.x, value.z)); 
+        }
+    } 
 
     public float EyeLevel {
         get { return collider.bounds.size.y * 0.75f; }
@@ -61,6 +66,7 @@ public abstract class SpriteController : MonoBehaviour{
 
     protected void Start(){
         // Default initialization:
+        collider = GetComponent<Collider>();
         rigidbody = GetComponent<Rigidbody>();
         Health = GetComponent<Health_handler>();
         Animation = GetComponent<Sprite_Animation>();
@@ -153,7 +159,7 @@ public abstract class SpriteController : MonoBehaviour{
         
          // change velocity by walk speed.
         if (CurrentStateIs(anim_Walk)){
-            float margin = speed - velocity.magnitude;        
+            float margin = speed - velocity.magnitude;
             velocity += direction * acceleration * margin;
         } 
     }
