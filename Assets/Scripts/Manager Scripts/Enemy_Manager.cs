@@ -78,9 +78,9 @@ public class Enemy_Manager : SingletonObject<Enemy_Manager>{
     }
 
     // Settings:
-    public  float m_SpawnRadius = 2f;      // Radius around camera that enemies spawn.
-    public  float m_SpawnRate = 1f;        // Time(Seconds) between spawns.
-    public  float m_GracePeriod = 5f;      // Time(Seconds) between waves.
+    public float m_SpawnRadius = 2f;       // Radius around camera that enemies spawn.
+    public float m_SpawnRate = 1f;         // Time(Seconds) between spawns.
+    public float m_GracePeriod = 5f;       // Time(Seconds) between waves.
     
     // Score Counters:
     private int currentWaveCounter = 0;    // Number of waves the player has finished.
@@ -388,7 +388,6 @@ public class Enemy_Manager : SingletonObject<Enemy_Manager>{
 
         // Set enemy position:
         enemy.transform.position = position;
-        enemy.GetComponent<Rigidbody>().position = position;
         enemy.SetActive(true);
 
         // Add to list:

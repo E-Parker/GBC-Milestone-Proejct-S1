@@ -14,16 +14,19 @@ namespace Utility{
 public static class Utility{
     
     // Constants:
-    public const float inv_PI_Div_4 =  1 / (Mathf.PI / 4);   // Divide by 45 degrees in radians.
-    public const float PI_2 = Mathf.PI * 2;
-    public const float MaxEnemyDistance = 1.75f;
+    public const float PI_Div_4 =  1 / (Mathf.PI / 4);  // 45 degrees in radians.
+    public const float inv_PI_Div_4 =  1 / PI_Div_4;    // divide by 45 degrees in radians. 
+    public const float TWO_PI = Mathf.PI * 2;
+    public const float HALF_PI = Mathf.PI / 2;
+    
+    public const float MaxEnemyDistance = 1.6f; // Enemies this far away will be handled to prevent the player from just outrunning them forever.
     public const float MaxEnemySqrDistance = MaxEnemyDistance * MaxEnemyDistance;
 
     public static Scene CurrentScene; 
 
-    /* This is used as a template when generating objects at runtime. 
-    I could have done this with prefabs but using this I can make any combination of scripts I want
-    on demand This avoids needing a prefab for an empty object. */
+    /* This is used as a template when generating objects at runtime. I could have done this with 
+    prefabs but using this I can make any combination of scripts I want on demand This avoids 
+    needing a prefab for an empty object. */
     public static GameObject EmptyObject = new GameObject("Empty");
 
     /*========================================================================================*\
@@ -69,7 +72,7 @@ public static class Utility{
             float angle = Mathf.Atan2(y, x);
 
             // Normalize angle to be positive:
-            if (angle < 0) angle += PI_2;
+            if (angle < 0) angle += TWO_PI;
             
             // Convert angle to index 0-7: inv_PI_Div_4 is equivalent to angle(as degrees) / 45 degrees.
             int index = (Mathf.RoundToInt(angle * inv_PI_Div_4) + offset) % 8;
@@ -102,8 +105,8 @@ public static class Utility{
                            math.round(position.z * PixelsPerUnit) * inv_ppu);
     }
     
-    public static float SignedAngleFromVector(float ax, float ay, float bx, float by){
-        return Mathf.Atan2( ax*by - ay*bx, ax*bx + ay*by );
+    public static float AngleFromVector(float ax, float ay, float bx, float by){
+        return (Mathf.Atan2( ax*by - ay*bx, ax*bx + ay*by ) - PI_Div_4) % TWO_PI;
     }
 
     public static void LookAtTransform(GameObject Original, GameObject Target){

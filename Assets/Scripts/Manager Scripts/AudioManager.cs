@@ -22,7 +22,6 @@ public struct SongData{
 public class AudioManager : SingletonObject<AudioManager>{
 
     // Constants:
-    
     readonly string MusicDirectory = "Sounds/Music";
     readonly string SfxDirectory = "Sounds/Sfx";
 
@@ -31,8 +30,11 @@ public class AudioManager : SingletonObject<AudioManager>{
     const bool c_spatialize = false;   // bool for if the audio is spatialized
 
     // Variables:
+    const int MusicChangeChecks = 4;
+    private int iteration = MusicChangeChecks;
+    private float interval { get { return musicClips[currentSong].duration / MusicChangeChecks; } }
 
-    static string queuedSong = "";      // This is used if a song is played but the audio manger doesn't exist in the scene yet.
+    static string queuedSong = "";          // This is used if a song is played but the audio manger doesn't exist in the scene yet.
 
     private AudioSource sfxSource;          // AudioSource for playing one-shot audio.
     private AudioSource[] musicTrack;       // array of AudioSource(s) for playing music.
@@ -78,34 +80,34 @@ public class AudioManager : SingletonObject<AudioManager>{
         StartCoroutine(FadeVolume());
     }
 
-
     IEnumerator FadeVolume(){
         /* This function fades the volume towards a target. */
 
         while(true){
             for (int i = 0; i < c_musicTracks; i++){
-                musicTrackVolume[i] = Lerp<float>(musicTrackVolume[i], musicTrackVolumeTarget[i], 0.05f);
+                musicTrackVolume[i] = Lerp(musicTrackVolume[i], musicTrackVolumeTarget[i], 0.05f);
             }
             yield return new WaitForSeconds(0.05f);
         }
     }
 
-
     IEnumerator ScheduleNextSong(){
         /* Coroutine for scheduling the next song to be played.  */
 
         while (true){
+            Debug.Log(iteration);
             if(currentSong != ""){
                 UpdateMusic();
-                yield return new WaitForSeconds(musicClips[currentSong].duration);
+                yield return new WaitForSeconds(interval);
             }
             yield return null;
         }
     }
 
-
     public void UpdateMusic(){
         /* This function plays the next music track. Used in Update function with Invoke. */
+        
+        iteration = (iteration + 1) % MusicChangeChecks;
         
         // If not looping, set the current song to the next song.
         currentSong = loopMusic? currentSong : nextSong;
@@ -120,7 +122,6 @@ public class AudioManager : SingletonObject<AudioManager>{
         PlayMusic(currentSong);
         
     }
-
 
     public void LoadSounds(){
         /*  This method loads all sound effects. */
@@ -147,7 +148,6 @@ public class AudioManager : SingletonObject<AudioManager>{
         }
     }
     
-
     public void LoadMusic(){
         /*  This method handles loading music files. */
 
@@ -197,7 +197,6 @@ public class AudioManager : SingletonObject<AudioManager>{
         }
     }
 
-
     public static bool CheckValidSongName(string name){
         /* Checks if a song "name" is a valid one that has been loaded. */
         if (!Instance.musicClips.Keys.Contains(name)){
@@ -206,7 +205,6 @@ public class AudioManager : SingletonObject<AudioManager>{
         }
         return true;
     }
-
 
     public static void SetmusicMasterVolume(float newVolume){
         /*  Set the music to a specific volume. */
@@ -233,7 +231,6 @@ public class AudioManager : SingletonObject<AudioManager>{
         return Instance.musicMasterVolume;
     }
 
-
     public static void SetsfxMasterVolume(float newVolume){
         /*set the sfx to a specific volume. */
 
@@ -250,7 +247,6 @@ public class AudioManager : SingletonObject<AudioManager>{
     public static float getsfxMasterVolume(){
         return Instance.sfxMasterVolume;
     }
-    
 
     public static void switchMusic(string name){
         /* Change music after the current song ends. */ 
@@ -265,7 +261,6 @@ public class AudioManager : SingletonObject<AudioManager>{
         Debug.Log($"Now playing: {'"'}{name}{'"'}.");
     }
     
-
     public static void PlayMusic(string song){
         /*  This function plays a song by its name. */
         
@@ -282,6 +277,7 @@ public class AudioManager : SingletonObject<AudioManager>{
             
             Instance.musicTrack[i].clip = clips.tracks[i];
             Instance.musicTrack[i].Play();
+            Instance.musicTrack[i].time = Instance.interval * Instance.iteration; // Set the time to the current time.
         }   
 
         Instance.loopMusicLatch = true;
@@ -310,3 +306,4 @@ public class AudioManager : SingletonObject<AudioManager>{
     }
     
 }
+

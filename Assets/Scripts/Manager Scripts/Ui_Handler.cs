@@ -30,7 +30,6 @@ public class Ui_Handler : SingletonObject<Ui_Handler>{
     private int mana;
     private int manaDiff;
 
-
     void Start(){
         gameObject.layer = 5;
 
@@ -48,13 +47,11 @@ public class Ui_Handler : SingletonObject<Ui_Handler>{
         OnPauseChange();
     }
 
-
     void OnPauseChange(){
         Time.timeScale = paused? 0.0f: 1.0f;
         PauseScene.SetActive(paused);
         AudioListener.pause = paused;
     }
-    
 
     void Update(){
         // If player is dead, show the respawn button.
@@ -78,7 +75,7 @@ public class Ui_Handler : SingletonObject<Ui_Handler>{
         
         if(health != Player_Controller.Instance.GetHealth()){
             health = Player_Controller.Instance.GetHealth();
-            healthDiff = Mathf.Abs(Player_Controller.Instance.controller.GetMaxHealth() - health);
+            healthDiff = Mathf.Abs(Player_Controller.Instance.Health.GetMaxHealth() - health);
 
             HPText.text = "(Health-";
 
@@ -92,9 +89,9 @@ public class Ui_Handler : SingletonObject<Ui_Handler>{
             HPText.text += ")";
         }
 
-        if(mana != Player_Controller.Instance.controller.GetCurrentMana()){
-            mana = Player_Controller.Instance.controller.GetCurrentMana();
-            manaDiff = Player_Controller.Instance.controller.GetMaxMana() - mana;
+        if(mana != Player_Controller.Instance.GetCurrentMana()){
+            mana = Player_Controller.Instance.GetCurrentMana();
+            manaDiff = Player_Controller.Instance.GetMaxMana() - mana;
 
             MPText.text = "(Mana-";
             

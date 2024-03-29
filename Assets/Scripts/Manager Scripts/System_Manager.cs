@@ -51,29 +51,33 @@ public class System_Manger : SingletonObject<System_Manger>{
         /* This method instances manager scripts depending on what the current scene is. */
         
         if (CurrentScene.name == "Start"){
-            
-            // Destroy old / unused objects:
+
+            // Clean up the DontDestroyOnLoad Scene:
             Enemy_Manager.DestroyInstance();
             Ui_Handler.DestroyInstance();
             
             // Make Instances:
+            SpriteManager.MakeInstance();
             AudioManager.MakeInstance();
             AudioManager.switchMusic("BattleCalm");
 
+            Debug.Log("Loaded Start Scene.");
+            
         }
 
         if(CurrentScene.name == "Game"){
-
-            Debug.Log("Loaded Game Scene.");
-
-            // Destroy old / unused objects:
+            
+            // Clean up the DontDestroyOnLoad Scene:
             Enemy_Manager.DestroyInstance();
             Ui_Handler.DestroyInstance();
 
             // Make Instances:
+            SpriteManager.MakeInstance();
+            AudioManager.MakeInstance();
             Enemy_Manager.MakeInstance();
             Ui_Handler.MakeInstance();
-            AudioManager.MakeInstance();
+
+            Debug.Log("Loaded Game Scene.");
 
         }
     }
