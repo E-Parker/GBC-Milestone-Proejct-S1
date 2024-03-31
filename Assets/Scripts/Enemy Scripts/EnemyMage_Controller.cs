@@ -64,7 +64,7 @@ public class EnemyMage_Controller: SpriteController{
         mana = m_Mana;
         friction = m_Friction;
         acceleration = m_Acceleration;
-        speed = m_Speed * 1.25f;
+        speed = m_Speed * 1.5f;
         SetTarget();
     }
     

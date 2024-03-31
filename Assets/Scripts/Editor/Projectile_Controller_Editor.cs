@@ -14,6 +14,7 @@ using UnityEditor;
         EditorGUILayout.PropertyField(serializedObject.FindProperty("m_Damage"));
         EditorGUILayout.PropertyField(serializedObject.FindProperty("m_Sfx_cast"));
         EditorGUILayout.PropertyField(serializedObject.FindProperty("m_Sfx_Hit"));
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("effect"));
         
         // Show lighting options:
         EditorGUILayout.PropertyField(serializedObject.FindProperty("lighting"));

@@ -28,6 +28,12 @@ public class Projectile_Controller : MonoBehaviour{
         [InspectorName("Point lights on both")]lighting3,
     }
 
+    public enum Effect{
+        None,
+        Damage,
+        Heal,
+    }
+
     // Expected animation names:
     private const string OnSpawn = "Spawn";
     private const string Idle = "Idle";
@@ -66,6 +72,8 @@ public class Projectile_Controller : MonoBehaviour{
     [Header("Settings")]
     [SerializeField] float m_Lifetime = 10;             // Time in seconds before self destruct.
     [SerializeField] public int m_Damage = 1;           // Amount of damage dealt on collision.
+    [SerializeField] Effect effect = Effect.Damage;     // Effect done on hit.
+
     [SerializeField] string m_Sfx_cast = "Cast_Magic";
     [SerializeField] string m_Sfx_Hit = "Metallic_Hit";
 
@@ -235,7 +243,6 @@ public class Projectile_Controller : MonoBehaviour{
         transform.position = TransformToPixels(position);
     }
 
-
     void OnTriggerEnter(Collider col){   
         /*  Handle projectiles colliding with things. */
         
@@ -267,9 +274,26 @@ public class Projectile_Controller : MonoBehaviour{
 
         // If colliding with something that is not the same tag as itself:
         if (collision.tag != this.gameObject.tag){
+
             currentTime = timeToCast + m_Lifetime;   // Change current time to des struct early.
-            AudioManager.PlaySound(m_Sfx_Hit);
-            health.SubHealth(m_Damage);              // Apply damage.   
+            
+            switch(effect){
+
+                case Effect.None:
+                break;
+
+                case Effect.Damage:
+                    AudioManager.PlaySound(m_Sfx_Hit);
+                    health.SubHealth(m_Damage); // Apply damage.
+                break;
+
+                case Effect.Heal:
+                    AudioManager.PlaySound(m_Sfx_Hit);
+                    health.AddHealth(m_Damage); // Apply healing.
+                    // maybe add a particle or something here. to show the health gained.
+                break;
+            }
+            
         }
     }
 }

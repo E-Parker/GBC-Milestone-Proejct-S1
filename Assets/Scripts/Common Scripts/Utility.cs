@@ -1,8 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
-using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Unity.Mathematics;
@@ -14,7 +11,7 @@ namespace Utility{
 public static class Utility{
     
     // Constants:
-    public const float PI_Div_4 =  1 / (Mathf.PI / 4);  // 45 degrees in radians.
+    public const float PI_Div_4 =  Mathf.PI / 4;        // 45 degrees in radians.
     public const float inv_PI_Div_4 =  1 / PI_Div_4;    // divide by 45 degrees in radians. 
     public const float TWO_PI = Mathf.PI * 2;
     public const float HALF_PI = Mathf.PI / 2;
@@ -65,15 +62,14 @@ public static class Utility{
             a &= (ushort)~b; // cast to ushort because bitwise not converts to int.. this sucks.
         }
 
-        public static int directionFromVector(ref ushort a, float x, float y, int offset=2){
+        public static int directionFromVector(ref ushort a, float x, float y){
             /*  This function sets a to the nearest cardinal direction given a directional vector. */
             
             // Get angle as float in radians:
-            float angle = Mathf.Atan2(y, x)% TWO_PI;
-
+            float angle = (Mathf.Atan2(y, x) + TWO_PI + HALF_PI) % TWO_PI;
             // Convert angle to index 0-7: inv_PI_Div_4 is equivalent to angle(as degrees) / 45 degrees.
-            int index = (Mathf.RoundToInt(angle * inv_PI_Div_4) + offset) % 8;
-
+            int index = Mathf.RoundToInt(angle / TWO_PI * 8.0f);
+            Debug.Log(angle / TWO_PI * 8.0f);
             // Set a to the corresponding direction.
             set(ref a, directionLookup(index));
 
@@ -101,7 +97,7 @@ public static class Utility{
                            math.round(position.y * PixelsPerUnit) * inv_ppu, 
                            math.round(position.z * PixelsPerUnit) * inv_ppu);
     }
-    
+
     public static float AngleFromVector(float ax, float ay, float bx, float by){
         return Mathf.Atan2( ax*by - ay*bx, ax*bx + ay*by );
     }

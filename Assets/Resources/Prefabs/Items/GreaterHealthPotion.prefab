@@ -229,6 +229,7 @@ MonoBehaviour:
   m_Caster_Intensity: 1
   m_Caster_Range: 0.2
   m_Lifetime: 5
-  m_Damage: -5
+  m_Damage: 5
+  effect: 2
   m_Sfx_cast: 
-  m_Sfx_Hit: 
+  m_Sfx_Hit: HealthUp
