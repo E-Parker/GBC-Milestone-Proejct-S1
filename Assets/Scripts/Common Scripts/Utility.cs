@@ -68,8 +68,8 @@ public static class Utility{
             // Get angle as float in radians:
             float angle = (Mathf.Atan2(y, x) + TWO_PI + HALF_PI) % TWO_PI;
             // Convert angle to index 0-7: inv_PI_Div_4 is equivalent to angle(as degrees) / 45 degrees.
-            int index = Mathf.RoundToInt(angle / TWO_PI * 8.0f);
-            Debug.Log(angle / TWO_PI * 8.0f);
+            int index = (int)(angle / TWO_PI * 8.0f);
+            Debug.Log(index);
             // Set a to the corresponding direction.
             set(ref a, directionLookup(index));
 
