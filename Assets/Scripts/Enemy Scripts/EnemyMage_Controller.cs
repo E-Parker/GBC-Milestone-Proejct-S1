@@ -157,7 +157,7 @@ public class EnemyMage_Controller: SpriteController{
         unsetAll();             // Clear all states
 
         LastTargetPosition = TargetPosition;        // Store position for next frame predictions.
-        TargetPosition = target.transform.position; // Update current Target Position:
+        TargetPosition = target.transform.position; // Update current Target Position.
 
         Vector3 RelativeTargetPosition = position - TargetPosition;
         toTarget = RelativeTargetPosition + ((LastTargetPosition - TargetPosition) * m_Overshoot);  

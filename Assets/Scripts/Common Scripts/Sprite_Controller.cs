@@ -1,22 +1,22 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using static Utility.Utility;
 
 public abstract class SpriteController : MonoBehaviour{
-    /*Prototype of sprite controller used for moving animated sprites across a scene. */
+    /* Prototype of sprite controller used for moving animated sprites across a scene. */
     
     /* Any animation with these names will be ignored by StatesFromAnimations(). 
     These are still expected to be there since they are played manually. */
+
     public readonly string anim_Walk =   "Walk";
     public readonly string anim_Idle =   "Idle";
 
     protected static string[] IgnoreAnimations = new string[]{"Dead", "Dying", "Idle", "Hurt"};
-
+    
     public Vector3 position {
-        get { return rigidbody.position; } 
+        get { return rigidbody.position; }
         set { rigidbody.position = value; }
     }
 
@@ -46,6 +46,7 @@ public abstract class SpriteController : MonoBehaviour{
     public float acceleration = 0.01f;          // amount velocity changes by over time.
     public float speed = 1;
 
+    public NavigationObject navigation;
     public Sprite_Animation Animation;          // Animation Script.
     public Sprite_Animator Animator;            // Animator Script to controller animation.
     public Health_handler Health;               // Health script.
@@ -71,6 +72,11 @@ public abstract class SpriteController : MonoBehaviour{
         Health = GetComponent<Health_handler>();
         Animation = GetComponent<Sprite_Animation>();
         Animator = GetComponent<Sprite_Animator>();
+        navigation = GetComponent<NavigationObject>();
+        
+        if (navigation == null){
+            gameObject.AddComponent<NavigationObject>();
+        }
         
         // Run custom start parameters.
         CustomStart();
@@ -88,7 +94,7 @@ public abstract class SpriteController : MonoBehaviour{
     }
 
     protected void StatesFromAnimations(string[] names){
-        /*  This function adds states to the look up dictionary. */
+        /* This function adds states to the look up dictionary. */
         
         // Ignore the Idle animation and add it as the default state. 
         states.Add("Idle", StateData.Idle);
@@ -122,11 +128,11 @@ public abstract class SpriteController : MonoBehaviour{
     // Update functions:
     
     public virtual void UpdateSpecial(){
-        /*  Change any special conditions here. For instance, fire a fireball or something. */
+        /* Change any special conditions here. For instance, fire a fireball or something. */
     }
 
     protected void Update(){
-        /*  Check states and play animations. This is called AFTER getting the player input. */
+        /* Check states and play animations. This is called AFTER getting the player input. */
 
         // If the character is hit, play the hurt animation. Skip playing any other animations.
         if (Health.IsHit()){

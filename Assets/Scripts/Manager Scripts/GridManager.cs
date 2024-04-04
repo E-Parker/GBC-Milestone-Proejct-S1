@@ -1,6 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
 
 public enum TileStatus{
     UNVISITED,
@@ -27,18 +27,13 @@ public enum TileAdjacent{
 };
 
 
-public class GridManager : SingletonObject<GridManager>
-{
-    [SerializeField] private GameObject tilePrefab;
-    [SerializeField] private GameObject tilePanelPrefab;
-    [SerializeField] private GameObject panelParent;
-    [SerializeField] private GameObject minePrefab;
-    [SerializeField] private Color[] colors;
-    [SerializeField] private float baseTileCost = 1f;
-    [SerializeField] private bool useManhattanHeuristic = true;
+public class GridManager : SingletonObject<GridManager>{
 
-    [SerializeField] private bool lineOfSightShip = true;
-    [SerializeField] private bool lineOfSightTarget = true;
+    public const float TileScale = 0.16f;
+
+    public static GameObject tilePrefab;
+    public static float baseTileCost = 1f;
+    public static bool useManhattanHeuristic = true;
 
     public TileScript[,] Grid;
 
@@ -48,73 +43,12 @@ public class GridManager : SingletonObject<GridManager>
     
     public override void CustomAwake()
     {
+        tilePrefab = (GameObject)Resources.Load("Prefabs/Tile");
+        Debug.Log("Building grid:");
         BuildGrid();
-        //  ConnectGrid();
+        
     }
-
-    void Update()
-    {   
-        // Show or hide the debug visuals:
-        if (Input.GetKeyDown(KeyCode.G)){  
-            foreach(Transform child in transform){
-                child.gameObject.SetActive(!child.gameObject.activeSelf);
-            }
-            panelParent.gameObject.SetActive(!panelParent.gameObject.activeSelf);
-        }
-
-        // Place a mine at the current tile:
-        if (Input.GetKeyDown(KeyCode.M))
-        {
-            Vector2 gridPosition = GetGridPosition(Camera.main.ScreenToWorldPoint(Input.mousePosition));
-            GameObject mineInst = GameObject.Instantiate(minePrefab, new Vector3(gridPosition.x, gridPosition.y, 0f), Quaternion.identity);
-            Vector2 mineIndex = mineInst.GetComponent<NavigationObject>().GetGridIndex();
-            Destroy(Grid[(int)mineIndex.y, (int)mineIndex.x].gameObject);
-            mines.Add(mineInst);
-            //ConnectGrid();
-        }
-
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            foreach (GameObject mine in mines)
-            {
-                Vector2 mineIndex = mine.GetComponent<NavigationObject>().GetGridIndex();
-                GameObject tileInst = GameObject.Instantiate(tilePrefab, 
-                    new Vector3(mine.transform.position.x, mine.transform.position.y, 0f), Quaternion.identity);
-                tileInst.transform.parent = transform;
-                Grid[(int)mineIndex.y, (int)mineIndex.x] = tileInst.GetComponent<TileScript>();
-                Destroy(mine);
-            }
-            mines.Clear();
-            // TODO: Comment out for Lab 6a.
-            //ConnectGrid();
-        }
-
-        // Check line of sight:
-        if (Input.GetKeyDown(KeyCode.L)){
-            CheckLineOfSight();
-        }
-
-        // Start path finding:
-        //if (Input.GetKeyDown(KeyCode.F)) 
-        //{
-        //    // Get ship node.
-        //    GameObject ship = GameObject.FindGameObjectWithTag("Ship");
-        //    Vector2 shipIndices = ship.GetComponent<NavigationObject>().GetGridIndex();
-        //    PathNode start = grid[(int)shipIndices.y, (int)shipIndices.x].GetComponent<TileScript>().Node;
-        //    // Get goal node.
-        //    GameObject planet = GameObject.FindGameObjectWithTag("Planet");
-        //    Vector2 planetIndices = planet.GetComponent<NavigationObject>().GetGridIndex();
-        //    PathNode goal = grid[(int)planetIndices.y, (int)planetIndices.x].GetComponent<TileScript>().Node;
-        //    // Start the algorithm.
-        //    PathManager.Instance.GetShortestPath(start, goal);
-        //}
-
-        // Reset grid:
-        if (Input.GetKeyDown(KeyCode.R)) 
-        {
-            SetTileStatuses();
-        }
-    }
+    
 
     private void BuildGrid(){
         
@@ -126,7 +60,7 @@ public class GridManager : SingletonObject<GridManager>
         for (int row = 0; row < rows; row++, rowPos--){
             float colPos = -7.5f;
             for (int col = 0; col < columns; col++, colPos++){
-                GameObject tileInst = Instantiate(tilePrefab, new Vector3(colPos, rowPos, 0f), Quaternion.identity);
+                GameObject tileInst = Instantiate(tilePrefab, new Vector3(colPos, 0f, rowPos), Quaternion.identity);
                 TileScript tileScript = tileInst.GetComponent<TileScript>();
                 Grid[row,col] = tileScript;
 
@@ -228,38 +162,22 @@ public class GridManager : SingletonObject<GridManager>
             tile.SetStatus(TileStatus.UNVISITED);
         }
 
-        foreach (GameObject mine in mines){
-            Vector2 mineIndex = mine.GetComponent<NavigationObject>().GetGridIndex();
-            Grid[(int)mineIndex.y, (int)mineIndex.x].SetStatus(TileStatus.IMPASSABLE);
-        }
-
+        //TODO: Replace this with a static call that sets it up for a pathfind call.
         // Set the tile under the ship to Start.
-        GameObject ship = GameObject.FindGameObjectWithTag("Ship");
-        Vector2 shipIndices = ship.GetComponent<NavigationObject>().GetGridIndex();
-        Grid[(int)shipIndices.y, (int)shipIndices.x].SetStatus(TileStatus.START);
+        //Vector2 shipIndices = ship.GetComponent<NavigationObject>().GetGridIndex();
+        // Grid[(int)shipIndices.y, (int)shipIndices.x].SetStatus(TileStatus.START);
         
         // Set the tile under the player to Goal.
-        GameObject planet = GameObject.FindGameObjectWithTag("Planet");
-        Vector2 planetIndices = planet.GetComponent<NavigationObject>().GetGridIndex();
-        Grid[(int)planetIndices.y, (int)planetIndices.x].SetStatus(TileStatus.GOAL);
+        //GameObject planet = GameObject.FindGameObjectWithTag("Planet");
+        //Vector2 planetIndices = planet.GetComponent<NavigationObject>().GetGridIndex();
+        //Grid[(int)planetIndices.y, (int)planetIndices.x].SetStatus(TileStatus.GOAL);
     }
 
-    public void CheckLineOfSight(){
-        if (!lineOfSightShip && !lineOfSightTarget){
-            foreach(TileScript tile in Grid){
-                if (tile == null) { continue; }  // Ignore null tiles.
-                tile.TileColor = Color.cyan;
-            }
-            return;
-        }
-
-        GameObject player = GameObject.FindWithTag("Ship");
-        GameObject planet = GameObject.FindWithTag("Planet"); 
-        Vector3 shipPos = player.transform.position;
-        Vector3 planetPos = planet.transform.position;
+    public static void CheckLineOfSight(Vector3 position){
+        
         Vector3 tilePos;
 
-        foreach(TileScript tile in Grid){
+        foreach(TileScript tile in Instance.Grid){
             // Ignore null tiles.
             if (tile == null) { 
                 continue; 
@@ -269,22 +187,11 @@ public class GridManager : SingletonObject<GridManager>
 
             bool hasShipLineOfSight = false;
 
-            if (lineOfSightShip){
-                Vector3 direction = shipPos - tilePos;
-                float magnitude = Vector3.Magnitude(direction);
-                direction /= magnitude;
+            Vector3 direction = Player_Controller.Instance.position - tilePos;
+            float magnitude = Vector3.Magnitude(direction);
+            direction /= magnitude;
 
-                hasShipLineOfSight = tile.Navigation.HasLOS(tile.gameObject, "Ship", direction, magnitude);
-            }
-
-            bool hasPlanetLineOfSight = false;
-            if (lineOfSightTarget){
-                Vector3 direction = planetPos - tilePos;
-                float magnitude = Vector3.Magnitude(direction);
-                direction /= magnitude;
-
-                hasPlanetLineOfSight = tile.Navigation.HasLOS(tile.gameObject, "Planet", direction, magnitude);
-            }
+            hasShipLineOfSight = tile.Navigation.HasLOS(tile.gameObject, "Player", direction, magnitude);
 
             if(hasShipLineOfSight){
                 tile.TileColor = Color.green;

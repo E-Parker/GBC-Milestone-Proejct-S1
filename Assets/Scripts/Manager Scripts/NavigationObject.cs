@@ -26,14 +26,14 @@ public class NavigationObject : MonoBehaviour{
     public bool HasLOS(GameObject source, string tag, Vector2 direction, float distance){
         /* Check if a source object has line of sight to this tile. */
         source.layer = 3;
-
+        
         int layerMask = ~(1 << LayerMask.NameToLayer("Ignore Linecast"));
+        
+        RaycastHit hit;
 
-        RaycastHit2D hit =  Physics2D.Raycast(transform.position, direction, distance, layerMask);
+        Physics.Raycast(transform.position, direction, out hit, distance, layerMask);
 
-        if (hit.collider != null && hit.collider.CompareTag(tag)){
-            return true;
-        }
-        return false;
+        return hit.collider != null && hit.collider.CompareTag(tag);
+
     }
 }

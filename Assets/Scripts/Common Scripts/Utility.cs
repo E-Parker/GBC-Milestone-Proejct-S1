@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Unity.Mathematics;
 
-/*  This file contains various classes that are used by multiple scripts. */
+/* This file contains various classes that are used by multiple scripts. */
 
 namespace Utility{
 
@@ -82,7 +82,6 @@ public static class Utility{
             return lookup[direction];
         }
     }
-
 
     /*========================================================================================*\
     |                               3D TRANSFORMATION & ALIGNMENT                              |

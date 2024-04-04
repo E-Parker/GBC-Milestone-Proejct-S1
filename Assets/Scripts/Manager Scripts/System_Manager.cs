@@ -55,11 +55,12 @@ public class System_Manger : SingletonObject<System_Manger>{
             // Clean up the DontDestroyOnLoad Scene:
             Enemy_Manager.DestroyInstance();
             Ui_Handler.DestroyInstance();
+            //GridManager.DestroyInstance();
             
             // Make Instances:
             SpriteManager.MakeInstance();
             AudioManager.MakeInstance();
-            AudioManager.switchMusic("BattleCalm");
+            AudioManager.switchMusic("Menu");
 
             Debug.Log("Loaded Start Scene.");
             
@@ -70,12 +71,14 @@ public class System_Manger : SingletonObject<System_Manger>{
             // Clean up the DontDestroyOnLoad Scene:
             Enemy_Manager.DestroyInstance();
             Ui_Handler.DestroyInstance();
+            //GridManager.DestroyInstance();
 
             // Make Instances:
             SpriteManager.MakeInstance();
-            AudioManager.MakeInstance();
+            AudioManager.MakeInstance();;
             Enemy_Manager.MakeInstance();
             Ui_Handler.MakeInstance();
+            //GridManager.MakeInstance();
 
             Debug.Log("Loaded Game Scene.");
 
