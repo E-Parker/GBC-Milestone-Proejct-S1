@@ -230,5 +230,6 @@ MonoBehaviour:
   m_Caster_Range: 0.2
   m_Lifetime: 5
   m_Damage: 3
+  effect: 1
   m_Sfx_cast: 
   m_Sfx_Hit: 

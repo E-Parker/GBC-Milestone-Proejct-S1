@@ -42,39 +42,40 @@ public class Health_handler : MonoBehaviour{
     }
 
     public bool Alive(){
-        return this.isAlive;
+        return isAlive;
     }
 
     public bool IsDying(){
-        return this.isDying;
+        return isDying;
     } 
 
     public void SetDying(){
         AudioManager.PlaySound("Hit_Hurt_Big");
-        this.isDying = true;
+        isDying = true;
     }
 
     public void SetHealth(int amount){
-        this.health = amount;    // I intentionally let this be any value to alow for overheal.
+        health = amount;    // I intentionally let this be any value to alow for overheal.
     }
 
     public void SubHealth(int amount){
 
         if (amount < 0){
-            this.health -= amount;
-            this.health = Mathf.Clamp(health, 0, maxHealth);
+            health -= amount;
+            health = Mathf.Clamp(health, 0, maxHealth);
             return;
         }
 
         if (!IsHit()){
             AudioManager.PlaySound("Hit_Hurt");
-            this.health -= amount;
+            health -= amount;
             invulnTimer = 0f;
         }
     }
 
     public void AddHealth(int amount){
-        this.health += amount;
+        health += amount;
+        health = health > maxHealth? maxHealth: health; 
     }
 
     public bool IsHit(){

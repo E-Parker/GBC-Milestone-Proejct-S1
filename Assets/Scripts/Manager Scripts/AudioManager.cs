@@ -92,10 +92,8 @@ public class AudioManager : SingletonObject<AudioManager>{
     }
 
     IEnumerator ScheduleNextSong(){
-        /* Coroutine for scheduling the next song to be played.  */
-
+        /* Coroutine for scheduling the next song to be played. */
         while (true){
-            Debug.Log(iteration);
             if(currentSong != ""){
                 UpdateMusic();
                 yield return new WaitForSeconds(interval);
