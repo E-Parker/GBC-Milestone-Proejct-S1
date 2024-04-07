@@ -55,7 +55,7 @@ public class System_Manger : SingletonObject<System_Manger>{
             // Clean up the DontDestroyOnLoad Scene:
             Enemy_Manager.DestroyInstance();
             Ui_Handler.DestroyInstance();
-            //GridManager.DestroyInstance();
+            Grid.DestroyInstance();
             
             // Make Instances:
             SpriteManager.MakeInstance();
@@ -69,16 +69,16 @@ public class System_Manger : SingletonObject<System_Manger>{
         if(CurrentScene.name == "Game"){
             
             // Clean up the DontDestroyOnLoad Scene:
+            Grid.DestroyInstance();
             Enemy_Manager.DestroyInstance();
             Ui_Handler.DestroyInstance();
-            //GridManager.DestroyInstance();
 
             // Make Instances:
+            Grid.MakeInstance();
             SpriteManager.MakeInstance();
             AudioManager.MakeInstance();;
             Enemy_Manager.MakeInstance();
             Ui_Handler.MakeInstance();
-            //GridManager.MakeInstance();
 
             Debug.Log("Loaded Game Scene.");
 

@@ -276,13 +276,13 @@ public static class Utility{
     }
 
     public static T CosLerp<T>(T a, T b, float t, float exp = 0f){
-        /* Cosine smooth lerp function. */
+        /* Smoothly interpolates between two values using a cosine. */
         return Lerp(a, b, -0.5f * Mathf.Cos(Mathf.PI * t) + 0.5f);
     }
 
     public static T smoothLerp<T>(T a, T b, float t, float exp = 0f){
         /* Smoothly interpolates between any values which can be interpolated using quadratics. */
-        return Lerp(a, b, Lerp(t * t, 1 - ((t - 1) * (t - 1)), t));
+        return Lerp(a, b, Lerp(t * t, 1.0f - ((t - 1.0f) * (t - 1.0f)), t));
     }
 
     public static T Lerp<T>(T a, T b, float t, float exp = 0f){

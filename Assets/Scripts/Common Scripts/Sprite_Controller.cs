@@ -46,7 +46,6 @@ public abstract class SpriteController : MonoBehaviour{
     public float acceleration = 0.01f;          // amount velocity changes by over time.
     public float speed = 1;
 
-    public NavigationObject navigation;
     public Sprite_Animation Animation;          // Animation Script.
     public Sprite_Animator Animator;            // Animator Script to controller animation.
     public Health_handler Health;               // Health script.
@@ -72,11 +71,6 @@ public abstract class SpriteController : MonoBehaviour{
         Health = GetComponent<Health_handler>();
         Animation = GetComponent<Sprite_Animation>();
         Animator = GetComponent<Sprite_Animator>();
-        navigation = GetComponent<NavigationObject>();
-        
-        if (navigation == null){
-            gameObject.AddComponent<NavigationObject>();
-        }
         
         // Run custom start parameters.
         CustomStart();
