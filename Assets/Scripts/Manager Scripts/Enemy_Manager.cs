@@ -1,11 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
 using System.IO;
-using static Utility.Utility;
-using Unity.VisualScripting;
 
 
 public class Enemy_Manager : SingletonObject<Enemy_Manager>{   
@@ -103,8 +100,8 @@ public class Enemy_Manager : SingletonObject<Enemy_Manager>{
     private int currentTypeIndex = 0;
     private int currentTypeAmount = 0;
 
-    private List<GameObject> alive;    // list of alive enemies
-    private List<GameObject> dead;     // list of dead (marked inactive) enemies.
+    public List<GameObject> alive {get; private set;}    // list of alive enemies
+    public List<GameObject> dead {get; private set;}     // list of dead (marked inactive) enemies.
 
     public override void CustomAwake(){
         EntityPrefabs = new UnityEngine.Object[MAX_UNIQUE_ENTITIES];
@@ -295,7 +292,7 @@ public class Enemy_Manager : SingletonObject<Enemy_Manager>{
             GenerateEnemies();
         }
         
-        //  HANDLE SPAWNING NORMALY, STILL FIGHTING CURRENT WAVE:
+        //  HANDLE SPAWNING NORMALLY, STILL FIGHTING THE CURRENT WAVE:
         if(waveScore < currentWave.Next || currentWave.Next == -1){
             // Update spawn timer:
             enemyTimer += Time.deltaTime;
@@ -326,7 +323,7 @@ public class Enemy_Manager : SingletonObject<Enemy_Manager>{
             return;
         }
         // Otherwise, there are still enemies alive but the wave has ended.
-        UpdateLists(); // Update Lists to reflect which enemies are dead
+        UpdateLists();          // Update Lists to reflect which enemies are dead
     }
 
 

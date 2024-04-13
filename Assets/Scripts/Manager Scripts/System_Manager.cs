@@ -14,8 +14,8 @@ scripts. */
 
 public class System_Manger : SingletonObject<System_Manger>{
 
-    const float DefaultSfxVolume = 0.25f;
-    const float DefaultMusVolume = 0.1f;
+    const float DefaultSfxVolume = 0.05f;
+    const float DefaultMusVolume = 0.05f;
     static string path;
    
     [Serializable] private struct SoundVolumeData{
@@ -76,10 +76,10 @@ public class System_Manger : SingletonObject<System_Manger>{
             // Make Instances:
             Grid.MakeInstance();
             SpriteManager.MakeInstance();
-            AudioManager.MakeInstance();;
+            AudioManager.MakeInstance();
             Enemy_Manager.MakeInstance();
             Ui_Handler.MakeInstance();
-
+            SpriteController.Characters = new(); //TODO: Replace this with some sort of event.
             Debug.Log("Loaded Game Scene.");
 
         }

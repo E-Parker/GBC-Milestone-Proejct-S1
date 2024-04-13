@@ -19,12 +19,47 @@ public static class Utility{
     public const float MaxEnemyDistance = 1.6f; // Enemies this far away will be handled to prevent the player from just outrunning them forever.
     public const float MaxEnemySqrDistance = MaxEnemyDistance * MaxEnemyDistance;
 
+    public static LayerMask unWalkableMask = LayerMask.NameToLayer("Unwalkable");
+    
     public static Scene CurrentScene; 
 
     /* This is used as a template when generating objects at runtime. I could have done this with 
     prefabs but using this I can make any combination of scripts I want on demand This avoids 
     needing a prefab for an empty object. */
     public static GameObject EmptyObject = new GameObject("Empty");
+
+    /*========================================================================================*\
+    |                                       BYTE FLAG CLASS                                    |
+    \*========================================================================================*/
+
+    public static class ByteFlags{
+
+        public static bool compare(byte a, byte b){
+            return (a & b) == b;
+        }
+        
+        public static void set(ref byte a, byte b){
+            a |= b;
+        }
+        public static void unset(ref byte a, byte b){
+            a &= (byte)~b;
+        }
+
+        public static bool getAt(ref byte a, int i){
+            byte mask = (byte)(1 << i);
+            return compare(a, mask);
+        }
+
+        public static void setAt(ref byte a, int i){
+            byte mask = (byte)(1 << i);
+            set(ref a, mask);
+        }
+        
+        public static void unsetAt(ref byte a, int i){
+            byte mask = (byte)(1 << i);
+            unset(ref a, mask);
+        }
+    }
 
     /*========================================================================================*\
     |                                  USHORT STATE HANDLER CLASS                              |
@@ -63,13 +98,14 @@ public static class Utility{
         }
 
         public static int directionFromVector(ref ushort a, float x, float y){
-            /*  This function sets a to the nearest cardinal direction given a directional vector. */
+            /* This function sets a to the nearest cardinal direction given a directional vector. */
             
             // Get angle as float in radians:
             float angle = (Mathf.Atan2(y, x) + TWO_PI + HALF_PI) % TWO_PI;
+
             // Convert angle to index 0-7: inv_PI_Div_4 is equivalent to angle(as degrees) / 45 degrees.
             int index = (int)(angle / TWO_PI * 8.0f);
-            Debug.Log(index);
+
             // Set a to the corresponding direction.
             set(ref a, directionLookup(index));
 

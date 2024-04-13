@@ -3,24 +3,21 @@ using System.Collections;
 using Unity.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
-
+using static Utility.Utility;
 
 public class Grid : SingletonObject<Grid> {
 
-    const float nodeRadius = 0.05f;                 // radius around each node checked for unwalkable surfaces.
-    const float nodeDiameter = nodeRadius * 2.0f;
-    
-    public static LayerMask unWalkableMask = 3;                     // Layer mask to define colliders that are walkable.
-    public static Vector2 gridSize = new Vector2(6f, 6f);       // size of the grid.
-    public Node[,] grid {get; private set; }                    // Array of grid nodes.
-
-    private static int GridSizeX, GridSizeY;
-
+    public static Vector2 gridSize = new Vector2(6.5f, 6.5f);   // World-space size of the grid.
+    public static Vector3 WorldBottomLeft { get; private set; }
+    public static int GridSizeX { get; private set; }
+    public static int GridSizeY { get; private set; }
+    public Node[,] grid { get; private set; }
 
     public override void CustomAwake(){
-        GridSizeX = Mathf.RoundToInt(gridSize.x / nodeDiameter);
-        GridSizeY = Mathf.RoundToInt(gridSize.y / nodeDiameter);
         IsPersistent = true;
+        GridSizeX = Mathf.RoundToInt(gridSize.x / Node.nodeDiameter);
+        GridSizeY = Mathf.RoundToInt(gridSize.y / Node.nodeDiameter);
+        WorldBottomLeft = transform.position - (Vector3.right * gridSize.x * 0.5f) - (Vector3.forward * gridSize.y * 0.5f);
     }
 
     void Start(){
@@ -29,41 +26,72 @@ public class Grid : SingletonObject<Grid> {
     }
 
     IEnumerator UpdateGrid(){
-        /* This function runs collision checks to update the walkable and unwalkable grid tiles. */
-        int x, y;
-        bool walkable;
 
         while(true){
-            for (x = 0; x < GridSizeX; x++){
-                for (y = 0; y < GridSizeY; y++){
-                    walkable = !Physics.CheckSphere(grid[x,y].worldPosition, nodeRadius, unWalkableMask);
-                    grid[x,y].walkable = walkable;
-                    yield return new WaitForSeconds(0.005f);    
-                }
-            }  
+
+            // Update each node in the grid.
+            foreach(Node n in grid){
+                n.Update();
+            }
+            
+            // Update the nodes under each character in the scene with it's effect and range.
+            Node node;
+            foreach(var character in SpriteController.Characters){
+                node = nodeFromPosition(character.position);
+                node.Propagate(character.nodeEffect, character.nodeRange);
+            }
+            yield return null;
         }
+    }
+
+    public static Node nodeFromPosition(Vector3 position){
+
+        // Get the nearest x, y index from the world position.
+        int x = (int)((GridSizeX - 1) * (position.x + (gridSize.x * 0.5f)) / gridSize.x);
+        int y = (int)((GridSizeY - 1) * (position.z + (gridSize.y * 0.5f)) / gridSize.y);
+
+        return Instance.grid[x, y];
+    }
+    
+    Vector3 offsetFromIndex(int x, int y){
+        /* calculate the world-space position of a node from the x, y indices of it. */
+        Vector3 result = Vector3.right * (x * Node.nodeDiameter + Node.nodeRadius);
+        result += Vector3.forward * (y * Node.nodeDiameter +  Node.nodeRadius);
+        result += WorldBottomLeft;
+        return result;
     }
 
     void BuildGrid(){
         /* This function initializes a grid of nodes specified by grideSize. */
         
         grid = new Node[GridSizeX,GridSizeY];
-
-        Vector3 position = transform.position;
-        Vector3 WorldBottomLeft = position - (Vector3.right * gridSize.x * 0.5f) - (Vector3.forward * gridSize.y * 0.5f);
         Vector3 nodePosition;
-
         int x, y;
         bool walkable;
 
         // Create nodes for each position in the grid.
         for (x = 0; x < GridSizeX; x++){
             for (y = 0; y < GridSizeY; y++){
-                nodePosition = WorldBottomLeft + (Vector3.right * (x * nodeDiameter + nodeRadius)) + Vector3.forward * (y * nodeDiameter + nodeRadius);
-                walkable = !Physics.CheckSphere(nodePosition, nodeRadius, unWalkableMask);
+                nodePosition = offsetFromIndex(x, y);
+                walkable = !Physics.CheckSphere(nodePosition, Node.nodeRadius, unWalkableMask);
                 grid[x,y] = new Node(walkable, nodePosition);
             }
-        }  
+        }
+
+        // populate connections.
+        for (x = 1; x < GridSizeX - 1; x++){
+            for (y = 1; y < GridSizeY - 1; y++){
+                //TODO: replace this with something better.
+                grid[x,y][AdjacentNode.North] = grid[x,y + 1];
+                grid[x,y][AdjacentNode.NorthWest] = grid[x - 1,y + 1];
+                grid[x,y][AdjacentNode.NorthEast] = grid[x + 1,y + 1];
+                grid[x,y][AdjacentNode.South] = grid[x,y - 1];
+                grid[x,y][AdjacentNode.SouthWest] = grid[x - 1,y - 1];
+                grid[x,y][AdjacentNode.SouthEast] = grid[x + 1,y - 1];
+                grid[x,y][AdjacentNode.West] = grid[x - 1,y];
+                grid[x,y][AdjacentNode.East] = grid[x + 1,y];
+            }
+        }
     }
 
     void OnDrawGizmos(){
@@ -72,10 +100,11 @@ public class Grid : SingletonObject<Grid> {
 
         if (grid != null){
             foreach (Node node in grid){
-                Gizmos.color = node.walkable? Color.green : Color.red;
-                Gizmos.DrawCube(node.worldPosition, Vector3.one * (nodeDiameter - 0.01f));
+                float val = (node.Desirability + 1.0f) * 0.5f;
+                Gizmos.color =  Color.Lerp( Color.red, Color.green, val); //node.Walkable ? Color.Lerp( Color.red, Color.green, val) : Color.blue;
+                Gizmos.DrawCube(node.worldPosition, Vector3.one * (Node.nodeDiameter - 0.01f));
             }
         }
     }
-
 }
+

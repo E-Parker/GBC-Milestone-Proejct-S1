@@ -28,7 +28,7 @@ public class EnemyMage_Controller: SpriteController{
     [SerializeField] float m_ActionOpertunity = 1.5f;
     [SerializeField] int m_Health = 3;
     
-    [Header("Other")]
+    [Header("Item Drops")]
     [SerializeField] GameObject DropOnDeath;
     [SerializeField] float DropRate = 0.25f;
 
@@ -167,14 +167,15 @@ public class EnemyMage_Controller: SpriteController{
         // Process AI:
 
         // if the enemy is too far away, teleport in front of the player.
-        if(relativeSqrDistance > MaxEnemySqrDistance){
-            direction = Vector3.Normalize(RelativeTargetPosition);
-            rigidbody.gameObject.transform.position = TargetPosition - direction; // this is nasty.
-            setState(anim_Walk);
-        }
+        //if(relativeSqrDistance > MaxEnemySqrDistance){
+        //    direction = Vector3.Normalize(RelativeTargetPosition);
+        //    rigidbody.gameObject.transform.position = TargetPosition - direction; // this is nasty.
+        //    setState(anim_Walk);
+        //}
 
         // If the enemy is to far away walk towards the player.
-        else if (relativeSqrDistance > m_MaxDistance * m_MaxDistance){
+        //else
+        if (relativeSqrDistance > m_MaxDistance * m_MaxDistance){
             
             // if the enemy has not moved very much since the last frame, try to get un-stuck.
             if(Vector3.SqrMagnitude(rigidbody.position - LastPosition) < 0.025f){

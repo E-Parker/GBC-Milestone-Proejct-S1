@@ -13,7 +13,7 @@ Material:
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
   - _ALPHABLEND_ON
-  - _COLORCOLOR_ON
+  - _COLOROVERLAY_ON
   - _FADING_ON
   m_InvalidKeywords: []
   m_LightmapFlags: 0
@@ -47,7 +47,7 @@ Material:
     - _CameraFadingEnabled: 1
     - _CameraFarFadeDistance: 1
     - _CameraNearFadeDistance: 0.25
-    - _ColorMode: 4
+    - _ColorMode: 3
     - _Cull: 2
     - _Cutoff: 0.5
     - _DistortionBlend: 0.699
@@ -66,7 +66,7 @@ Material:
     - _ZWrite: 0
     m_Colors:
     - _CameraFadeParams: {r: 0.25, g: 1.3333334, b: 0, a: 0}
-    - _Color: {r: 0.09803922, g: 0.09803922, b: 0.09803922, a: 1}
+    - _Color: {r: 0.86487055, g: 0.8773585, b: 0.6994037, a: 0.19215687}
     - _ColorAddSubDiff: {r: 1, g: 0, b: 0, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SoftParticleFadeParams: {r: 0, g: 0, b: 0, a: 0}

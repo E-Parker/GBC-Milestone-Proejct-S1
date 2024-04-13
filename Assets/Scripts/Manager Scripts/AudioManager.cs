@@ -96,7 +96,7 @@ public class AudioManager : SingletonObject<AudioManager>{
         while (true){
             if(currentSong != ""){
                 UpdateMusic();
-                yield return new WaitForSeconds(interval);
+                yield return new WaitForSecondsRealtime(interval);
             }
             yield return null;
         }

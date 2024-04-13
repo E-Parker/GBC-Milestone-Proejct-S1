@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6555413490930237408}
   - component: {fileID: 6490818255067172220}
   - component: {fileID: 4325582953121905304}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Projectile_Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -110,7 +110,7 @@ GameObject:
   - component: {fileID: 4326468879264094571}
   - component: {fileID: 5074756732703009133}
   - component: {fileID: 8902437735156694916}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: EM_Summon
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -230,5 +230,6 @@ MonoBehaviour:
   m_Caster_Range: 0.3
   m_Lifetime: 2
   m_Damage: 2
+  effect: 1
   m_Sfx_cast: Cast_Evoker
   m_Sfx_Hit: Explosion_Big
