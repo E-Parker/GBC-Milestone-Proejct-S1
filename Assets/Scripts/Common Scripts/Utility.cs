@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Unity.Mathematics;
 
-/*  This file contains various classes that are used by multiple scripts. */
+/* This file contains various classes that are used by multiple scripts. */
 
 namespace Utility{
 
@@ -19,12 +19,47 @@ public static class Utility{
     public const float MaxEnemyDistance = 1.6f; // Enemies this far away will be handled to prevent the player from just outrunning them forever.
     public const float MaxEnemySqrDistance = MaxEnemyDistance * MaxEnemyDistance;
 
+    public static LayerMask unWalkableMask = LayerMask.NameToLayer("Unwalkable");
+    
     public static Scene CurrentScene; 
 
     /* This is used as a template when generating objects at runtime. I could have done this with 
     prefabs but using this I can make any combination of scripts I want on demand This avoids 
     needing a prefab for an empty object. */
     public static GameObject EmptyObject = new GameObject("Empty");
+
+    /*========================================================================================*\
+    |                                       BYTE FLAG CLASS                                    |
+    \*========================================================================================*/
+
+    public static class ByteFlags{
+
+        public static bool compare(byte a, byte b){
+            return (a & b) == b;
+        }
+        
+        public static void set(ref byte a, byte b){
+            a |= b;
+        }
+        public static void unset(ref byte a, byte b){
+            a &= (byte)~b;
+        }
+
+        public static bool getAt(ref byte a, int i){
+            byte mask = (byte)(1 << i);
+            return compare(a, mask);
+        }
+
+        public static void setAt(ref byte a, int i){
+            byte mask = (byte)(1 << i);
+            set(ref a, mask);
+        }
+        
+        public static void unsetAt(ref byte a, int i){
+            byte mask = (byte)(1 << i);
+            unset(ref a, mask);
+        }
+    }
 
     /*========================================================================================*\
     |                                  USHORT STATE HANDLER CLASS                              |
@@ -63,13 +98,14 @@ public static class Utility{
         }
 
         public static int directionFromVector(ref ushort a, float x, float y){
-            /*  This function sets a to the nearest cardinal direction given a directional vector. */
+            /* This function sets a to the nearest cardinal direction given a directional vector. */
             
             // Get angle as float in radians:
             float angle = (Mathf.Atan2(y, x) + TWO_PI + HALF_PI) % TWO_PI;
+
             // Convert angle to index 0-7: inv_PI_Div_4 is equivalent to angle(as degrees) / 45 degrees.
-            int index = Mathf.RoundToInt(angle / TWO_PI * 8.0f);
-            Debug.Log(angle / TWO_PI * 8.0f);
+            int index = (int)(angle / TWO_PI * 7.999f);  // value fresh from my ass.
+
             // Set a to the corresponding direction.
             set(ref a, directionLookup(index));
 
@@ -79,10 +115,9 @@ public static class Utility{
 
         public static ushort directionLookup(int direction){
             /*  This function returns the direction from the lookup table. index must be int 0-7 */
-            return lookup[direction];
+            return lookup[direction % lookup.Length];
         }
     }
-
 
     /*========================================================================================*\
     |                               3D TRANSFORMATION & ALIGNMENT                              |
@@ -166,7 +201,6 @@ public static class Utility{
         public ValueGradient(float[] points, T[] values){
 
             this.nodes = new();
-
             // if the arrays are valid, add a node for each pair.
             if (points.Length == values.Length){
                 for(int i = 0; i < points.Length; i++){
@@ -277,13 +311,13 @@ public static class Utility{
     }
 
     public static T CosLerp<T>(T a, T b, float t, float exp = 0f){
-        /* Cosine smooth lerp function. */
+        /* Smoothly interpolates between two values using a cosine. */
         return Lerp(a, b, -0.5f * Mathf.Cos(Mathf.PI * t) + 0.5f);
     }
 
     public static T smoothLerp<T>(T a, T b, float t, float exp = 0f){
         /* Smoothly interpolates between any values which can be interpolated using quadratics. */
-        return Lerp(a, b, Lerp(t * t, 1 - ((t - 1) * (t - 1)), t));
+        return Lerp(a, b, Lerp(t * t, 1.0f - ((t - 1.0f) * (t - 1.0f)), t));
     }
 
     public static T Lerp<T>(T a, T b, float t, float exp = 0f){

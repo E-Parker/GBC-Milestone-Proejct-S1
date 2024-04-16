@@ -1,22 +1,24 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using static Utility.Utility;
 
 public abstract class SpriteController : MonoBehaviour{
-    /*Prototype of sprite controller used for moving animated sprites across a scene. */
+    /* Prototype of sprite controller used for moving animated sprites across a scene. */
     
     /* Any animation with these names will be ignored by StatesFromAnimations(). 
     These are still expected to be there since they are played manually. */
+
     public readonly string anim_Walk =   "Walk";
     public readonly string anim_Idle =   "Idle";
 
     protected static string[] IgnoreAnimations = new string[]{"Dead", "Dying", "Idle", "Hurt"};
+    
+    public static List<SpriteController> Characters = new();
 
     public Vector3 position {
-        get { return rigidbody.position; } 
+        get { return rigidbody.position; }
         set { rigidbody.position = value; }
     }
 
@@ -26,12 +28,13 @@ public abstract class SpriteController : MonoBehaviour{
     }
 
     public Vector3 direction{
-        get { return true_direction; }
+        get { return new Vector3(true_direction.x, 0.0f, true_direction.z).normalized; }
         set { 
             if(value == Vector3.zero){
                 return;
             }
-            true_direction = value.normalized;
+            true_direction = new Vector3(value.x, 0.0f, value.z);
+            true_direction = value;
             Animator.ChangeVariant(StateData.directionFromVector(ref state, value.x, value.z)); 
         }
     } 
@@ -39,24 +42,28 @@ public abstract class SpriteController : MonoBehaviour{
     public float EyeLevel {
         get { return collider.bounds.size.y * 0.75f; }
     }
-  
-    private Vector3 true_direction;             // store the actual direction here since a validation step is needed.
-
-    public float friction = 0.05f;              // amount velocity decays by over time.
-    public float acceleration = 0.01f;          // amount velocity changes by over time.
-    public float speed = 1;
-
-    public Sprite_Animation Animation;          // Animation Script.
-    public Sprite_Animator Animator;            // Animator Script to controller animation.
-    public Health_handler Health;               // Health script.
-    public new Collider collider;
-    public new Rigidbody rigidbody;
-
-    public ushort state;                        // holds the current sprite state. see ActorData.
-    protected ushort lastState;                 // holds the last sprite state.
-    public Dictionary<string, ushort> states;   // dictionary of named states.
     
-    public bool initialized { get; private set; } = false;
+    private Vector3 true_direction;             // store the actual direction here since a validation step is needed.
+    
+    [HideInInspector] public float friction = 0.05f;              // amount velocity decays by over time.
+    [HideInInspector] public float acceleration = 0.01f;          // amount velocity changes by over time.
+    [HideInInspector] public float speed = 1;
+
+    [HideInInspector] public Sprite_Animation Animation;          // Animation Script.
+    [HideInInspector] public Sprite_Animator Animator;            // Animator Script to controller animation.
+    [HideInInspector] public Health_handler Health;               // Health script.
+
+    [HideInInspector] public new Collider collider;
+    [HideInInspector] public new Rigidbody rigidbody;
+
+    [HideInInspector] public ushort state;                        // holds the current sprite state. see ActorData.
+    [HideInInspector] protected ushort lastState;                 // holds the last sprite state.
+    [HideInInspector] public Dictionary<string, ushort> states;   // dictionary of named states.
+    [HideInInspector] public bool initialized { get; private set; } = false;
+
+    [Header("Pathfinding")]
+    public float nodeEffect = -0.4f;    // Float value propagated to nodes under the sprite. 
+    public float nodeRange = 0.5f;      // Range of effect the sprite has.
 
     // Initialization:
 
@@ -72,6 +79,15 @@ public abstract class SpriteController : MonoBehaviour{
         Animation = GetComponent<Sprite_Animation>();
         Animator = GetComponent<Sprite_Animator>();
         
+        gameObject.layer = unWalkableMask;
+
+        if(!Characters.Contains(this)){
+            Characters.Add(this);
+        }
+        else{
+            Debug.Log("Already added to the list!!");
+        }
+
         // Run custom start parameters.
         CustomStart();
         initialized = true;
@@ -87,8 +103,12 @@ public abstract class SpriteController : MonoBehaviour{
         ResetController();
     }
 
+    protected void OnDestroy(){
+        Characters.Remove(this);
+    }
+
     protected void StatesFromAnimations(string[] names){
-        /*  This function adds states to the look up dictionary. */
+        /* This function adds states to the look up dictionary. */
         
         // Ignore the Idle animation and add it as the default state. 
         states.Add("Idle", StateData.Idle);
@@ -116,18 +136,18 @@ public abstract class SpriteController : MonoBehaviour{
 
         // Set state from direction and change to correct animation variant:
         Animator.ChangeVariant(StateData.directionFromVector(ref state, direction.x, direction.z));
-
+        Characters.Add(this);
     }
     
     // Update functions:
     
     public virtual void UpdateSpecial(){
-        /*  Change any special conditions here. For instance, fire a fireball or something. */
+        /* Change any special conditions here. For instance, fire a fireball or something. */
     }
 
     protected void Update(){
-        /*  Check states and play animations. This is called AFTER getting the player input. */
-
+        /* Check states and play animations. This is called AFTER getting the player input. */
+        
         // If the character is hit, play the hurt animation. Skip playing any other animations.
         if (Health.IsHit()){
             Animation.Play("Hurt");
@@ -183,6 +203,7 @@ public abstract class SpriteController : MonoBehaviour{
             // Play animations last. If one or both are missing the object will still be destroyed.
             Animation.Play("Dying");
             Animation.Play("Dead");
+            Characters.Remove(this);
         }
     }
 

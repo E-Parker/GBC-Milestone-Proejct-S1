@@ -1,8 +1,5 @@
 using System;
 using System.IO;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using static Utility.Utility;
@@ -14,8 +11,8 @@ scripts. */
 
 public class System_Manger : SingletonObject<System_Manger>{
 
-    const float DefaultSfxVolume = 0.25f;
-    const float DefaultMusVolume = 0.1f;
+    const float DefaultSfxVolume = 0.05f;
+    const float DefaultMusVolume = 0.05f;
     static string path;
    
     [Serializable] private struct SoundVolumeData{
@@ -55,11 +52,12 @@ public class System_Manger : SingletonObject<System_Manger>{
             // Clean up the DontDestroyOnLoad Scene:
             Enemy_Manager.DestroyInstance();
             Ui_Handler.DestroyInstance();
+            Grid.DestroyInstance();
             
             // Make Instances:
             SpriteManager.MakeInstance();
             AudioManager.MakeInstance();
-            AudioManager.switchMusic("BattleCalm");
+            AudioManager.switchMusic("Menu");
 
             Debug.Log("Loaded Start Scene.");
             
@@ -68,15 +66,17 @@ public class System_Manger : SingletonObject<System_Manger>{
         if(CurrentScene.name == "Game"){
             
             // Clean up the DontDestroyOnLoad Scene:
+            Grid.DestroyInstance();
             Enemy_Manager.DestroyInstance();
             Ui_Handler.DestroyInstance();
 
             // Make Instances:
+            Grid.MakeInstance();
             SpriteManager.MakeInstance();
             AudioManager.MakeInstance();
             Enemy_Manager.MakeInstance();
             Ui_Handler.MakeInstance();
-
+            SpriteController.Characters = new(); //TODO: Replace this with some sort of event.
             Debug.Log("Loaded Game Scene.");
 
         }

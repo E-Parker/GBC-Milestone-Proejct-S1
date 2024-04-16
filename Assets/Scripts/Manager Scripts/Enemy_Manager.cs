@@ -1,16 +1,14 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
 using System.IO;
-using static Utility.Utility;
-using Unity.VisualScripting;
 
 
 public class Enemy_Manager : SingletonObject<Enemy_Manager>{   
 
     const int MAX_UNIQUE_ENTITIES = 64;
+    const float ARENA_RADIUS = 2.75f;
     static readonly string SPAWN_DATA = "EnemySpawn.json";
     static readonly string SPAWN_PATH = $"{Application.dataPath}/Resources/Data/Level/{SPAWN_DATA}";
     static readonly string PREFAB_PATH = "Prefabs/Enemies/";
@@ -103,8 +101,8 @@ public class Enemy_Manager : SingletonObject<Enemy_Manager>{
     private int currentTypeIndex = 0;
     private int currentTypeAmount = 0;
 
-    private List<GameObject> alive;    // list of alive enemies
-    private List<GameObject> dead;     // list of dead (marked inactive) enemies.
+    public List<GameObject> alive {get; private set;}    // list of alive enemies
+    public List<GameObject> dead {get; private set;}     // list of dead (marked inactive) enemies.
 
     public override void CustomAwake(){
         EntityPrefabs = new UnityEngine.Object[MAX_UNIQUE_ENTITIES];
@@ -161,7 +159,6 @@ public class Enemy_Manager : SingletonObject<Enemy_Manager>{
         Instance.currentWave = Instance.WaveQueue.Dequeue();
         AudioManager.switchMusic(Instance.currentWave.Song);
     }
-
 
     public static void InitializeWavesSorted(){
         /*  This function sorts the waves by level. */
@@ -295,7 +292,7 @@ public class Enemy_Manager : SingletonObject<Enemy_Manager>{
             GenerateEnemies();
         }
         
-        //  HANDLE SPAWNING NORMALY, STILL FIGHTING CURRENT WAVE:
+        //  HANDLE SPAWNING NORMALLY, STILL FIGHTING THE CURRENT WAVE:
         if(waveScore < currentWave.Next || currentWave.Next == -1){
             // Update spawn timer:
             enemyTimer += Time.deltaTime;
@@ -325,8 +322,9 @@ public class Enemy_Manager : SingletonObject<Enemy_Manager>{
             GenerateEnemiesAsync();
             return;
         }
+        
         // Otherwise, there are still enemies alive but the wave has ended.
-        UpdateLists(); // Update Lists to reflect which enemies are dead
+        UpdateLists();  // Update Lists to reflect which enemies are dead
     }
 
 
@@ -334,12 +332,14 @@ public class Enemy_Manager : SingletonObject<Enemy_Manager>{
         /*  Returns a random vector m_SpawnRadius distance from the target. */
 
         // Get random position on radius:
-        Vector3 position = new Vector3(UnityEngine.Random.Range(-1f,1f),
-                                    Player_Controller.Instance.transform.position.y,
-                                    UnityEngine.Random.Range(-1f,1f));
+        Vector3 position = new Vector3( 
+            UnityEngine.Random.Range(-1.0f, 1.0f),
+            Player_Controller.Instance.transform.position.y,
+            UnityEngine.Random.Range(-1.0f, 1.0f)
+        );
         
-        // Varify position is not zero vector before normalization.
-        if (position == Vector3.zero){position = Vector3.down;}
+        // Verify position is not zero vector before normalization.
+        if (position == Vector3.zero) { position = Vector3.down; }
         return Vector3.Normalize(position) * m_SpawnRadius;
     }
 

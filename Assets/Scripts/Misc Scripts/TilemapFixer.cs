@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -13,7 +11,7 @@ public class TilemapFixer : MonoBehaviour{
     
     I hate this stupid engine with every fiber of my being. */
     
-    void Start(){
+    void Awake(){
         TilemapRenderer tilemap = GetComponent<TilemapRenderer>();
         tilemap.receiveShadows = true; // The ONLY purpose of this script is to change this value.
     }

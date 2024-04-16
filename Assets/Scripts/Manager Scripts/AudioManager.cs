@@ -96,7 +96,7 @@ public class AudioManager : SingletonObject<AudioManager>{
         while (true){
             if(currentSong != ""){
                 UpdateMusic();
-                yield return new WaitForSeconds(interval);
+                yield return new WaitForSecondsRealtime(interval);
             }
             yield return null;
         }
@@ -274,8 +274,8 @@ public class AudioManager : SingletonObject<AudioManager>{
             }
             
             Instance.musicTrack[i].clip = clips.tracks[i];
-            Instance.musicTrack[i].Play();
             Instance.musicTrack[i].time = Instance.interval * Instance.iteration; // Set the time to the current time.
+            Instance.musicTrack[i].Play();
         }   
 
         Instance.loopMusicLatch = true;
@@ -291,6 +291,8 @@ public class AudioManager : SingletonObject<AudioManager>{
 
     public static void PlaySound(string name){
         /*  This function plays a sound effect with name "name". */
+
+        if (name == "") return;
 
         Dictionary<string, AudioClip> sfxClips = Instance.sfxClips;
         

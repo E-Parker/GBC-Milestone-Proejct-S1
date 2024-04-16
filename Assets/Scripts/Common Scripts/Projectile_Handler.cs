@@ -19,9 +19,9 @@ public class Projectile_Handler : MonoBehaviour{
         Projectile_Controller controller = projectile.GetComponent<Projectile_Controller>();
         
         // create random offset to the velocity:
-        Vector3 random = new Vector3(Random.Range(-m_Randomness,m_Randomness),
-                                     0,//Random.Range(-m_Randomness,m_Randomness),
-                                     Random.Range(-m_Randomness,m_Randomness));
+        Vector3 random = new Vector3(Random.Range(-m_Randomness, m_Randomness),
+                                     0.0f,//Random.Range(-m_Randomness,m_Randomness),
+                                     Random.Range(-m_Randomness, m_Randomness));
 
         // Change set up direction by random offset:
         direction = -(direction + (random * 0.1f)) * velocity;

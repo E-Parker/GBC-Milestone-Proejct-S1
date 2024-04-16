@@ -112,6 +112,7 @@ GameObject:
   - component: {fileID: 28906703703604902}
   - component: {fileID: 688577644292843106}
   - component: {fileID: 6645384622714547171}
+  - component: {fileID: 1045553837873453377}
   - component: {fileID: 1989157272451855560}
   m_Layer: 0
   m_Name: Lowly_Mage
@@ -179,7 +180,7 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 1
+  m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 112
@@ -274,6 +275,19 @@ MonoBehaviour:
   projectile_prefab: {fileID: 4722450577736150645, guid: 31e8ee17becc96c49889b0643cff5cad, type: 3}
   velocity: 0.5
   m_Randomness: 1.5
+--- !u!114 &1045553837873453377
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6093886521202672647}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2166aba0a5182484f983cf59574715aa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  desirabilityWeight: 0.5
 --- !u!114 &1989157272451855560
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -295,6 +309,8 @@ MonoBehaviour:
   collider: {fileID: 0}
   rigidbody: {fileID: 0}
   state: 0
+  nodeEffect: -0.8
+  nodeRange: 1
   m_Acceleration: 0.6
   m_Friction: 0.45
   m_Speed: 0.25
@@ -309,5 +325,4 @@ MonoBehaviour:
   m_Health: 1
   DropOnDeath: {fileID: 0}
   DropRate: 0.25
-  target: {fileID: 0}
-  wanderTarget: {x: 0, y: 0, z: 0}
+  Target: {fileID: 0}

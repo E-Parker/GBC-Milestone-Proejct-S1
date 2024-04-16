@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using static Utility.Utility;
 
@@ -78,12 +79,14 @@ public class Projectile_Controller : MonoBehaviour{
     [SerializeField] string m_Sfx_Hit = "Metallic_Hit";
 
     private Func<Vector3, Vector3, float, float, Vector3> interpolationType;
-    private bool interp;
+    private bool castDirection;
+    private float exponent = 0.0f;
     
     private Vector3 direction;                  // Combined initial velocity and direction.
-    private Vector3 position;                       
-    private Vector3 startpos;                   // position to travel from
-    private Vector3 endpos;                     // position to end up at from
+    private Vector3 position;                   
+
+    private Vector3 fromPosition;               // position to travel from
+    private Vector3 toPosition;                 // position to end up at from
     private Sprite_Animation Animation;
     
     private Light p_light;                      // Projectile light holder
@@ -101,22 +104,22 @@ public class Projectile_Controller : MonoBehaviour{
 
     void Start(){
         // Initialize Values:
-        interp = falloffDirection == InterpDirection.to_from;
+        castDirection = falloffDirection == InterpDirection.to_from;
 
         // Set interpolation function:
         switch(falloff){
             case FalloffOptions.Linear:         interpolationType = Lerp; break;
             case FalloffOptions.Quadratic:      interpolationType = smoothLerp; break;
             case FalloffOptions.Cosine:         interpolationType = CosLerp; break;
-            case FalloffOptions.Exponent:       interpolationType = ExponentLerp; break;
-            case FalloffOptions.ExponentCosine: interpolationType = CosExponentLerp; break;
-            case FalloffOptions.Boomerang:      interpolationType = BoomerangLerp; break;
+            case FalloffOptions.Exponent:       interpolationType = ExponentLerp; exponent = m_Exponent; break;
+            case FalloffOptions.ExponentCosine: interpolationType = CosExponentLerp; exponent = m_CosineExponent; break;
+            case FalloffOptions.Boomerang:      interpolationType = BoomerangLerp; exponent = m_Smoothness; break;
         }
 
         // Set position / start and end points.
         position = transform.position;
-        startpos = transform.position;
-        endpos = startpos + (direction * m_Lifetime);
+        fromPosition = transform.position;
+        toPosition = fromPosition + (direction * m_Lifetime);
 
         // Get Animation component:
         Animation = GetComponent<Sprite_Animation>();
@@ -158,7 +161,7 @@ public class Projectile_Controller : MonoBehaviour{
 
         // Set Direction:
         this.direction = newDirection;
-        this.endpos = startpos+(direction * m_Lifetime);
+        this.toPosition = fromPosition+(direction * m_Lifetime);
     }
 
 
@@ -216,9 +219,11 @@ public class Projectile_Controller : MonoBehaviour{
             // Get the ratio of currentTime to totalTime.
             currentFTime = currentTime / totalTime;
         }
-        // Otherwise not alive, approximate slowing by updating currentFTime independently of the actual time.
+        // Otherwise the projectile has hit.
         else{
+            // time increases by 1/4th the normal rate to make it look like it slowed down.
             currentFTime += Time.deltaTime / totalTime * 0.25f;
+
             // Nothing *should* break if currentFTime is greater than 1, but do this just in case.
             currentFTime = Mathf.Min(currentFTime, 1f);     
         }
@@ -237,7 +242,7 @@ public class Projectile_Controller : MonoBehaviour{
         }
 
         // Change position by using the interpolation function.
-        position = interpolationType(startpos, endpos, interp?currentFTime:1f-currentFTime, m_Exponent);
+        position = interpolationType(fromPosition, toPosition, castDirection? currentFTime : 1.0f - currentFTime, exponent);
 
         // Update transform to rounded version of position. 
         transform.position = TransformToPixels(position);

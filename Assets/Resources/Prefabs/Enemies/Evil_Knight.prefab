@@ -112,6 +112,7 @@ GameObject:
   - component: {fileID: 28906703703604902}
   - component: {fileID: 688577644292843106}
   - component: {fileID: 6645384622714547171}
+  - component: {fileID: 7483612571284100713}
   - component: {fileID: 1989157272451855560}
   m_Layer: 0
   m_Name: Evil_Knight
@@ -179,7 +180,7 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 1
+  m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 112
@@ -274,6 +275,19 @@ MonoBehaviour:
   projectile_prefab: {fileID: 4722450577736150645, guid: d8dd811df227e6441aef0eac9d35a5e6, type: 3}
   velocity: 0.4
   m_Randomness: 1.5
+--- !u!114 &7483612571284100713
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6093886521202672647}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2166aba0a5182484f983cf59574715aa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  desirabilityWeight: 0.5
 --- !u!114 &1989157272451855560
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -286,6 +300,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b386060074640440b6a1b55f8f7aa7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  friction: 0.05
+  acceleration: 0.01
+  speed: 1
+  Animation: {fileID: 0}
+  Animator: {fileID: 0}
+  Health: {fileID: 0}
+  collider: {fileID: 0}
+  rigidbody: {fileID: 0}
+  state: 0
+  nodeEffect: -0.8
+  nodeRange: 1
   m_Acceleration: 0.6
   m_Friction: 0.45
   m_Speed: 0.2
@@ -300,3 +325,4 @@ MonoBehaviour:
   m_Health: 3
   DropOnDeath: {fileID: 4722450577736150645, guid: a5bb34edef807fc49a7cc381ee44898c, type: 3}
   DropRate: 0.1
+  Target: {fileID: 0}
