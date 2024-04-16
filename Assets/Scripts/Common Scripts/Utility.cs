@@ -104,13 +104,13 @@ public static class Utility{
             float angle = (Mathf.Atan2(y, x) + TWO_PI + HALF_PI) % TWO_PI;
 
             // Convert angle to index 0-7: inv_PI_Div_4 is equivalent to angle(as degrees) / 45 degrees.
-            int index = (int)(angle / TWO_PI * 7.999f);  // value fresh from my ass.
+            int index = Mathf.RoundToInt(angle / TWO_PI * 8.0f);  // value fresh from my ass.
 
             // Set a to the corresponding direction.
             set(ref a, directionLookup(index));
 
             // return the index here because i cant figure out a better way to do this.
-            return index;
+            return Mathf.Min(index,7);
         }
 
         public static ushort directionLookup(int direction){
@@ -147,8 +147,8 @@ public static class Utility{
         var ot = (Original.GetComponent<Transform>()!=null)? Original.GetComponent<Transform>():
                                                              Original.GetComponent<RectTransform>();
         
-        var tt = (Target.GetComponent<Transform>()!=null)?  Target.GetComponent<Transform>():
-                                                            Target.GetComponent<RectTransform>();
+        var tt = (Target.GetComponent<Transform>()!=null)? Target.GetComponent<Transform>():
+                                                           Target.GetComponent<RectTransform>();
         
         ot.rotation = Quaternion.RotateTowards(ot.rotation, tt.rotation,2^32);
         //ot.rotation = Quaternion.Inverse(tt.rotation);
@@ -181,41 +181,41 @@ public static class Utility{
     |                                       INTERPOLATION                                      |
     \*========================================================================================*/
     
-    public struct GradientNode<T>{
+    public struct GradientNode{
 
         public float position;  // Position in the gradient.
-        public T value;         // Value at the position.
+        public float value;         // Value at the position.
 
-        public GradientNode(float position, T value)
+        public GradientNode(float position, float value)
         {
             this.position = Mathf.Clamp01(position);
             this.value = value;
         }
     }
 
-    public struct ValueGradient<T>{
+    public struct ValueGradient{
         /* Struct for sampling a gradient defined by a list of position-value pairs. */
         
-        private List<GradientNode<T>> nodes;
+        private List<GradientNode> nodes;
 
-        public ValueGradient(float[] points, T[] values){
+        public ValueGradient(float[] points, float[] values){
 
             this.nodes = new();
             // if the arrays are valid, add a node for each pair.
             if (points.Length == values.Length){
                 for(int i = 0; i < points.Length; i++){
-                    this.nodes.Add(new GradientNode<T>(points[i], values[i]));
+                    this.nodes.Add(new GradientNode(points[i], values[i]));
                 }
                 SortNodes();
             }
         }
 
-        public ValueGradient(List<GradientNode<T>> nodes){
+        public ValueGradient(List<GradientNode> nodes){
             this.nodes = nodes;
             SortNodes();
         }
 
-        public void Add(GradientNode<T> node){
+        public void Add(GradientNode node){
             nodes.Add(node);
             SortNodes();
         }
@@ -224,7 +224,7 @@ public static class Utility{
             nodes.Sort((a, b) => a.position.CompareTo(b.position));
         }
 
-        private void SearchNodes(int approxIndex, float t, out GradientNode<T> left,  out GradientNode<T> right){
+        private void SearchNodes(int approxIndex, float t, out GradientNode left,  out GradientNode right){
             /* Check the nodes left and right of the approximate index. if a better value is found 
             recessively search the new best indices. */
 
@@ -250,12 +250,12 @@ public static class Utility{
             return;
         }
 
-        public T Sample(float input, Func<T, T, float, float, T> interpolation = null){
+        public float Sample(float input, Func<float, float, float, float, float> interpolation = null){
             /* This function returns the gradient at "t" from the list of nodes. */
             
             // Check for interpolation type.
             if (interpolation == null){
-                interpolation = Lerp<T>;
+                interpolation = Lerp;
             }
 
             // No nodes. return the default for this type.
@@ -268,7 +268,7 @@ public static class Utility{
             }
 
             // Find the nearest nodes on the left and right of the input.
-            GradientNode<T> left, right;
+            GradientNode left, right;
 
             /* Since the nodes are sorted, truncate to the nearest index into the list of nodes. 
             This would only work first try if the nodes happen to be evenly spaced, although
@@ -281,28 +281,28 @@ public static class Utility{
         }
     }
 
-    public static T BoomerangLerp<T>(T a, T b, float t, float smooth = 0f){
+    public static float BoomerangLerp(float a, float b, float t, float smooth = 0f){
         /* Blend between the two boomerang lerps for different levels of smoothness. */
         return Lerp(LinearBoomerangLerp(a, b, t), CosBoomerangLerp(a, b, t), smooth);
     }
 
-    public static T LinearBoomerangLerp<T>(T a, T b, float t, float exp = 0f){
+    public static float LinearBoomerangLerp(float a, float b, float t, float exp = 0f){
         /* Return to sender! */
         return Lerp(a, b, -4f * t * (t - 1f));
     }
 
-    public static T CosBoomerangLerp<T>(T a, T b, float t, float exp = 0f){
+    public static float CosBoomerangLerp(float a, float b, float t, float exp = 0f){
         /* Return to sender but smooth! */
         return CosLerp(a, b, t * 2f);
     }
 
-    public static T CosExponentLerp<T>(T a, T b, float t, float exp = 0.8f){
+    public static float CosExponentLerp(float a, float b, float t, float exp = 0.8f){
         /*  This function raises t to a power derived from exp. Same thing as ExponentLerp(), 
         just with cosine. https://www.desmos.com/calculator/tebffd9hbu */
         return CosLerp(a, b, Mathf.Pow(t, (exp < 0.5f)?1/(2*exp): 2 - (2*exp)));
     }
 
-    public static T ExponentLerp<T>(T a, T b, float t, float exp = 0.8f){
+    public static float ExponentLerp(float a, float b, float t, float exp = 0.8f){
         /*  This function raises t to a power derived from exp. This warp the interpolation. 
         when exp < 0.5, transform use 1/exp so exp -> inf. when exp > 0.5, change direction, 
         exp -> 0. Here's the graph I made to explain what's going on exactly. 
@@ -310,27 +310,71 @@ public static class Utility{
         return Lerp(a, b, Mathf.Pow(t, (exp < 0.5f)?1/(2*exp): 2 - (2*exp)));
     }
 
-    public static T CosLerp<T>(T a, T b, float t, float exp = 0f){
+    public static float CosLerp(float a, float b, float t, float exp = 0f){
         /* Smoothly interpolates between two values using a cosine. */
         return Lerp(a, b, -0.5f * Mathf.Cos(Mathf.PI * t) + 0.5f);
     }
 
-    public static T smoothLerp<T>(T a, T b, float t, float exp = 0f){
+    public static float smoothLerp(float a, float b, float t, float exp = 0f){
         /* Smoothly interpolates between any values which can be interpolated using quadratics. */
         return Lerp(a, b, Lerp(t * t, 1.0f - ((t - 1.0f) * (t - 1.0f)), t));
     }
 
-    public static T Lerp<T>(T a, T b, float t, float exp = 0f){
-        /*  Static function to interpolate linearly any values which can be interpolated. 
-        Interpolation is not performed on types that cannot be compared. */
-        
-        /* I had to change the Unity .Net API Compatibility level to "Framework" which is actually 
-        framework 4.x but incorrectly labeled. I hate this engine. */
-        
-        dynamic da = a;
-        dynamic db = b;
+    public static float Lerp(float a, float b, float t, float exp = 0f){
 
-        return a + (da - db) * t;
+        // Perform linear interpolation
+        float result = a + (a - b) * t;
+
+        // Cast result back to type float and return
+        return result;
+    }
+
+    public static Vector3 BoomerangLerp(Vector3 a, Vector3 b, float t, float smooth = 0f){
+        /* Blend between the two boomerang lerps for different levels of smoothness. */
+        return Lerp(LinearBoomerangLerp(a, b, t), CosBoomerangLerp(a, b, t), smooth);
+    }
+
+    public static Vector3 LinearBoomerangLerp(Vector3 a, Vector3 b, float t, float exp = 0f){
+        /* Return to sender! */
+        return Lerp(a, b, -4f * t * (t - 1f));
+    }
+
+    public static Vector3 CosBoomerangLerp(Vector3 a, Vector3 b, float t, float exp = 0f){
+        /* Return to sender but smooth! */
+        return CosLerp(a, b, t * 2f);
+    }
+
+    public static Vector3 CosExponentLerp(Vector3 a, Vector3 b, float t, float exp = 0.8f){
+        /*  This function raises t to a power derived from exp. Same thing as ExponentLerp(), 
+        just with cosine. https://www.desmos.com/calculator/tebffd9hbu */
+        return CosLerp(a, b, Mathf.Pow(t, (exp < 0.5f)?1/(2*exp): 2 - (2*exp)));
+    }
+
+    public static Vector3 ExponentLerp(Vector3 a, Vector3 b, float t, float exp = 0.8f){
+        /*  This function raises t to a power derived from exp. This warp the interpolation. 
+        when exp < 0.5, transform use 1/exp so exp -> inf. when exp > 0.5, change direction, 
+        exp -> 0. Here's the graph I made to explain what's going on exactly. 
+        https://www.desmos.com/calculator/ez5zhgpylg */
+        return Lerp(a, b, Mathf.Pow(t, (exp < 0.5f)?1/(2*exp): 2 - (2*exp)));
+    }
+
+    public static Vector3 CosLerp(Vector3 a, Vector3 b, float t, float exp = 0f){
+        /* Smoothly interpolates between two values using a cosine. */
+        return Lerp(a, b, -0.5f * Mathf.Cos(Mathf.PI * t) + 0.5f);
+    }
+
+    public static Vector3 smoothLerp(Vector3 a, Vector3 b, float t, float exp = 0f){
+        /* Smoothly interpolates between any values which can be interpolated using quadratics. */
+        return Lerp(a, b, Lerp(t * t, 1.0f - ((t - 1.0f) * (t - 1.0f)), t));
+    }
+
+    public static Vector3 Lerp(Vector3 a, Vector3 b, float t, float exp = 0f){
+
+        // Perform linear interpolation
+        Vector3 result = a + (a - b) * t;
+
+        // Cast result back to type float and return
+        return result;
     }
 }
 

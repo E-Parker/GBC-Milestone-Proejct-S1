@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 
 public class TilemapFixer : MonoBehaviour{   
-
+    
     /*  This is quite literally the dumbest thing I think I have ever written in code. For whatever
     reason, Tilemaps have a hidden property that allows them to receive shadows...
     

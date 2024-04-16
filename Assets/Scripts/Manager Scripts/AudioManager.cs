@@ -27,7 +27,7 @@ public class AudioManager : SingletonObject<AudioManager>{
 
     const ushort c_musicTracks = 4;    // number of AudioSources instanced to handle music.
     const float c_dopplerLevel = 0f;   // Amount of doppler for sfx.
-    const bool c_spatialize = false;   // bool for if the audio is spatialized
+    const bool c_spatialize = false;   // bool for if the audio is spatialized.
 
     // Variables:
     const int MusicChangeChecks = 4;
@@ -39,7 +39,7 @@ public class AudioManager : SingletonObject<AudioManager>{
     private AudioSource sfxSource;          // AudioSource for playing one-shot audio.
     private AudioSource[] musicTrack;       // array of AudioSource(s) for playing music.
     private float[] musicTrackVolume;       // array of floats. controls each track's volume.
-    private float[] musicTrackVolumeTarget; // array of floats for what the music volume should approach
+    private float[] musicTrackVolumeTarget; // array of floats for what the music volume should approach.
     private float musicVolumeOffset;        // Adjust each music track volume so the total volume is 1.
 
     private Dictionary<string, AudioClip> sfxClips;     // Store sfx here.
@@ -181,7 +181,7 @@ public class AudioManager : SingletonObject<AudioManager>{
          
             // If there are to many tracks, don't add the track. 
             if (track > c_musicTracks){
-                Debug.LogError($"Could not add track,{'"'}{name}{'"'}. music can only be {c_musicTracks} track(s).");
+                //Debug.LogError($"Could not add track,{'"'}{name}{'"'}. music can only be {c_musicTracks} track(s).");
                 continue;
             }
             
@@ -198,7 +198,7 @@ public class AudioManager : SingletonObject<AudioManager>{
     public static bool CheckValidSongName(string name){
         /* Checks if a song "name" is a valid one that has been loaded. */
         if (!Instance.musicClips.Keys.Contains(name)){
-            Debug.LogError($"Could not play music, {'"'}{name}{'"'}.");
+            //Debug.LogError($"Could not play music, {'"'}{name}{'"'}.");
             return false;
         }
         return true;
@@ -234,7 +234,7 @@ public class AudioManager : SingletonObject<AudioManager>{
 
         // Validate input:
         if (newVolume < 0f || newVolume > 1f){
-            Debug.LogWarning("Music volume must be in range [0,1].");
+            //Debug.LogWarning("Music volume must be in range [0,1].");
             return;
         }
         // Update the sfxSoruce volume:
@@ -256,7 +256,7 @@ public class AudioManager : SingletonObject<AudioManager>{
         Instance.loopMusic = false;
         Instance.loopMusicLatch = true;
         
-        Debug.Log($"Now playing: {'"'}{name}{'"'}.");
+        //Debug.Log($"Now playing: {'"'}{name}{'"'}.");
     }
     
     public static void PlayMusic(string song){
@@ -298,7 +298,7 @@ public class AudioManager : SingletonObject<AudioManager>{
         
         // If the music cannot be found, leave early.
         if (!sfxClips.Keys.Contains(name)){
-            Debug.LogError($"Could not play sound effect, {'"'}{name}{'"'}.");
+            //Debug.LogError($"Could not play sound effect, {'"'}{name}{'"'}.");
             return;
         }
 

@@ -42,7 +42,8 @@ public class Node {
     public bool LineOfSight = true; // Bool for if the tile in line of sight for the player.
 
     // Non-Persistent pathfinding variables:
-    public float fCost { get { return hCost + gCost; } } 
+    
+    public float fCost { get { return hCost + gCost; } }
     public float hCost = 0.0f;
     public float gCost = 0.0f;
   
@@ -63,7 +64,7 @@ public class Node {
         this.desirability = 0.0f;
     }
 
-    public dynamic this[AdjacentNode direction]{
+    public Node this[AdjacentNode direction]{
         get{
             // If the node exists and is an active connection, return that node.
             if (connections.ContainsKey(direction) && connections[direction].Walkable){

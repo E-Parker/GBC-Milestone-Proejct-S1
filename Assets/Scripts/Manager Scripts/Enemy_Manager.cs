@@ -9,8 +9,7 @@ public class Enemy_Manager : SingletonObject<Enemy_Manager>{
 
     const int MAX_UNIQUE_ENTITIES = 64;
     const float ARENA_RADIUS = 2.75f;
-    static readonly string SPAWN_DATA = "EnemySpawn.json";
-    static readonly string SPAWN_PATH = $"{Application.dataPath}/Resources/Data/Level/{SPAWN_DATA}";
+    static readonly string SPAWN_PATH = "Data/Level/EnemySpawn";
     static readonly string PREFAB_PATH = "Prefabs/Enemies/";
 
     public static UnityEngine.Object[] EntityPrefabs;
@@ -121,7 +120,7 @@ public class Enemy_Manager : SingletonObject<Enemy_Manager>{
 
     void LoadSpawnPatterns(){
         /* This function reads the Json file containing the spawn patterns. */
-        string rawJson = File.ReadAllText(SPAWN_PATH);
+        string rawJson = Resources.Load<TextAsset>(SPAWN_PATH).text;
         IEnemyWaveArray data = JsonUtility.FromJson<IEnemyWaveArray>(rawJson);
         Waves = data.Waves;
     }
@@ -136,7 +135,7 @@ public class Enemy_Manager : SingletonObject<Enemy_Manager>{
         // Instance each one and add it to the Arrays.
         for(int i = 0; i < EntityData.Length; i++) {
             EntityPrefabs[i] = EntityData[i]; //Instantiate(, this.transform);
-            Debug.Log(EntityData[i].name);
+            //Debug.Log(EntityData[i].name);
             EntityLookup.Add(EntityData[i].name, EntityPrefabs[i]);
         }
     }
@@ -151,7 +150,7 @@ public class Enemy_Manager : SingletonObject<Enemy_Manager>{
         
         for (int i = 0; i < iterations; i++){ 
             IEnemyWave IWave = Instance.Waves[i];
-            Debug.Log($"wave: {i}, level: {IWave.level}");
+            //Debug.Log($"wave: {i}, level: {IWave.level}");
             int nextLevel = (iterations-1 != i)?Instance.Waves[i+1].level : -1;
             EnemyWave wave = new EnemyWave(IWave, nextLevel);
             Instance.WaveQueue.Enqueue(wave);
@@ -203,12 +202,12 @@ public class Enemy_Manager : SingletonObject<Enemy_Manager>{
         foreach(GameObject enemy in alive){
             Destroy(enemy);
         }
-        alive.Clear();
+        alive = new();
 
         foreach(GameObject enemy in dead){
             Destroy(enemy);
         }
-        dead.Clear();
+        dead = new();
 
         // For each type of enemy in the wave instanciate a copy, set active to false.
         foreach(EnemySpawn enemyType in currentWave.Spawns){
@@ -288,7 +287,7 @@ public class Enemy_Manager : SingletonObject<Enemy_Manager>{
     void Update(){
         /*  Handle spawning new enemies here */
 
-        if (alive == null && dead == null){
+        if (alive == null || dead == null){
             GenerateEnemies();
         }
         

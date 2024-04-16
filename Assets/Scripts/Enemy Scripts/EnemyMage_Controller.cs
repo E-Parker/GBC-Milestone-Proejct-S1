@@ -58,7 +58,7 @@ public class EnemyMage_Controller: SpriteController{
     }
     private Node currentNode;
     Vector3 directionToNode;
-    private Color debugColor = Color.black;
+    //private Color debugColor = Color.black;
 
     private int mana;                   // the maximum mana the player can have.
     private int currentMana = 0;        // the current amount of mana the player has.
@@ -134,7 +134,7 @@ public class EnemyMage_Controller: SpriteController{
 
     public override void UpdateSpecial(){
         
-        Debug.DrawRay(position, Vector3.up, debugColor);
+        //Debug.DrawRay(position, Vector3.up, debugColor);
 
         SetTarget();            // Check for missing target:
         RememberLastState();    // Remember the previous state
@@ -208,21 +208,21 @@ public class EnemyMage_Controller: SpriteController{
 
         // If the enemy is really far away, target a random position.
         if (relativeSqrDistance > MaxEnemySqrDistance){
-            debugColor = Color.blue;
+            //debugColor = Color.blue;
             Wander();
             return;
         }
 
         // If the enemy is too far away walk towards the target.
         if (relativeSqrDistance > m_MaxDistance * m_MaxDistance){
-            debugColor = Color.green;
+            //debugColor = Color.green;
             SeekTarget();
             return;
         }
 
         // If the target is too close, blindly run in the opposite direction. 
         if(relativeSqrDistance < (m_MinDistance * m_MinDistance)){
-            debugColor = Color.yellow;
+            //debugColor = Color.yellow;
             path = null;
             direction = RelativeTargetPosition.normalized;
             setState(anim_Walk);
@@ -231,12 +231,12 @@ public class EnemyMage_Controller: SpriteController{
 
         // Randomly chose to try to find a better position, or attack.
         if(UnityEngine.Random.Range(0.0f, 1.0f) > m_Agression){
-            debugColor = Color.gray;
+            //debugColor = Color.gray;
             Reposition();
         }
         else{
             Attack(PredictedTargetPosition);
-            debugColor = Color.cyan;
+            //debugColor = Color.cyan;
         }
     }
 

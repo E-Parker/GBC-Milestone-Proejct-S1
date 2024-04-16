@@ -24,7 +24,9 @@ public abstract class SingletonObject<T> : MonoBehaviour where T : SingletonObje
     }
 
     public static bool IsPersistent{
-        get{ return Persistent[Indexer]; }
+        get{ 
+            return Persistent[Indexer]; 
+        }
         
         set{ 
 
@@ -44,7 +46,7 @@ public abstract class SingletonObject<T> : MonoBehaviour where T : SingletonObje
             //DontDestroyOnLoad(this);      // Ensure the same object persists between Loads.
         }
         catch(ArgumentException){
-            Debug.Log("Instance Already In scene.");
+            //Debug.Log("Instance Already In scene.");
             Destroy(gameObject);            // Since It already exits in the scene, destroy it.
         }
         CustomAwake();                      // Call custom overrides for Awake function.
@@ -60,7 +62,7 @@ public abstract class SingletonObject<T> : MonoBehaviour where T : SingletonObje
         /* This function creates a new instance of type T. */
 
         if (Instances.ContainsKey(Indexer)){
-            Debug.Log("Instance already exists! Use DestroyInstance() before trying to make another.");
+            //Debug.Log("Instance already exists! Use DestroyInstance() before trying to make another.");
             return;
         }
 
@@ -77,7 +79,7 @@ public abstract class SingletonObject<T> : MonoBehaviour where T : SingletonObje
         improperly. This is only intended to be called once */
 
         if (!Instances.ContainsKey(Indexer)){
-            Debug.Log("Cannot destroy a singleton which has not been initialized! ");
+            //Debug.Log("Cannot destroy a singleton which has not been initialized! ");
             return;
         }
 

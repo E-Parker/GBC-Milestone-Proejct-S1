@@ -72,7 +72,6 @@ public class Grid : SingletonObject<Grid> {
 
     void BuildGrid(){
         /* This function initializes a grid of nodes specified by grideSize. */
-        
         grid = new Node[GridSizeX,GridSizeY];
         Vector3 nodePosition;
         int x, y;
