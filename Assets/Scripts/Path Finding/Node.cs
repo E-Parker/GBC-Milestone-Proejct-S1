@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
 using static Utility.Utility;
 
 public enum AdjacentNode {
@@ -36,10 +35,18 @@ public class Node {
     
     // Variables:
 
-    public Vector3 worldPosition { get; private set; }  // The world-space position of the node.
-    private Dictionary<AdjacentNode,Node> connections;  // list containing adjacent nodes.
+    public Vector3 worldPosition { get; private set; }                      // The world-space position of the node.
+    public Dictionary<AdjacentNode,Node> connections { get; private set; }  // list containing adjacent nodes.
     private float desirability;     // Agent bias towards pathfinding to this node.
     public bool Walkable = false;   // Bool for if the current tile is walkable or not.
+    public bool LineOfSight = true; // Bool for if the tile in line of sight for the player.
+
+    // Non-Persistent pathfinding variables:
+    public float fCost { get { return hCost + gCost; } } 
+    public float hCost = 0.0f;
+    public float gCost = 0.0f;
+  
+    public Node parent;             // Stores the node used to traverse to this node.
 
     // Attributes:
 
@@ -78,15 +85,22 @@ public class Node {
         /* This method runs a physics check to see if the node is intersecting a collider. */
         
         Walkable = !Physics.CheckSphere(worldPosition, nodeRadius, unWalkableMask);
-
+        
         // if walkable, decay desirability towards zero.
         if (Walkable){
             Desirability *= decayRate;
             return;
         }
-
+        
         // Propagate the -1.0f value to the adjacent walkable nodes.
-        Propagate(-1.0f);
+        Propagate(-1.0f, 3);
+    }
+
+    public void Propagate(float val = -1.0f, int range = 1){
+        /* This function propagates a value to the adjacent nodes. */
+
+        // call the internal version of the function with more exposed variables.
+        Propagate(Paths, val, range);
     }
 
     public void Propagate(float val = -1.0f, float range = 0.5f){
@@ -99,7 +113,7 @@ public class Node {
     private void Propagate(List<AdjacentNode> paths, float val = -1.0f, int end = 0){
         /* This function propagates a value to the adjacent nodes, specified by path. */
         
-        Desirability += val * (1.0f - decayRate);//(desirability * 0.5f ) + (val * 0.5f);
+        Desirability += val * (1.0f - decayRate);
 
         if(paths.Count == end){
             return;
@@ -125,8 +139,24 @@ public class Node {
             }
 
             // Otherwise, propagate for that node.
-            this[path].Propagate(nextPaths, val * 0.3f);    // call the next node's propagate with the shortened list.
+            this[path].Propagate(nextPaths, val * 0.15f);  // call the next node's propagate with the shortened list.
         
         }
+    }
+
+    public bool HasLOS(Vector3 source, Vector3 direction, string tag, float distance = 1.0f){
+        /* Check if a source object has line of sight to this node. */
+
+        RaycastHit hit;
+        Physics.Raycast(source, direction, out hit, distance, unWalkableMask);
+
+        if (hit.collider != null && hit.collider.CompareTag(tag)){
+            LineOfSight = true;
+        }
+        else{
+            LineOfSight = false;
+        }
+
+        return LineOfSight;
     }
 }

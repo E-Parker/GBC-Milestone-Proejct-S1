@@ -104,7 +104,7 @@ public static class Utility{
             float angle = (Mathf.Atan2(y, x) + TWO_PI + HALF_PI) % TWO_PI;
 
             // Convert angle to index 0-7: inv_PI_Div_4 is equivalent to angle(as degrees) / 45 degrees.
-            int index = (int)(angle / TWO_PI * 8.0f);
+            int index = (int)(angle / TWO_PI * 7.999f);  // value fresh from my ass.
 
             // Set a to the corresponding direction.
             set(ref a, directionLookup(index));
@@ -115,7 +115,7 @@ public static class Utility{
 
         public static ushort directionLookup(int direction){
             /*  This function returns the direction from the lookup table. index must be int 0-7 */
-            return lookup[direction];
+            return lookup[direction % lookup.Length];
         }
     }
 
@@ -201,7 +201,6 @@ public static class Utility{
         public ValueGradient(float[] points, T[] values){
 
             this.nodes = new();
-
             // if the arrays are valid, add a node for each pair.
             if (points.Length == values.Length){
                 for(int i = 0; i < points.Length; i++){

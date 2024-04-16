@@ -28,12 +28,13 @@ public abstract class SpriteController : MonoBehaviour{
     }
 
     public Vector3 direction{
-        get { return true_direction; }
+        get { return new Vector3(true_direction.x, 0.0f, true_direction.z).normalized; }
         set { 
             if(value == Vector3.zero){
                 return;
             }
-            true_direction = value.normalized;
+            true_direction = new Vector3(value.x, 0.0f, value.z);
+            true_direction = value;
             Animator.ChangeVariant(StateData.directionFromVector(ref state, value.x, value.z)); 
         }
     } 
@@ -61,8 +62,8 @@ public abstract class SpriteController : MonoBehaviour{
     [HideInInspector] public bool initialized { get; private set; } = false;
 
     [Header("Pathfinding")]
-    public float nodeEffect = -0.8f;    // Float value propagated to nodes under the sprite. 
-    public float nodeRange = 1.0f;      // Range of effect the sprite has.
+    public float nodeEffect = -0.4f;    // Float value propagated to nodes under the sprite. 
+    public float nodeRange = 0.5f;      // Range of effect the sprite has.
 
     // Initialization:
 

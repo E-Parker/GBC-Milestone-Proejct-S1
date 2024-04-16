@@ -38,23 +38,40 @@ public class EnemyMage_Controller: SpriteController{
     // Animations that halt movement:
     private readonly string[] StopMovement = new string[]{"Attack"};
 
-    // holder for target to shoot at:
-    public GameObject target;
+    public Player_Controller Target;
     private Projectile_Handler Projectile;
+    private Pathfinder pathfinder;
+    private float timeSincePathChange;
+    private Stack<Node> path;
+    private Stack<Node> Path{
+        get{ 
+            return path; 
+        }
+        
+        set{
+            if(timeSincePathChange > 0.25f){
+                timeSincePathChange = 0.0f;
+                path = value;
+                currentNode = null;
+            }
+        }
+    }
+    private Node currentNode;
+    Vector3 directionToNode;
+    private Color debugColor = Color.black;
 
     private int mana;                   // the maximum mana the player can have.
     private int currentMana = 0;        // the current amount of mana the player has.
     private float manaTimer = 0f;       // timer used to handle changing manaRate.
     private float ActionTimer;          // Tracks the amount of time since last action taken.
-    public Vector3 wanderTarget;        // Random location min distance from player to wander too.
-    private Vector3 TargetPosition;     // Stores the target's transform.position.
-    private Vector3 LastTargetPosition; // stores the last position the target was at.
-    private Vector3 toTarget;           // Stores the predicted position of the target.
-    private Vector3 LastPosition;       // stores last position. for checking if stuck on something.
+
+    private Vector3 LastTargetPosition;         // stores the last position the target was at.
+    private Vector3 PredictedTargetPosition;    // Stores the predicted position of the target.
 
     public override void CustomStart(){
    
         Projectile = GetComponent<Projectile_Handler>();
+        pathfinder = GetComponent<Pathfinder>();
 
         // Make a dictionary of the states by their animation name.
         states = new Dictionary<string, ushort>();                             
@@ -88,20 +105,16 @@ public class EnemyMage_Controller: SpriteController{
             if(DropOnDeath != null && UnityEngine.Random.Range(0f,1f) < DropRate){
                 Instantiate(DropOnDeath, position, quaternion.identity).GetComponent<Projectile_Controller>().Setvalues(Vector3.zero, this.gameObject);
             }
-            
             gameObject.SetActive(false);
         }
     }
 
     public void SetTarget(){
         /*  This function sets the target to the player. */ 
-        if (target == null){
-            target = Player_Controller.Instance.gameObject;
-        
-            TargetPosition = target.transform.position;
-            LastTargetPosition = target.transform.position;
-            LastPosition = position;
-            toTarget = target.transform.position;
+        if (Target == null){
+            Target = Player_Controller.Instance;
+            LastTargetPosition = Target.position;
+            PredictedTargetPosition = Target.position;
         }
     }
 
@@ -110,6 +123,7 @@ public class EnemyMage_Controller: SpriteController{
         
         // Check that the character has enough mana:
         if (currentMana > 0){
+            Debug.DrawRay(position + Vector3.up, direction, Color.green,0.25f);
             Projectile.On_Fire(direction);
             currentMana--;
         }
@@ -119,10 +133,15 @@ public class EnemyMage_Controller: SpriteController{
     }
 
     public override void UpdateSpecial(){
+        
+        Debug.DrawRay(position, Vector3.up, debugColor);
 
         SetTarget();            // Check for missing target:
         RememberLastState();    // Remember the previous state
         UpdateAi();             // Update AI code with new predicted target location.
+        updatePathfinding();
+
+        timeSincePathChange += Time.deltaTime; //TODO: replace this hack with something better.
         
         // Update Timers
         if(currentMana != mana){
@@ -146,64 +165,86 @@ public class EnemyMage_Controller: SpriteController{
         transform.position = new Vector3(transform.position.x, 0.06f, transform.position.z);  
     
     }
+
+    public void updatePathfinding(){
+
+        if(Path == null){
+            return;
+        }
+
+        if (Path.Count != 0){
+
+            if (currentNode == null || Vector3.SqrMagnitude(directionToNode) < (Node.nodeRadius * Node.nodeRadius)){
+                currentNode = path.Pop();
+            }
+
+            directionToNode = position - currentNode.worldPosition;
+            direction = -directionToNode.normalized;
+            setState(anim_Walk);
+            return;
+        }
+
+        path = null;
+    }
     
     public void UpdateAi(){
-
+        
         // Check if enough time as passed to take an action:
         if (!ActionOpertunityCheck()){
             return;
         }
-        
-        unsetAll();             // Clear all states
 
-        LastTargetPosition = TargetPosition;        // Store position for next frame predictions.
-        TargetPosition = target.transform.position; // Update current Target Position.
+        unsetAll();                             // Clear all states
+        Vector3 RelativeTargetPosition = position - Target.position;
+        PredictedTargetPosition = Target.position + (Target.direction * m_Overshoot * 0.05f);
+        LastTargetPosition = Target.position;   // Store position for next update predictions.
+             
+        Debug.DrawLine(Target.position, PredictedTargetPosition, Color.black, 0.25f);
+        Debug.DrawLine(Target.position, position, Color.red, 0.25f);
 
-        Vector3 RelativeTargetPosition = position - TargetPosition;
-        toTarget = RelativeTargetPosition + ((LastTargetPosition - TargetPosition) * m_Overshoot);  
-        
         float relativeSqrDistance = Vector3.SqrMagnitude(RelativeTargetPosition); 
 
         // Process AI:
 
-        // if the enemy is too far away, teleport in front of the player.
-        //if(relativeSqrDistance > MaxEnemySqrDistance){
-        //    direction = Vector3.Normalize(RelativeTargetPosition);
-        //    rigidbody.gameObject.transform.position = TargetPosition - direction; // this is nasty.
-        //    setState(anim_Walk);
-        //}
-
-        // If the enemy is to far away walk towards the player.
-        //else
-        if (relativeSqrDistance > m_MaxDistance * m_MaxDistance){
-            
-            // if the enemy has not moved very much since the last frame, try to get un-stuck.
-            if(Vector3.SqrMagnitude(rigidbody.position - LastPosition) < 0.025f){
-                MovementOpertunity();
-            }
-            
-            // otherwise, walk towards the player.
-            else{
-                direction = -RelativeTargetPosition.normalized;
-                setState(anim_Walk);
-            }
+        // If the enemy is really far away, target a random position.
+        if (relativeSqrDistance > MaxEnemySqrDistance){
+            debugColor = Color.blue;
+            Wander();
+            return;
         }
 
-        // If player is under the minimum distance, try to run away. Don't check for stuck so the enemy seems more panicked.
-        else if(relativeSqrDistance < m_MinDistance * m_MinDistance){
+        // If the enemy is too far away walk towards the target.
+        if (relativeSqrDistance > m_MaxDistance * m_MaxDistance){
+            debugColor = Color.green;
+            SeekTarget();
+            return;
+        }
+
+        // If the target is too close, blindly run in the opposite direction. 
+        if(relativeSqrDistance < (m_MinDistance * m_MinDistance)){
+            debugColor = Color.yellow;
+            path = null;
             direction = RelativeTargetPosition.normalized;
             setState(anim_Walk);
+            return;
         }
 
-        // Aggression determines how likely the character is to attack.
-        else if(UnityEngine.Random.Range(0f,1f) > m_Agression){
-            MovementOpertunity();
+        // Randomly chose to try to find a better position, or attack.
+        if(UnityEngine.Random.Range(0.0f, 1.0f) > m_Agression){
+            debugColor = Color.gray;
+            Reposition();
         }
         else{
-            AttackOpertunity(toTarget);
+            Attack(PredictedTargetPosition);
+            debugColor = Color.cyan;
         }
     }
 
+    private void Reposition(){
+        // Search for a better position.
+        SeekTarget();   // Was going to add LOS, doesn't work don't have time.
+    }
+    
     public bool ActionOpertunityCheck(){
         /*  Check for a movement opertunities. Called in Update function. */
 
@@ -216,24 +257,43 @@ public class EnemyMage_Controller: SpriteController{
         return false;
     }
 
-    private void AttackOpertunity(Vector3 ToTarget){
+    private void Attack(Vector3 PredictedTargetPosition){
         /* this function attacks in the predicted direction of the player. */
-        
-        // Check that the character has enough mana:
+
         if (currentMana > 0){
-            direction = -ToTarget.normalized;
+            direction = -PredictedTargetPosition.normalized;
             setState(anim_Attack);
         }
     }
 
-    private void MovementOpertunity(){   
-        /*  Randomly walk in any direction. */
-        Vector3 wander = new Vector3(UnityEngine.Random.Range(-m_MaxDistance, m_MaxDistance), 0, 
-                                     UnityEngine.Random.Range(-m_MaxDistance, m_MaxDistance));
-        
-        direction = wander.normalized;
-        setState(anim_Walk);
+    private void PathToTarget(Vector3 target){
+        /* this function starts pathfinding towards a target. */
+        Path = pathfinder.FindPath(position, target);        
+    }
     
+    private void EscapeTarget(Vector3 target, float radius = 0.5f){
+        /* This function paths to a safe location away from the target. */
+        Node best = Pathfinder.FindBestNode(position, target, Pathfinder.LowestCost, radius);
+        PathToTarget(best.worldPosition);
+    }
+
+    private void SeekTarget(){
+        /* Walk towards the best node around the target. */
+        //Debug.Log(Target.position);
+
+        Vector3 random = new Vector3(
+            UnityEngine.Random.Range(-1.0f, 1.0f), 0.0f, 
+            UnityEngine.Random.Range(-1.0f, 1.0f)).normalized * m_MinDistance;
+
+        PathToTarget(random + Target.position);
+    }
+
+    private void Wander(){   
+        /* Randomly walk to a target position. */
+        Vector3 wander = new Vector3(UnityEngine.Random.Range(-1.0f, 1.0f), 0.0f, 
+                                     UnityEngine.Random.Range(-1.0f, 1.0f));
+        
+        PathToTarget(wander.normalized);
     }
 }
 

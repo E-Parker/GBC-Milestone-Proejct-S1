@@ -163,6 +163,8 @@ public class Player_Controller : SpriteController, IReceiver{
         float angle = ((AngleFromVector(direction.x, -direction.z, 0, 1) * Mathf.Rad2Deg) - 90f) % 360f;
         Vector3 newDirection;
         Health_handler targetHealth;
+
+        
         
         // Check rays from +- 10 degrees.
         for (int i= -10; i < 10; i+=2){

@@ -1,7 +1,4 @@
-using System;
 using System.Collections;
-using Unity.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 using static Utility.Utility;
 
@@ -28,21 +25,33 @@ public class Grid : SingletonObject<Grid> {
     IEnumerator UpdateGrid(){
 
         while(true){
-
+            Vector3 playerPosition = Player_Controller.Instance.position;
             // Update each node in the grid.
             foreach(Node n in grid){
                 n.Update();
             }
             
             // Update the nodes under each character in the scene with it's effect and range.
-            Node node;
-            foreach(var character in SpriteController.Characters){
-                node = nodeFromPosition(character.position);
-                node.Propagate(character.nodeEffect, character.nodeRange);
-            }
+            //Node node;
+            //foreach(var character in SpriteController.Characters){
+            //    node = nodeFromPosition(character.position - ((playerPosition - character.position).normalized * 0.1f));
+            //    node.Propagate(character.nodeEffect, character.nodeRange);
+            //}
             yield return null;
         }
     }
+
+    public static float GetDistance(Node a, Node b){
+
+        // Get the float distance from one node to another.
+		float dstX = Mathf.Abs(a.worldPosition.x - a.worldPosition.x) * gridSize.x;
+		float dstY = Mathf.Abs(a.worldPosition.y - b.worldPosition.y) * gridSize.y;
+
+        // Return the distance value plus the weighted offset from the target node.
+		if (dstX > dstY)
+			return (1.4f * dstY) + (dstX-dstY);
+		return (1.4f * dstX) + (dstY-dstX);
+	}
 
     public static Node nodeFromPosition(Vector3 position){
 
@@ -101,8 +110,8 @@ public class Grid : SingletonObject<Grid> {
         if (grid != null){
             foreach (Node node in grid){
                 float val = (node.Desirability + 1.0f) * 0.5f;
-                Gizmos.color =  Color.Lerp( Color.red, Color.green, val); //node.Walkable ? Color.Lerp( Color.red, Color.green, val) : Color.blue;
-                Gizmos.DrawCube(node.worldPosition, Vector3.one * (Node.nodeDiameter - 0.01f));
+                Gizmos.color = !node.LineOfSight? Color.blue : Color.Lerp( Color.red, Color.green, val);
+                Gizmos.DrawCube(node.worldPosition, Vector3.one * (Node.nodeDiameter - 0.02f));
             }
         }
     }
